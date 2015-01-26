@@ -95,6 +95,12 @@ namespace pretty_output
 	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
 
+	bool is_running_same_thread();
+	uint64_t current_thread_id();
+
+	void lock_output();
+	void unlock_output();
+
 	const std::string &indentation();
 	void indentation_add();
 	void indentation_remove();
@@ -139,12 +145,21 @@ namespace pretty_output
 	public:
 		out_stream(const std::string &filename_line)
 		{
+			lock_output();
+
+			if (!is_running_same_thread())
+			{
+				std::cout << std::endl << "[Thread: " << current_thread_id() << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
+			}
+
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
 		}
 
 
 		out_stream(const std::string &filename_line, const char *format, va_list arguments)
 		{
+			lock_output();
+
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
 			std::vprintf(format, arguments);
 		}
@@ -153,6 +168,8 @@ namespace pretty_output
 		~out_stream()
 		{
 			std::cout << std::endl;
+
+			unlock_output();
 		}
 
 
