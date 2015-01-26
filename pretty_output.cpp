@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#include "thread_local_storage.h"
 #include "pretty_output.h"
 
 
@@ -10,54 +11,25 @@ namespace pretty_output
 	static pthread_key_t indentation_pthread_key;
 
 
-	void _make_indentation_key()
-	{
-		int retval = pthread_key_create(&indentation_pthread_key, NULL);
-		assert(retval == 0);
-	}
+	tls<std::string> _indentation;
 
 
 	const std::string &indentation()
 	{
-		pthread_once(&once_control, _make_indentation_key);
-
-		std::string *indentation = (std::string*)pthread_getspecific(indentation_pthread_key);
-		if (indentation == NULL)
-		{
-			indentation = new std::string("");
-		}
-
-		return *indentation;
+		return _indentation.get();
 	}
 
 
 	void indentation_add()
 	{
-		pthread_once(&once_control, _make_indentation_key);
-
-		std::string *indentation = (std::string*)pthread_getspecific(indentation_pthread_key);
-		if (indentation == NULL)
-		{
-			indentation = new std::string("");
-		}
-
-		int retval = pthread_setspecific(indentation_pthread_key, new std::string(*indentation + INDENTATION));
-		assert(retval == 0);
+		_indentation.set(_indentation.get() + INDENTATION);
 	}
 
 
 	void indentation_remove()
 	{
-		pthread_once(&once_control, _make_indentation_key);
-
-		std::string *indentation = (std::string*)pthread_getspecific(indentation_pthread_key);
-		if (indentation == NULL)
-		{
-			indentation = new std::string("");
-		}
-
-		int retval = pthread_setspecific(indentation_pthread_key, new std::string(indentation->substr(0, indentation->length() - INDENTATION_SIZE)));
-		assert(retval == 0);
+		const std::string &old_indentation = _indentation.get();
+		_indentation.set(old_indentation.substr(0, old_indentation.length() - INDENTATION_SIZE));
 	}
 
 }
