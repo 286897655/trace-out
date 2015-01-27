@@ -119,6 +119,20 @@ namespace pretty_output
 	}
 
 
+	inline const std::string thread_id_field(uint64_t thread_id)
+	{
+		std::stringstream stream;
+		stream.fill(' ');
+
+		stream.width(20);
+		stream.flags(std::ios::right);
+
+		stream << thread_id;
+
+		return stream.str();
+	}
+
+
 	inline const std::string filename_line_field(const std::string &file, unsigned int line)
 	{
 		std::stringstream stream;
@@ -155,18 +169,9 @@ namespace pretty_output
 
 			if (!is_running_same_thread())
 			{
-				std::stringstream thread_info;
-				std::string thread_name = current_thread_name();
-				if (thread_name != "")
-				{
-					thread_info << thread_name << " (" << current_thread_id() << ")";
-				}
-				else
-				{
-					thread_info << current_thread_id();
-				}
-
-				std::cout << std::endl << "[Thread: " << thread_info.str() << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
+				std::string thread_id = thread_id_field(current_thread_id());
+				const std::string &thread_name = current_thread_name();
+				std::cout << std::endl << "[Thread: " << thread_id << (thread_name != "" ? " " : "") << thread_name << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
 			}
 
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
