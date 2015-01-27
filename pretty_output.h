@@ -67,6 +67,10 @@
 			pretty_output::trace(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
 
 
+#define $tn(name) \
+			pretty_output::set_current_thread_name(#name);
+
+
 // private macros:
 
 #define PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b) \
@@ -95,8 +99,10 @@ namespace pretty_output
 	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
 
-	bool is_running_same_thread();
 	uint64_t current_thread_id();
+	const std::string current_thread_name();
+	void set_current_thread_name(const std::string &name);
+	bool is_running_same_thread();
 
 	void lock_output();
 	void unlock_output();
@@ -149,7 +155,18 @@ namespace pretty_output
 
 			if (!is_running_same_thread())
 			{
-				std::cout << std::endl << "[Thread: " << current_thread_id() << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
+				std::stringstream thread_info;
+				std::string thread_name = current_thread_name();
+				if (thread_name != "")
+				{
+					thread_info << thread_name << " (" << current_thread_id() << ")";
+				}
+				else
+				{
+					thread_info << current_thread_id();
+				}
+
+				std::cout << std::endl << "[Thread: " << thread_info.str() << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
 			}
 
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
