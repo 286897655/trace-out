@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <mutex>
 
 #include "thread_local_storage.h"
 #include "pretty_output.h"
@@ -15,7 +14,7 @@ namespace pretty_output
 	tls<std::string> _indentation;
 	uint64_t _current_thread_id;
 	tls<std::string> _thread_name;
-	std::mutex _output_mutex;
+	mutex _output_mutex;
 
 
 	uint64_t current_thread_id()
