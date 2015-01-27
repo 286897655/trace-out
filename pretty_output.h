@@ -67,10 +67,6 @@
 			pretty_output::trace(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
 
 
-#define $tn(name) \
-			pretty_output::set_current_thread_name(#name);
-
-
 // private macros:
 
 #define PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b) \
@@ -99,14 +95,6 @@ namespace pretty_output
 	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
 
-	uint64_t current_thread_id();
-	const std::string current_thread_name();
-	void set_current_thread_name(const std::string &name);
-	bool is_running_same_thread();
-
-	void lock_output();
-	void unlock_output();
-
 	const std::string &indentation();
 	void indentation_add();
 	void indentation_remove();
@@ -119,26 +107,12 @@ namespace pretty_output
 	}
 
 
-	inline const std::string thread_id_field(uint64_t thread_id)
-	{
-		std::stringstream stream;
-		stream.fill(' ');
-
-		stream.width(20);
-		stream.flags(std::ios::right);
-
-		stream << thread_id;
-
-		return stream.str();
-	}
-
-
 	inline const std::string filename_line_field(const std::string &file, unsigned int line)
 	{
 		std::stringstream stream;
 		stream.fill(' ');
 
-		stream.width(20);
+		stream.width(FILENAME_FIELD_WIDTH);
 		stream.flags(std::ios::right);
 		std::string filename = file;
 		if (filename.length() > FILENAME_FIELD_WIDTH)
@@ -165,23 +139,12 @@ namespace pretty_output
 	public:
 		out_stream(const std::string &filename_line)
 		{
-			lock_output();
-
-			if (!is_running_same_thread())
-			{
-				std::string thread_id = thread_id_field(current_thread_id());
-				const std::string &thread_name = current_thread_name();
-				std::cout << std::endl << "[Thread: " << thread_id << (thread_name != "" ? " " : "") << thread_name << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
-			}
-
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
 		}
 
 
 		out_stream(const std::string &filename_line, const char *format, va_list arguments)
 		{
-			lock_output();
-
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
 			std::vprintf(format, arguments);
 		}
@@ -190,8 +153,6 @@ namespace pretty_output
 		~out_stream()
 		{
 			std::cout << std::endl;
-
-			unlock_output();
 		}
 
 
