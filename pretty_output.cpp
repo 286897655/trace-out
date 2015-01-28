@@ -4,10 +4,6 @@
 namespace pretty_output
 {
 
-	static pthread_once_t once_control = PTHREAD_ONCE_INIT;
-	static pthread_key_t indentation_pthread_key;
-
-
 	tls<std::string> _indentation;
 	uint64_t _current_thread_id;
 	tls<std::string> _thread_name;
