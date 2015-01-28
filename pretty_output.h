@@ -139,7 +139,7 @@ namespace pretty_output
 		std::stringstream stream;
 		stream.fill(' ');
 
-		stream.width(20);
+		stream.width(FILENAME_FIELD_WIDTH);
 		stream.flags(std::ios::right);
 		std::string filename = file;
 		if (filename.length() > FILENAME_FIELD_WIDTH)
