@@ -230,19 +230,15 @@ namespace pretty_output
 	template <template <typename ...> class Container, typename ...A>
 	inline const std::string to_string(const Container<A...> &value);
 
+	template <typename T, typename ...R>
+	const std::string to_string(const T &value, R ...rest);
+
 #endif // __cplusplus >= 201103L
 
 	template <typename T>
 	inline const std::string to_string();
 
 	inline const std::string to_string();
-
-#if __cplusplus >= 201103L
-
-	template <typename T, typename ...R>
-	const std::string to_string(const T &value, R ...rest);
-
-#endif // __cplusplus >= 201103L
 
 
 	template <typename T>
@@ -306,6 +302,12 @@ namespace pretty_output
 		return stream.str();
 	}
 
+	template <typename T, typename ...R>
+	const std::string to_string(const T &value, R ...rest)
+	{
+		return to_string<T>(value) + ", " + to_string<R...>(rest...);
+	}
+
 #endif // __cplusplus >= 201103L
 
 
@@ -320,17 +322,6 @@ namespace pretty_output
 	{
 		return "";
 	}
-
-
-#if __cplusplus >= 201103L
-
-	template <typename T, typename ...R>
-	const std::string to_string(const T &value, R ...rest)
-	{
-		return to_string<T>(value) + ", " + to_string<R...>(rest...);
-	}
-
-#endif // __cplusplus >= 201103L
 
 
 	// watch
