@@ -1,6 +1,3 @@
-#include <assert.h>
-
-#include "thread_local_storage.h"
 #include "pretty_output.h"
 
 
