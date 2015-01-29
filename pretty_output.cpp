@@ -5,15 +5,9 @@ namespace pretty_output
 {
 
 	tls<std::string> _indentation;
-	uint64_t _current_thread_id;
+	std::uint64_t _current_thread_id;
 	tls<std::string> _thread_name;
 	mutex _output_mutex;
-
-
-	uint64_t current_thread_id()
-	{
-		return (uint64_t)pthread_self();
-	}
 
 
 	const std::string current_thread_name()

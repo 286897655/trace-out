@@ -1,9 +1,18 @@
 #include <windows.h>
 #include <assert.h>
 
+#include "pretty_output.h"
+
 
 namespace pretty_output
 {
+
+	std::uint64_t current_thread_id()
+	{
+		return (std::uint64_t)GetCurrentThreadId();
+	}
+
+
 
 	struct tlskey_t
 	{

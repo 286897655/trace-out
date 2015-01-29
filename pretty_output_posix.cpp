@@ -7,6 +7,13 @@
 namespace pretty_output
 {
 
+	std::uint64_t current_thread_id()
+	{
+		return (std::uint64_t)pthread_self();
+	}
+
+
+
 	struct tlskey_t
 	{
 		pthread_key_t value;

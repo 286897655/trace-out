@@ -13,6 +13,8 @@
 #include <iostream>
 #include <utility>
 #include <type_traits>
+#include <cstdint>
+#include <cstdarg>
 
 
 // public macros:
@@ -99,7 +101,7 @@ namespace pretty_output
 	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
 
-	uint64_t current_thread_id();
+	std::uint64_t current_thread_id();
 	const std::string current_thread_name();
 	void set_current_thread_name(const std::string &name);
 	bool is_running_same_thread();
@@ -119,7 +121,7 @@ namespace pretty_output
 	}
 
 
-	inline const std::string thread_id_field(uint64_t thread_id)
+	inline const std::string thread_id_field(std::uint64_t thread_id)
 	{
 		std::stringstream stream;
 		stream.fill(' ');
