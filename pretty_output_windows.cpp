@@ -63,7 +63,7 @@ namespace pretty_output
 	mutex::mutex()
 	{
 		_handle = new _mutex_t;
-		InitializeCriticalSection(&_handle->value, NULL);
+		InitializeCriticalSection(&_handle->value);
 	}
 
 
