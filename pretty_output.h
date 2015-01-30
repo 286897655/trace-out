@@ -24,7 +24,7 @@
 
 
 #define $f \
-			pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, __PRETTY_FUNCTION__);
+			pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 #if __cplusplus >= 201103L
@@ -88,6 +88,15 @@
 
 #define PRETTY_OUTPUT_FILENAME_LINE \
 			(pretty_output::filename_line_field(pretty_output::filename_from_path(__FILE__), __LINE__))
+
+
+#if defined(__GNUG__) || defined(__clang__)
+	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
+#elif defined(_MSC_VER)
+	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __FUNCSIG__
+#else
+	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block
+#endif
 
 
 namespace pretty_output
