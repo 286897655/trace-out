@@ -36,13 +36,17 @@ namespace pretty_output
 
 	void lock_output()
 	{
+#if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 		_output_mutex.lock();
+#endif // PRETTY_OUTPUT_NO_OUTPUT_SYNC
 	}
 
 
 	void unlock_output()
 	{
+#if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 		_output_mutex.unlock();
+#endif // PRETTY_OUTPUT_NO_OUTPUT_SYNC
 	}
 
 
