@@ -95,7 +95,7 @@
 #elif defined(_MSC_VER)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __FUNCSIG__
 #else
-	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block
+	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block.
 #endif
 
 
