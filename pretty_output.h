@@ -65,11 +65,11 @@
 			pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
 
 
-#define $t(format, ...) \
-			pretty_output::trace(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
+#define $p(format, ...) \
+			pretty_output::print(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
 
 
-#define $tn(name) \
+#define $t(name) \
 			pretty_output::set_current_thread_name(#name);
 
 
@@ -774,9 +774,9 @@ namespace pretty_output
 	};
 
 
-	// trace
+	// print
 
-	inline void trace(const std::string &filename_line, const char *format, ...)
+	inline void print(const std::string &filename_line, const char *format, ...)
 	{
 		va_list arguments;
 
