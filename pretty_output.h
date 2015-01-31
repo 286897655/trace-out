@@ -102,6 +102,8 @@
 namespace pretty_output
 {
 
+	static const size_t THREAD_HEADER_WIDTH = 80;
+	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
 	static const size_t LINE_FIELD_WIDTH = 4;
@@ -133,12 +135,19 @@ namespace pretty_output
 	inline const std::string thread_id_field(std::uint64_t thread_id)
 	{
 		std::stringstream stream;
-		stream.fill(' ');
+		stream << (void*)thread_id;
 
-		stream.width(20);
-		stream.flags(std::ios::right);
+		return stream.str();
+	}
 
-		stream << thread_id;
+
+	inline const std::string thread_header(const std::string &thread_id, const std::string &thread_name)
+	{
+		std::stringstream stream;
+		stream.fill(THREAD_HEADER_FILL_CHAR);
+		stream.flags(std::ios::left);
+		stream.width(THREAD_HEADER_WIDTH);
+		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
 
 		return stream.str();
 	}
@@ -182,7 +191,8 @@ namespace pretty_output
 			{
 				std::string thread_id = thread_id_field(current_thread_id());
 				const std::string &thread_name = current_thread_name();
-				std::cout << std::endl << "[Thread: " << thread_id << (thread_name != "" ? " " : "") << thread_name << "] -- -- -- -- -- -- -- -- -- -- -- -- -- -- --" << std::endl;
+				const std::string &header = thread_header(thread_id, thread_name);
+				std::cout << std::endl << header << std::endl;
 			}
 
 			std::cout << filename_line.c_str() << DELIMITER << indentation();
