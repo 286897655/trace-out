@@ -803,75 +803,20 @@ namespace pretty_output
 
 	// helper stuff
 
-	struct tlskey_t;
+	struct _tlskey_t;
 
-	tlskey_t *_tls_new_key();
-	void _tls_delete_key(tlskey_t *key);
-	void *_tls_get(tlskey_t *key);
-	void _tls_set(tlskey_t *key, void *data);
-
-
-	template <typename T>
-	class tls
-	{
-	public:
-		tls()
-		{
-			_key = _tls_new_key();
-		}
-
-
-		~tls()
-		{
-			_tls_delete_key(_key);
-		}
-
-
-		void set(const T &value)
-		{
-			T *old_value = (T*)_tls_get(_key);
-			if (old_value != NULL)
-			{
-				delete old_value;
-			}
-
-			T *new_value = new T(value);
-			_tls_set(_key, new_value);
-		}
-
-
-		T &get() const
-		{
-			T *value = (T*)_tls_get(_key);
-			if (value == NULL)
-			{
-				value = new T;
-				_tls_set(_key, value);
-			}
-
-			return *value;
-		}
-
-
-	private:
-		tlskey_t *_key;
-	};
-
+	_tlskey_t *_tls_new_key();
+	void _tls_delete_key(_tlskey_t *key);
+	void *_tls_get(_tlskey_t *key);
+	void _tls_set(_tlskey_t *key, void *data);
 
 
 	struct _mutex_t;
 
-	class mutex
-	{
-	public:
-		mutex();
-		~mutex();
-		void lock();
-		void unlock();
-
-	private:
-		_mutex_t *_handle;
-	};
+	_mutex_t *_mutex_new();
+	void _mutex_delete(_mutex_t *mutex);
+	void _mutex_lock(_mutex_t *mutex);
+	void _mutex_unlock(_mutex_t *mutex);
 
 }
 

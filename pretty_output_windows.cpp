@@ -14,15 +14,15 @@ namespace pretty_output
 
 
 
-	struct tlskey_t
+	struct _tlskey_t
 	{
 		DWORD value;
 	};
 
 
-	tlskey_t *_tls_new_key()
+	_tlskey_t *_tls_new_key()
 	{
-		tlskey_t *key = new tlskey_t;
+		_tlskey_t *key = new _tlskey_t;
 		DWORD retval = TlsAlloc();
 		assert(retval != TLS_OUT_OF_INDEXES);
 
@@ -31,7 +31,7 @@ namespace pretty_output
 	}
 
 
-	void _tls_delete_key(tlskey_t *key)
+	void _tls_delete_key(_tlskey_t *key)
 	{
 		int retval = TlsFree(key->value);
 		assert(retval != 0);
@@ -40,13 +40,13 @@ namespace pretty_output
 	}
 
 
-	void *_tls_get(tlskey_t *key)
+	void *_tls_get(_tlskey_t *key)
 	{
 		return TlsGetValue(key->value);
 	}
 
 
-	void _tls_set(tlskey_t *key, void *data)
+	void _tls_set(_tlskey_t *key, void *data)
 	{
 		BOOL retval = TlsSetValue(key->value, data);
 		assert(retval != 0);
@@ -60,28 +60,30 @@ namespace pretty_output
 	};
 
 
-	mutex::mutex()
+	_mutex_t *_mutex_new()
 	{
-		_handle = new _mutex_t;
+		_mutex_t mutex = new _mutex_t;
 		InitializeCriticalSection(&_handle->value);
+
+		return mutex;
 	}
 
 
-	mutex::~mutex()
+	void _mutex_delete(_mutex_t *mutex)
 	{
-		DeleteCriticalSection(&_handle->value);
+		DeleteCriticalSection(&mutex->value);
 	}
 
 
-	void mutex::lock()
+	void _mutex_lock(_mutex_t *mutex)
 	{
-		EnterCriticalSection(&_handle->value);
+		EnterCriticalSection(&mutex->value);
 	}
 
 
-	void mutex::unlock()
+	void _mutex_unlock(_mutex_t *mutex)
 	{
-		LeaveCriticalSection(&_handle->value);
+		LeaveCriticalSection(&mutex->value);
 	}
 
 }

@@ -14,15 +14,15 @@ namespace pretty_output
 
 
 
-	struct tlskey_t
+	struct _tlskey_t
 	{
 		pthread_key_t value;
 	};
 
 
-	tlskey_t *_tls_new_key()
+	_tlskey_t *_tls_new_key()
 	{
-		tlskey_t *key = new tlskey_t;
+		_tlskey_t *key = new _tlskey_t;
 		int retval = pthread_key_create(&key->value, NULL);
 		assert(retval == 0);
 
@@ -30,7 +30,7 @@ namespace pretty_output
 	}
 
 
-	void _tls_delete_key(tlskey_t *key)
+	void _tls_delete_key(_tlskey_t *key)
 	{
 		int retval = pthread_key_delete(key->value);
 		assert(retval == 0);
@@ -39,13 +39,13 @@ namespace pretty_output
 	}
 
 
-	void *_tls_get(tlskey_t *key)
+	void *_tls_get(_tlskey_t *key)
 	{
 		return pthread_getspecific(key->value);
 	}
 
 
-	void _tls_set(tlskey_t *key, void *data)
+	void _tls_set(_tlskey_t *key, void *data)
 	{
 		int retval = pthread_setspecific(key->value, data);
 		assert(retval == 0);
@@ -59,28 +59,31 @@ namespace pretty_output
 	};
 
 
-	mutex::mutex()
+	_mutex_t *_mutex_new()
 	{
-		_handle = new _mutex_t;
-		pthread_mutex_init(&_handle->value, NULL);
+		_mutex_t *mutex = new _mutex_t;
+		pthread_mutex_init(&mutex->value, NULL);
+
+		return mutex;
 	}
 
 
-	mutex::~mutex()
+	void _mutex_delete(_mutex_t *mutex)
 	{
-		pthread_mutex_destroy(&_handle->value);
+		pthread_mutex_destroy(&mutex->value);
+		delete mutex;
 	}
 
 
-	void mutex::lock()
+	void _mutex_lock(_mutex_t *mutex)
 	{
-		pthread_mutex_lock(&_handle->value);
+		pthread_mutex_lock(&mutex->value);
 	}
 
 
-	void mutex::unlock()
+	void _mutex_unlock(_mutex_t *mutex)
 	{
-		pthread_mutex_unlock(&_handle->value);
+		pthread_mutex_unlock(&mutex->value);
 	}
 
 }

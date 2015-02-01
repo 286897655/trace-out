@@ -4,6 +4,85 @@
 namespace pretty_output
 {
 
+	template <typename T>
+	class tls
+	{
+	public:
+		tls()
+		{
+			_key = _tls_new_key();
+		}
+
+
+		~tls()
+		{
+			_tls_delete_key(_key);
+		}
+
+
+		void set(const T &value)
+		{
+			T *old_value = (T*)_tls_get(_key);
+			if (old_value != NULL)
+			{
+				delete old_value;
+			}
+
+			T *new_value = new T(value);
+			_tls_set(_key, new_value);
+		}
+
+
+		T &get() const
+		{
+			T *value = (T*)_tls_get(_key);
+			if (value == NULL)
+			{
+				value = new T;
+				_tls_set(_key, value);
+			}
+
+			return *value;
+		}
+
+	private:
+		_tlskey_t *_key;
+	};
+
+
+
+	class mutex
+	{
+	public:
+		mutex()
+		{
+			_handle = _mutex_new();
+		}
+
+
+		~mutex()
+		{
+			_mutex_delete(_handle);
+		}
+
+
+		void lock()
+		{
+			_mutex_lock(_handle);
+		}
+
+
+		void unlock()
+		{
+			_mutex_unlock(_handle);
+		}
+
+	private:
+		_mutex_t *_handle;
+	};
+
+
+
 	tls<std::string> _indentation;
 	std::uint64_t _current_thread_id;
 	tls<std::string> _thread_name;
