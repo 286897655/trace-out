@@ -107,6 +107,11 @@ namespace pretty_output
 	static const size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
 	static const size_t LINE_FIELD_WIDTH = 4;
+#if defined(_WIN32)
+	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
+#else
+	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
+#endif
 	static const char DELIMITER[] = " |  ";
 	static const char INDENTATION[] = "    ";
 	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
@@ -128,7 +133,7 @@ namespace pretty_output
 	inline const std::string filename_from_path(const char *path)
 	{
 		std::string file_path(path);
-		return file_path.substr(file_path.rfind('/') + 1);
+		return file_path.substr(file_path.rfind(FILE_PATH_COMPONENT_DELIMITER) + 1);
 	}
 
 
