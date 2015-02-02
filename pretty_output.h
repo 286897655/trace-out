@@ -200,7 +200,7 @@ namespace pretty_output
 				std::cout << std::endl << header << std::endl;
 			}
 
-			std::cout << filename_line.c_str() << DELIMITER << indentation();
+			std::cout << filename_line << DELIMITER << indentation();
 		}
 
 
@@ -208,7 +208,7 @@ namespace pretty_output
 		{
 			lock_output();
 
-			std::cout << filename_line.c_str() << DELIMITER << indentation();
+			std::cout << filename_line << DELIMITER << indentation();
 			std::vprintf(format, arguments);
 		}
 
