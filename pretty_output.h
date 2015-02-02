@@ -102,7 +102,7 @@
 namespace pretty_output
 {
 
-	static const size_t THREAD_HEADER_WIDTH = 80;
+	static const size_t THREAD_HEADER_WIDTH = 79;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
