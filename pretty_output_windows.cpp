@@ -62,8 +62,8 @@ namespace pretty_output
 
 	_mutex_t *_mutex_new()
 	{
-		_mutex_t mutex = new _mutex_t;
-		InitializeCriticalSection(&_handle->value);
+		_mutex_t *mutex = new _mutex_t;
+		InitializeCriticalSection(&mutex->value);
 
 		return mutex;
 	}
