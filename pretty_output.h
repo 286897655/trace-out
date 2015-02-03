@@ -240,9 +240,15 @@ namespace pretty_output
 	template <typename T>
 	const std::string to_string(const T &value);
 
+	template <typename T>
+	const std::string to_string(const T *value);
+
+	template <typename T>
+	const std::string to_string(T *value);
+
 	inline const std::string to_string(bool value);
 
-	inline const std::string to_string(const char *value);
+	inline const std::string to_string(char value);
 
 	inline const std::string to_string(const std::string &value);
 
@@ -275,16 +281,44 @@ namespace pretty_output
 	}
 
 
+	template <typename T>
+	const std::string to_string(const T *value)
+	{
+		if (value == NULL)
+		{
+			return "(null)";
+		}
+
+		std::stringstream stream;
+		stream << "0x" << (void*)value << " -> " << to_string(*value);
+		return stream.str();
+	}
+
+
+	template <typename T>
+	const std::string to_string(T *value)
+	{
+		if (value == NULL)
+		{
+			return "(null)";
+		}
+
+		std::stringstream stream;
+		stream << "0x" << (void*)value << " -> " << to_string(*value);
+		return stream.str();
+	}
+
+
 	inline const std::string to_string(bool value)
 	{
 		return value ? "true" : "false";
 	}
 
 
-	inline const std::string to_string(const char *value)
+	inline const std::string to_string(char value)
 	{
 		std::stringstream stream;
-		stream << "\"" << value << "\"";
+		stream << "\'" << value << "\'";
 		return stream.str();
 	}
 
