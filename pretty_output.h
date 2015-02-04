@@ -1,17 +1,35 @@
-//
-//  pretty_output.h
-//
-//  by shrpnsld
-//
-//
+/* ABOUT *
 
-/* HELP
+	This is a library for pretty printing information about a code.
+	Those who prefer using console output for debugging purposes might
+	consider this library as a more useful alternative to
+	printf/std::cout/whatever.
 
- * * * * * * * * * *
 
-Macros:
+	Features:
 
-$w(epression) - print value of expression and returns that value, so can be used inside other expression.
+		* Easy to use and extend
+
+		* Uses only C++/C++11. Does not use any additional
+			preprocessors or libraries, except standard library
+
+		* Crossplatform. Tested on Clang 600.0.56, MVS 2010
+
+		* Free for all
+
+
+	Project page:
+
+		https://github.com/shrpnsld/pretty_output
+
+*/
+
+
+/* HELP *
+
+$w(epression) - print value of expression and returns that value, so
+can be used inside other expression.
+The name is an abbreviation of 'watch'.
 
 	Example:
 
@@ -64,7 +82,10 @@ $w(epression) - print value of expression and returns that value, so can be used
 	>
 
 
-$f - print function or member-function call and return labels. Uses inside function or member-function. Automatically adds and removes indentation to the output.
+$f - print function or member-function call and return labels. Should
+be used inside a function or member-function. Automatically adds and
+removes indentation to the output.
+The name is an abbreviation of 'function'.
 
 	Example:
 
@@ -95,7 +116,10 @@ $f - print function or member-function call and return labels. Uses inside funct
 	>
 
 
-$c(function) - print function arguments and return value. Uses at function call. Automatically adds and removes indentation to the output.
+$c(function) - print function arguments and return value. Should be
+used at function call. Automatically adds and removes indentation to
+the output.
+The name is an abbreviation of 'call'.
 
 	Example:
 
@@ -115,7 +139,10 @@ $c(function) - print function arguments and return value. Uses at function call.
 	>
 
 
-$m(object, function_name) - print member-function arguments and return value. Uses at member-function call. 'object' argument can be pointer and non-pointer type.
+$m(object, function_name) - print member-function arguments and return
+value.  Should be used at member-function call. 'object' argument can
+be of a pointer or non-pointer type.
+The name is an abbreviation of 'member-function'.
 
 	Example:
 
@@ -140,7 +167,8 @@ $m(object, function_name) - print member-function arguments and return value. Us
 	>
 
 
-$return expression - print value of epxression passed to return statement
+$return expression - print value of epxression passed to return
+statement.
 
 	Example:
 
@@ -160,7 +188,8 @@ $return expression - print value of epxression passed to return statement
 	>
 
 
-$if(condition) - print value of the if condition. Automatically adds and removes indentation to the output.
+$if (condition) - print value of the if condition. Automatically adds
+and removes indentation to the output.
 
 	Example:
 
@@ -176,7 +205,8 @@ $if(condition) - print value of the if condition. Automatically adds and removes
 	>
 
 
-$for(statements) - print iteration numbers of the for loop. Automatically adds and removes indentation to the output.
+$for (statements) - print iteration numbers of the for loop.
+Automatically adds and removes indentation to the output.
 
 	Example:
 
@@ -217,7 +247,8 @@ $for(statements) - print iteration numbers of the for loop. Automatically adds a
 	>
 
 
-$while(condition) - print iteration conditions of the while loop. Automatically adds and removes indentation to the output.
+$while (condition) - print iteration conditions of the while loop.
+Automatically adds and removes indentation to the output.
 
 	Example:
 
@@ -263,16 +294,22 @@ $_ - Adds and removes indentation in the containing scope.
 	>
 
 
-$p(format, ...) - like printf.
+$p(format, ...) - like printf. The name is an abbreviation of 'printf'.
 
 	Example:
 
+	13|
 	14|	$p("%i %f %s", 456, 789.0f, "hellomoto!")
+	15|
 
+	>
 	>	main.cpp:14   |  456 789.000000 hellomoto!
+	>
 
 
-$t(thread_name) - set thread name, that will be printed in the thread header.
+$t(thread_name) - set thread name, that will be printed in the thread
+header.
+The name is an abbreviation of 'thread'.
 
 	Example:
 
@@ -299,64 +336,70 @@ $t(thread_name) - set thread name, that will be printed in the thread header.
 	25|
 
 	>
-	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:16   |  [call] int main()
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  for (auto i : arr)
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  for (auto i : arr)
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #0]
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #0]
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 1
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 1
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #1]
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #1]
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 2
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 2
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #2]
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #2]
 	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 3
 	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 3
 	>
-	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:23   |      return 0
 	>	            main.cpp:16   |  [ret]  int main()
 	>
 
+*/
 
 
- * * * * * * * * * *
-
-Notes:
+/* NOTES *
 
 	* Macros $c and $m work only with C++11 and later.
-	* There is an output synchronization that prevents outputs from different threads mixing up. By default this feture is turned on. To disable this synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
+
+	* There is an output synchronization that prevents outputs from
+		different threads mixing up. By default this feture is turned
+		on. To disable this synchronization define macro
+		PRETTY_OUTPUT_NO_OUTPUT_SYNC.
+
+	* If you want to output your class/struct/whatever, you should
+		overload operator <<(std::ostream &, <your_type>)
 
 */
 
