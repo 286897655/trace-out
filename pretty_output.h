@@ -486,7 +486,7 @@ namespace pretty_output
 
 
 	template <typename R, typename ...A>
-	function_call_printer<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A&&...))
+	function_call_printer<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A...))
 	{
 		return function_call_printer<R, A...>(filename_line, function_name, function_pointer);
 	}
