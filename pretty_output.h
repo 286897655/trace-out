@@ -7,6 +7,8 @@
 
 /* HELP
 
+ * * * * * * * * * *
+
 Macros:
 
 $w(epression) - print value of expression and returns that value, so can be used inside other expression.
@@ -346,6 +348,15 @@ $t(thread_name) - set thread name, that will be printed in the thread header.
 	>	            main.cpp:23   |      return 0
 	>	            main.cpp:16   |  [ret]  int main()
 	>
+
+
+
+ * * * * * * * * * *
+
+Notes:
+
+	* Macros $c and $m work only with C++11 and later.
+	* There is an output synchronization that prevents outputs from different threads mixing up. By default this feture is turned on. To disable this synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
 
 */
 
