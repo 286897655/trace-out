@@ -13,196 +13,259 @@ $w(epression) - print value of expression and returns that value, so can be used
 
 	Example:
 
-	1	int i = 455;
-	2	$w(i + 1);
+	 4|
+	 5|	int i = 455;
+	 6|	$w(i + 1);
+	 7|
 
-	>	main.cpp:15   |  i + 1 = 456
-
-
-	3	std::string s = "hellomoto!";
-	4	$w(s);
-
-	>	main.cpp:18   |  s = "hellomoto!"
+	>
+	>	main.cpp:6    |  i + 1 = 456
+	>
 
 
-	5	float *pf = new float(789.0f);
-	6	$w(pf);
+	 7|
+	 8|	std::string s = "hellomoto!";
+	 9|	$w(s);
+	10|
 
-	>	main.cpp:21   |  pf = 0x7fd9a8c04bf0 -> 789
-
-
-	7	const char *c = NULL;
-	8	$w(c);
-
-	>	main.cpp:24   |  c = (null)
+	>
+	>	main.cpp:9    |  s = "hellomoto!"
+	>
 
 
-	8	int r = 123 + $w(*pf);
+	10|
+	11|	float *pf = new float(789.0f);
+	12|	$w(pf);
+	13|
 
-	>	main.cpp:26   |  *pf = 789
+	>
+	>	main.cpp:12   |  pf = 0x7fd9a8c04bf0 -> 789
+	>
+
+
+	13|
+	14|	const char *c = NULL;
+	15|	$w(c);
+	16|
+
+	>
+	>	main.cpp:15   |  c = (null)
+	>
+
+
+	16|
+	17|	int r = 123 + $w(*pf);
+	18|
+
+	>
+	>	main.cpp:9    |  *pf = 789
+	>
 
 
 $f - print function or member-function call and return labels. Uses inside function or member-function. Automatically adds and removes indentation to the output.
 
 	Example:
 
-	1	void func()
-	2	{$f
-	3		float f = 789.0f;
-	4		$w(f);
-	5	}
-	6
-	7	int main()
-	8	{$f
-	9		int i = 456;
-	10		$w(i);
-	11		func();
-	12		return 0;
-	13	}
+	 2|
+	 3|	void func()
+	 4|	{$f
+	 5|		float f = 789.0f;
+	 6|		$w(f);
+	 7|	}
+	 8|
+	 9|	int main()
+	10|	{$f
+	11|		int i = 456;
+	12|		$w(i);
+	13|		func();
+	14|
+	15|		return 0;
+	16|	}
+	17|
 
-	>	main.cpp:19   |  [call] int main()
-	>	main.cpp:21   |      i = 456
-	>	main.cpp:13   |      [call] void func()
-	>	main.cpp:15   |          f = 789
-	>	main.cpp:13   |      [ret]  void func()
-	>	main.cpp:19   |  [ret]  int main()
+	>
+	>	main.cpp:10   |  [call] int main()
+	>	main.cpp:12   |      i = 456
+	>	main.cpp:4    |      [call] void func()
+	>	main.cpp:6    |          f = 789
+	>	main.cpp:4    |      [ret]  void func()
+	>	main.cpp:10   |  [ret]  int main()
+	>
 
 
 $c(function) - print function arguments and return value. Uses at function call. Automatically adds and removes indentation to the output.
 
 	Example:
 
-	1	void func(int i, float f, const std::string &s)
-	2	{
-	3	}
+	 2|
+	 3|	void func(int i, float f, const std::string &s)
+	 4|	{
+	 5|	}
+	 6|
+	...
+	 8|
+	 9|	int i = 456;
+	10|	$c(func)(i, 789, "hellomoto!");
+	11|
 
-		...
-
-	10	int i = 456;
-	11	$c(func)(i, 789, "hellomoto!");
-
-	>	main.cpp:20   |  func(456, 789, hellomoto!)
+	>
+	>	main.cpp:11   |  func(456, 789, hellomoto!)
+	>
 
 
 $m(object, function_name) - print member-function arguments and return value. Uses at member-function call. 'object' argument can be pointer and non-pointer type.
 
 	Example:
 
-	1	class some
-	2	{
-	3	public:
-	4		void func(int i, float f, const std::string &s)
-	5		{
-	6		}
-	7	};
+	 2|
+	 3|	class some
+	 4|	{
+	 5|	public:
+	 6|		void func(int i, float f, const std::string &s)
+	 7|		{
+	 8|		}
+	 9|	};
+	10|
+	...
+	12|
+	13|	some obj;
+	14|	int i = 456;
+	15|	$m(obj, some::func)(i, 789, "hellomoto!");
+	16|
 
-		...
-
-	10	some obj;
-	11	int i = 456;
-	12	$m(obj, some::func)(i, 789, "hellomoto!");
-
-	>	main.cpp:25   |  some::func(456, 789, hellomoto!)
+	>
+	>	main.cpp:15   |  some::func(456, 789, hellomoto!)
+	>
 
 
 $return expression - print value of epxression passed to return statement
 
 	Example:
 
-	1	int add(int a, int b)
-	2	{
-	3		$return a + b;
-	4	}
+	 2|
+	 3|	int add(int a, int b)
+	 4|	{
+	 5|		$return a + b;
+	 6|	}
+	 7|
+	...
+	 9|
+	10|	add(456, 789);
+	11|
 
-		...
-
-	10	add(456, 789);
-
-	>	main.cpp:14   |  return 1245
+	>
+	>	main.cpp:5    |  return 1245
+	>
 
 
 $if(condition) - print value of the if condition. Automatically adds and removes indentation to the output.
 
 	Example:
 
-	1	int i = 0;
-	2	$if (i < 2)
-	3	{
-	4	}
+	 5|
+	 6|	int i = 0;
+	 7|	$if (i < 2)
+	 8|	{
+	 9|	}
+	10|
 
-	>	main.cpp:15   |  if (i < 2) => true
-	>	main.cpp:17   |      i = 0
+	>
+	>	main.cpp:7    |  if (i < 2) => true
+	>
 
 
 $for(statements) - print iteration numbers of the for loop. Automatically adds and removes indentation to the output.
 
 	Example:
 
-	1	$for (int i = 0; i < 3; ++i)
-	2	{
-	3		$w(i);
-	4	}
+	 5|
+	 6|	$for (int i = 0; i < 3; ++i)
+	 7|	{
+	 8|		$w(i);
+	 9|	}
+	10|
 
-	>	main.cpp:14   |  for (int i = 0; i < 3; ++i)
-	>	main.cpp:14   |  [iteration #0]
-	>	main.cpp:14   |  [iteration #1]
-	>	main.cpp:14   |  [iteration #2]
+	>
+	>	main.cpp:6    |  for (int i = 0; i < 3; ++i)
+	>	main.cpp:6    |  [iteration #0]
+	>	main.cpp:8    |      i = 0
+	>	main.cpp:6    |  [iteration #1]
+	>	main.cpp:8    |      i = 1
+	>	main.cpp:6    |  [iteration #2]
+	>	main.cpp:8    |      i = 2
+	>
 
 
-	5	int arr[] = {4, 5, 6};
-	6	$for (auto i : arr)
-	7	{
-	8		$w(i);
-	9	}
+	 5|
+	 6|	int arr[] = {4, 5, 6};
+	 7|	$for (auto i : arr)
+	 8|	{
+	 9|		$w(i);
+	10|	}
+	11|
 
-	>	main.cpp:19   |  for (auto i : arr)
-	>	main.cpp:19   |  [iteration #0]
-	>	main.cpp:19   |  [iteration #1]
-	>	main.cpp:19   |  [iteration #2]
+	>
+	>	main.cpp:7    |  for (auto i : arr)
+	>	main.cpp:7    |  [iteration #0]
+	>	main.cpp:9    |      i = 4
+	>	main.cpp:7    |  [iteration #1]
+	>	main.cpp:9    |      i = 5
+	>	main.cpp:7    |  [iteration #2]
+	>	main.cpp:9    |      i = 6
+	>
 
 
 $while(condition) - print iteration conditions of the while loop. Automatically adds and removes indentation to the output.
 
 	Example:
 
-	1	int i = 0;
-	2	$while (i < 3)
-	3	{
-	4		$w(i);
-	5	}
+	 5|
+	 6|	int i = 0;
+	 7|	$while (i < 3)
+	 8|	{
+	 9|		$w(i);
+	10|		++i;
+	11|	}
+	12|
 
-	>	main.cpp:15   |  while (i < 3) => true
-	>	main.cpp:17   |      i = 0
-	>	main.cpp:15   |  while (i < 3) => true
-	>	main.cpp:17   |      i = 1
-	>	main.cpp:15   |  while (i < 3) => true
-	>	main.cpp:17   |      i = 2
-	>	main.cpp:15   |  while (i < 3) => false
+	>
+	>	main.cpp:7    |  while (i < 3) => true
+	>	main.cpp:9    |      i = 0
+	>	main.cpp:7    |  while (i < 3) => true
+	>	main.cpp:9    |      i = 1
+	>	main.cpp:7    |  while (i < 3) => true
+	>	main.cpp:9    |      i = 2
+	>	main.cpp:7    |  while (i < 3) => false
+	>
 
 
 $_ - Adds and removes indentation in the containing scope.
 
 	Example:
 
-	1	int i = 456;
-	2	$w(i);
-	3
-	4	{$_
-	5		$w(i);
-	6	}
-	7
-	8	$w(i);
+	 5|
+	 6|	int i = 456;
+	 7|	$w(i);
+	 8|
+	 9|	{$_
+	10|		$w(i);
+	11|	}
+	12|
+	13|	$w(i);
+	14|
 
-	>	main.cpp:15   |  i = 456
-	>	main.cpp:18   |      i = 456
-	>	main.cpp:21   |  i = 456
+	>
+	>	main.cpp:7    |  i = 456
+	>	main.cpp:10   |      i = 456
+	>	main.cpp:13   |  i = 456
+	>
 
 
 $p(format, ...) - like printf.
 
 	Example:
 
-	1	$p("%i %f %s", 456, 789.0f, "hellomoto!")
+	14|	$p("%i %f %s", 456, 789.0f, "hellomoto!")
 
 	>	main.cpp:14   |  456 789.000000 hellomoto!
 
@@ -211,66 +274,78 @@ $t(thread_name) - set thread name, that will be printed in the thread header.
 
 	Example:
 
-	1	void func()
-	2	{$t(worker)
-	3		int arr[] = {1, 2, 3};
-	4		$for (auto i : arr)
-	5		{
-	6			$w(i);
-	7		}
-	8	}
-	9
-	10	int main()
-	11	{$t(main) $f
-	12
-	13		std::thread t1(func);
-	14		std::thread t2(func);
-	15		t1.join();
-	16		t2.join();
-	17
-	18		$return 0;
-	19	}
+	 5|
+	 6|	void func()
+	 7|	{$t(worker)
+	 8|		int arr[] = {1, 2, 3};
+	 9|		$for (auto i : arr)
+	10|		{
+	11|			$w(i);
+	12|		}
+	13|	}
+	14|
+	15|	int main()
+	16|	{$t(main) $f
+	17|
+	18|		std::thread t1(func);
+	19|		std::thread t2(func);
+	20|		t1.join();
+	21|		t2.join();
+	22|
+	23|		$return 0;
+	24|	}
+	25|
 
-	>	[Thread: 0x7fff77a2c300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:23   |  [call] int main()
 	>
-	>	[Thread: 0x1024dc000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  for (auto i : arr)
-	>				main.cpp:15   |  [iteration #0]
-	>				main.cpp:17   |      i = 1
+	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:16   |  [call] int main()
 	>
-	>	[Thread: 0x10255f000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  for (auto i : arr)
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  for (auto i : arr)
 	>
-	>	[Thread: 0x1024dc000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  [iteration #1]
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  for (auto i : arr)
 	>
-	>	[Thread: 0x10255f000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  [iteration #0]
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #0]
 	>
-	>	[Thread: 0x1024dc000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:17   |      i = 2
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #0]
 	>
-	>	[Thread: 0x10255f000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:17   |      i = 1
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 1
 	>
-	>	[Thread: 0x1024dc000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  [iteration #2]
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 1
 	>
-	>	[Thread: 0x10255f000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:15   |  [iteration #1]
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #1]
 	>
-	>	[Thread: 0x1024dc000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:17   |      i = 3
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #1]
 	>
-	>	[Thread: 0x10255f000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:17   |      i = 2
-	>				main.cpp:15   |  [iteration #2]
-	>				main.cpp:17   |      i = 3
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 2
 	>
-	>	[Thread: 0x7fff77a2c300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>				main.cpp:30   |      return 0
-	>				main.cpp:23   |  [ret]  int main()
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 2
+	>
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #2]
+	>
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #2]
+	>
+	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 3
+	>
+	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:11   |      i = 3
+	>
+	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:23   |      return 0
+	>	            main.cpp:16   |  [ret]  int main()
+	>
 
 */
 
