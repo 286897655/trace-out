@@ -12,7 +12,7 @@ Features:
 Usage
 =====
 
-`$w(epression)` - print value of `expression` and return that value. Can be used inside other expression. The name is an abbreviation of 'watch'.
+`$w(epression)` - print value of the `expression` and return that value. Can be used inside other expression. The name is an abbreviation of 'watch'.
 
 Examples:
 
@@ -65,7 +65,7 @@ main.cpp:9    |  *pf = 789
 ```
 --
 
-`$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically adds and removes indentation to the output. The name is an abbreviation of 'function'.
+`$f` - print function or member-function 'call' and 'return' labels. Should be used inside a function or member-function. Automatically shifts indentation of the output. The name is an abbreviation of 'function'.
 
 Example:
 
@@ -96,7 +96,7 @@ main.cpp:10   |  [ret]  int main()
 ```
 --
 
-`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically adds and removes indentation to the output. The name is an abbreviation of 'call'.
+`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output. The name is an abbreviation of 'call'.
 
 Example:
 
@@ -141,7 +141,7 @@ main.cpp:15   |  some::func(456, 789, hellomoto!)
 ```
 --
 
-`$return` expression - print value of epxression passed to return statement.
+`$return` expression - print value of epxression passed to the return statement.
 
 Example:
 
@@ -161,7 +161,7 @@ main.cpp:5    |  return 1245
 ```
 --
 
-`$if (condition)` - print value of the if `condition`. Automatically adds and removes indentation to the output.
+`$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
 
 Example:
 
@@ -177,7 +177,7 @@ main.cpp:7    |  if (i < 2) => true
 ```
 --
 
-`$for (statements)` - print iteration numbers of the for loop. Automatically adds and removes indentation to the output.
+`$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
 
 Example:
 
@@ -218,7 +218,7 @@ main.cpp:9    |      i = 6
 ```
 --
 
-`$while (condition)` - print iteration conditions of the while loop. Automatically adds and removes indentation to the output.
+`$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
 
 Example:
 
