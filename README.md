@@ -24,7 +24,7 @@ $w(i + 1);
 ```
 main.cpp:6    |  i + 1 = 456
 ```
---
+<br>
 
 ```C++
 std::string s = "hellomoto!";
@@ -34,7 +34,7 @@ $w(s);
 ```
 main.cpp:9    |  s = "hellomoto!"
 ```
---
+<br>
 
 ```C++
 float *pf = new float(789.0f);
@@ -44,7 +44,7 @@ $w(pf);
 ```
 main.cpp:12   |  pf = 0x7fd9a8c04bf0 -> 789
 ```
---
+<br>
 
 ```C++
 const char *c = NULL;
@@ -54,7 +54,7 @@ $w(c);
 ```
 main.cpp:15   |  c = (null)
 ```
---
+<br>
 
 ```C++
 int r = 123 + $w(*pf);
@@ -197,7 +197,7 @@ main.cpp:8    |      i = 1
 main.cpp:6    |  [iteration #2]
 main.cpp:8    |      i = 2
 ```
---
+<br>
 
 ```C++
 int arr[] = {4, 5, 6};
