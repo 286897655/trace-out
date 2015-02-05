@@ -414,6 +414,8 @@ The name is an abbreviation of 'thread'.
 #include <type_traits>
 #include <cstdint>
 #include <cstdarg>
+#include <cstdio>
+
 #if __cplusplus >= 201103L
 #include <tuple>
 #endif
@@ -504,11 +506,11 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const size_t THREAD_HEADER_WIDTH = 79;
+	static const std::size_t THREAD_HEADER_WIDTH = 79;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
-	static const size_t FILENAME_FIELD_WIDTH = 20;
+	static const std::size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
-	static const size_t LINE_FIELD_WIDTH = 4;
+	static const std::size_t LINE_FIELD_WIDTH = 4;
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
 #else
@@ -516,7 +518,7 @@ namespace pretty_output
 #endif
 	static const char DELIMITER[] = " |  ";
 	static const char INDENTATION[] = "    ";
-	static const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
+	static const std::size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
 
 	std::uint64_t current_thread_id();
@@ -697,7 +699,7 @@ namespace pretty_output
 		}
 
 		std::stringstream stream;
-		size_t numeric_value = (size_t)value;
+		std::size_t numeric_value = (std::size_t)value;
 		stream << std::hex << std::showbase << numeric_value << " -> " << to_string(*value);
 		return stream.str();
 	}
@@ -718,7 +720,7 @@ namespace pretty_output
 		}
 
 		std::stringstream stream;
-		size_t numeric_value = (size_t)value;
+		std::size_t numeric_value = (std::size_t)value;
 		stream << std::hex << std::showbase << numeric_value;
 		return stream.str();
 	}
@@ -757,14 +759,14 @@ namespace pretty_output
 
 #if __cplusplus >= 201103L
 
-	template <size_t I, typename ...T>
+	template <std::size_t I, typename ...T>
 	typename std::enable_if<I == sizeof...(T), std::string>::type tuple_to_string(const std::tuple<T...> &)
 	{
 		return ")";
 	}
 
 
-	template <size_t I, typename ...T>
+	template <std::size_t I, typename ...T>
 	typename std::enable_if<I < sizeof...(T), std::string>::type tuple_to_string(const std::tuple<T...> &tuple)
 	{
 		std::stringstream stream;
@@ -1175,7 +1177,7 @@ namespace pretty_output
 		}
 
 
-		size_t iteration_number() const
+		std::size_t iteration_number() const
 		{
 			return _iteration_number;
 		}
@@ -1187,7 +1189,7 @@ namespace pretty_output
 		}
 
 	private:
-		size_t _iteration_number;
+		std::size_t _iteration_number;
 	};
 
 
