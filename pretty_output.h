@@ -414,6 +414,9 @@ The name is an abbreviation of 'thread'.
 #include <type_traits>
 #include <cstdint>
 #include <cstdarg>
+#if __cplusplus >= 201103L
+#include <tuple>
+#endif
 
 
 // public macros:
@@ -659,6 +662,9 @@ namespace pretty_output
 
 #if __cplusplus >= 201103L
 
+	template <typename ...T>
+	const std::string to_string(const std::tuple<T...> &tuple);
+
 	template <template <typename ...> class Container, typename ...A>
 	inline const std::string to_string(const Container<A...> &value);
 
@@ -750,6 +756,31 @@ namespace pretty_output
 
 
 #if __cplusplus >= 201103L
+
+	template <size_t I, typename ...T>
+	typename std::enable_if<I == sizeof...(T), std::string>::type tuple_to_string(const std::tuple<T...> &)
+	{
+		return ")";
+	}
+
+
+	template <size_t I, typename ...T>
+	typename std::enable_if<I < sizeof...(T), std::string>::type tuple_to_string(const std::tuple<T...> &tuple)
+	{
+		std::stringstream stream;
+		stream << std::get<I>(tuple);
+		return ", " + stream.str() + tuple_to_string<I + 1>(tuple);
+	}
+
+
+	template <typename ...T>
+	const std::string to_string(const std::tuple<T...> &tuple)
+	{
+		std::stringstream stream;
+		stream << std::get<0>(tuple);
+		return "(" + stream.str() + tuple_to_string<1>(tuple);
+	}
+
 
 	template <template <typename ...> class Container, typename ...A>
 	inline const std::string to_string(const Container<A...> &container)
