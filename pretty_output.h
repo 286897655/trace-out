@@ -409,6 +409,7 @@ The name is an abbreviation of 'thread'.
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <utility>
 #include <type_traits>
 #include <cstdint>
@@ -644,6 +645,8 @@ namespace pretty_output
 	template <typename T>
 	const std::string to_string(T *value);
 
+	const std::string to_string(const void *value);
+
 	inline const std::string to_string(bool value);
 
 	inline const std::string to_string(char value);
@@ -688,7 +691,8 @@ namespace pretty_output
 		}
 
 		std::stringstream stream;
-		stream << (void*)value << " -> " << to_string(*value);
+		size_t numeric_value = (size_t)value;
+		stream << std::hex << std::showbase << numeric_value << " -> " << to_string(*value);
 		return stream.str();
 	}
 
@@ -696,13 +700,20 @@ namespace pretty_output
 	template <typename T>
 	const std::string to_string(T *value)
 	{
+		return to_string((const T*)value);
+	}
+
+
+	inline const std::string to_string(const void *value)
+	{
 		if (value == NULL)
 		{
 			return "(null)";
 		}
 
 		std::stringstream stream;
-		stream << (void*)value << " -> " << to_string(*value);
+		size_t numeric_value = (size_t)value;
+		stream << std::hex << std::showbase << numeric_value;
 		return stream.str();
 	}
 
