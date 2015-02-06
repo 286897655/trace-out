@@ -356,7 +356,7 @@ int main()
 
 Noes
 =====
-* Macros $c and $m work only with C++11 and later.
+* Macros `$c` and `$m` work only with C++11 and later.
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feture is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
 * If you want to output your class/struct/whatever, you should overload `std::ostream &operator <<(std::ostream &, <your_type>)`.
 
