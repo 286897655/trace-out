@@ -427,6 +427,10 @@ The name is an abbreviation of 'thread'.
 			pretty_output::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
 
 
+#define $d(pointer, ...) \
+			pretty_output::print_dump(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
+
+
 #define $f \
 			pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
@@ -866,6 +870,44 @@ namespace pretty_output
 		std::string _filename_line;
 		std::string _function_signature;
 	};
+
+
+	// dump
+
+	inline const std::string dump_to_string(const void *pointer, std::size_t length, std::size_t grouping)
+	{
+		std::size_t size = length * grouping;
+		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
+		std::size_t bytes_printed = 0;
+		std::stringstream stream;
+		for (const std::uint8_t *iterator = bytes; iterator < bytes + size; ++iterator)
+		{
+			stream.fill('0');
+			stream.width(2);
+			stream.flags(std::ios::right);
+			stream << std::hex << std::noshowbase << (int)*iterator;
+			++bytes_printed;
+			if (bytes_printed % grouping == 0)
+			{
+				stream << " ";
+			}
+		}
+
+		return stream.str();
+	}
+
+
+	inline void print_dump(const std::string &filename_line, const char *name, const void *pointer, std::size_t length, std::size_t grouping = 1)
+	{
+		out_stream(filename_line) << name << ": " << dump_to_string(pointer, length, grouping);
+	}
+
+
+	template <typename T>
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t length = 1)
+	{
+		out_stream(filename_line) << name << ": " << dump_to_string(pointer, length, sizeof(T));
+	}
 
 
 #if __cplusplus >= 201103L
