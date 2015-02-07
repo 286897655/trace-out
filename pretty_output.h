@@ -893,42 +893,37 @@ namespace pretty_output
 
 	// dump
 
-	inline const std::string dump_part(const std::uint8_t *bytes, std::size_t size)
+	template <typename T>
+	inline const std::string _dump_part(const T *pointer)
 	{
 		std::stringstream stream;
-		for (std::size_t index = 0; index < size; ++index)
-		{
-			stream.fill('0');
-			stream.width(2);
-			stream << std::hex << std::noshowbase << (int)bytes[index];
-		}
+		stream.fill('0');
+		stream.width(sizeof(T) * 2);
+		stream << std::hex << std::noshowbase << (std::uint64_t)*pointer;
 
 		return stream.str();
 	}
 
 
-	inline void print_dump(const std::string &filename_line, const char *name, const void *pointer, std::size_t length, std::size_t grouping = 1)
+	template <typename T>
+	inline void _print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t length)
 	{
 		out_stream(filename_line) << name << ": ";
 		indentation_add();
 
-		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
-		std::size_t size = length * grouping;
 		std::stringstream stream;
-		stream << to_string((void*)bytes) << ": ";
-		for (std::size_t index = 0; index < size; )
+		stream << to_string((void*)pointer) << ": ";
+		for (std::size_t index = 0; index < length; ++index)
 		{
-			if (output_width_left() < stream.str().length() + (grouping * 2))
+			if (output_width_left() < stream.str().length() + (sizeof(T) * 2))
 			{
 				out_stream() << stream.str();
 				stream.str("");
 
-				stream << to_string((void*)(bytes + index)) << ": ";
+				stream << to_string((void*)(pointer + index)) << ": ";
 			}
 
-			stream << dump_part(bytes + index, grouping) << " ";
-
-			index += grouping;
+			stream << _dump_part(pointer + index) << " ";
 		}
 
 		if (!stream.str().empty())
@@ -942,9 +937,15 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t length = 1)
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t length = sizeof(T))
 	{
-		print_dump(filename_line, name, pointer, length, sizeof(T));
+		_print_dump(filename_line, name, pointer, length);
+	}
+
+
+	inline void print_dump(const std::string &filename_line, const char *name, const void *pointer, std::size_t length = 1)
+	{
+		_print_dump(filename_line, name, (const std::uint8_t*)pointer, length);
 	}
 
 
