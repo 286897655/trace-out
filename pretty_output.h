@@ -684,7 +684,6 @@ namespace pretty_output
 	template <typename A, typename B>
 	inline const std::string to_string(const std::pair<A, B> &value);
 
-
 #if __cplusplus >= 201103L
 
 	template <typename ...T>
@@ -825,6 +824,7 @@ namespace pretty_output
 
 		return stream.str();
 	}
+
 
 	template <typename T, typename ...R>
 	const std::string to_string(const T &value, R ...rest)
