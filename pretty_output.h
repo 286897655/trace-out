@@ -510,7 +510,7 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t THREAD_HEADER_WIDTH = 79;
+	static const std::size_t PRETTY_OUTPUT_WIDTH = 79;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const std::size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
@@ -559,7 +559,7 @@ namespace pretty_output
 		std::stringstream stream;
 		stream.fill(THREAD_HEADER_FILL_CHAR);
 		stream.flags(std::ios::left);
-		stream.width(THREAD_HEADER_WIDTH);
+		stream.width(PRETTY_OUTPUT_WIDTH);
 		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
 
 		return stream.str();
@@ -590,6 +590,12 @@ namespace pretty_output
 		stream << line;
 
 		return stream.str();
+	}
+
+
+	inline std::size_t output_width_left()
+	{
+		return PRETTY_OUTPUT_WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + sizeof(DELIMITER) + indentation().length());
 	}
 
 
@@ -888,41 +894,51 @@ namespace pretty_output
 
 	// dump
 
+	inline const std::string dump_part(const std::uint8_t *bytes, std::size_t size)
+	{
+		std::stringstream stream;
+		for (std::size_t index = 0; index < size; ++index)
+		{
+			stream.fill('0');
+			stream.width(2);
+			stream << std::hex << std::noshowbase << (int)bytes[index];
+		}
+
+		return stream.str();
+	}
+
+
 	inline void print_dump(const std::string &filename_line, const char *name, const void *pointer, std::size_t length, std::size_t grouping = 1)
 	{
 		out_stream(filename_line) << name << ": ";
+		indentation_add();
 
 		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
 		std::size_t size = length * grouping;
 		std::stringstream stream;
-		stream << (void*)bytes << ": ";
+		stream << to_string((void*)bytes) << ": ";
 		for (std::size_t index = 0; index < size; )
 		{
-			if (stream.str().length() + grouping + 1 >= 160)
+			if (output_width_left() < stream.str().length() + (grouping * 2))
 			{
-				out_stream() << "    " << stream.str();
+				out_stream() << stream.str();
 				stream.str("");
-				stream << (void*)(bytes + index) << ": ";
+
+				stream << to_string((void*)(bytes + index)) << ": ";
 			}
 
-			for (std::size_t index_in_group = 0; index_in_group < grouping; ++index_in_group)
-			{
-				stream.fill('0');
-				stream.width(2);
-				stream.flags(std::ios::right);
-				stream << std::hex << std::noshowbase << (int)bytes[index];
+			stream << dump_part(bytes + index, grouping) << " ";
 
-				++index;
-			}
-
-			stream << " ";
+			index += grouping;
 		}
 
 		if (!stream.str().empty())
 		{
-			out_stream() << "    " << stream.str();
+			out_stream() << stream.str();
 			out_stream();
 		}
+
+		indentation_remove();
 	}
 
 
