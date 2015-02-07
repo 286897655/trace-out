@@ -521,6 +521,7 @@ namespace pretty_output
 	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
 #endif
 	static const char DELIMITER[] = " |  ";
+	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
 	static const char INDENTATION[] = "    ";
 	static const std::size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
 
@@ -595,7 +596,7 @@ namespace pretty_output
 
 	inline std::size_t output_width_left()
 	{
-		return PRETTY_OUTPUT_WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + sizeof(DELIMITER) + indentation().length());
+		return PRETTY_OUTPUT_WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + DELIMITER_WIDTH + indentation().length());
 	}
 
 

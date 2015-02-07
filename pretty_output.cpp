@@ -144,7 +144,7 @@ namespace pretty_output
 	void indentation_remove()
 	{
 		const std::string &old_indentation = _indentation.get();
-		_indentation.set(old_indentation.substr(0, old_indentation.length() - INDENTATION_SIZE));
+		_indentation.set(old_indentation.substr(0, old_indentation.length() - INDENTATION_WIDTH));
 	}
 
 }
