@@ -510,7 +510,7 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t PRETTY_OUTPUT_WIDTH = 79;
+	static const std::size_t WIDTH = 79;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const std::size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
@@ -523,7 +523,7 @@ namespace pretty_output
 	static const char DELIMITER[] = " |  ";
 	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
 	static const char INDENTATION[] = "    ";
-	static const std::size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
+	static const std::size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
 
 
 	std::uint64_t current_thread_id();
@@ -537,13 +537,6 @@ namespace pretty_output
 	const std::string &indentation();
 	void indentation_add();
 	void indentation_remove();
-
-
-	inline const std::string filename_from_path(const char *path)
-	{
-		std::string file_path(path);
-		return file_path.substr(file_path.rfind(FILE_PATH_COMPONENT_DELIMITER) + 1);
-	}
 
 
 	inline const std::string thread_id_field(std::uint64_t thread_id)
@@ -560,10 +553,17 @@ namespace pretty_output
 		std::stringstream stream;
 		stream.fill(THREAD_HEADER_FILL_CHAR);
 		stream.flags(std::ios::left);
-		stream.width(PRETTY_OUTPUT_WIDTH);
+		stream.width(WIDTH);
 		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
 
 		return stream.str();
+	}
+
+
+	inline const std::string filename_from_path(const char *path)
+	{
+		std::string file_path(path);
+		return file_path.substr(file_path.rfind(FILE_PATH_COMPONENT_DELIMITER) + 1);
 	}
 
 
@@ -596,7 +596,7 @@ namespace pretty_output
 
 	inline std::size_t output_width_left()
 	{
-		return PRETTY_OUTPUT_WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + DELIMITER_WIDTH + indentation().length());
+		return WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + DELIMITER_WIDTH + indentation().length());
 	}
 
 
@@ -632,11 +632,9 @@ namespace pretty_output
 		{
 			lock_output();
 
-			char old_fill = std::cout.fill(' ');
-			std::size_t old_width = std::cout.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+			std::cout.fill(' ');
+			std::cout.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
 			std::cout << "";
-			std::cout.fill(old_fill);
-			std::cout.width(old_width);
 
 			std::cout << DELIMITER << indentation();
 		}
