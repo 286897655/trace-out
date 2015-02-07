@@ -82,6 +82,59 @@ The name is an abbreviation of 'watch'.
 	>
 
 
+$d(pointer/variable, size) - print memory under the pointer or memory of a
+variable. When printing contents under the pointer then the argument 'size'
+should be provided. When printing memory of the variable then the argument
+'size' should be ommited.
+The name is an abbreviation of 'dump'.
+
+	Example:
+
+	 4|
+	 5|	std::uint64_t arr[] = {456, 789, 123, 545, 784, 942, 124, 545, 382};
+	 6|	$d(arr, sizeof(arr)) // Note, size *is* provided
+	 7|
+
+	>
+	>	main.cpp:6    |  dump of arr:
+	>				  |      0x7fff54376b60: c8 01 00 00 00 00 00 00 15 03
+	>				  |      0x7fff54376b6a: 00 00 00 00 00 00 7b 00 00 00
+	>				  |      0x7fff54376b74: 00 00 00 00 21 02 00 00 00 00
+	>				  |      0x7fff54376b7e: 00 00 10 03 00 00 00 00 00 00
+	>				  |      0x7fff54376b88: ae 03 00 00 00 00 00 00 7c 00
+	>				  |      0x7fff54376b92: 00 00 00 00 00 00 21 02 00 00
+	>				  |      0x7fff54376b9c: 00 00 00 00 7e 01 00 00 00 00
+	>				  |      0x7fff54376ba6: 00 00 49 00 00 00 00 00 00 00
+	>				  |      0x7fff54376bb0: 47 00 00 00 00 00 00 00 5a 00
+	>				  |      0x7fff54376bba: 00 00 00 00 00 00 05 00 00 00
+	>				  |      0x7fff54376bc4: 00 00 00 00
+	>				  |
+	>
+
+
+	 7|
+	 8|	struct s_t
+	 9|	{
+	10|		int i;
+	11|		float f;
+	12|		char c;
+	13|	} s;
+	14|
+	15|	s.i = 456;
+	16|	s.f = 789.123f;
+	17|	s.c = 'r';
+	18|
+	19|	$d(s); // Note, 'size' *is not* provided
+	20|
+
+	>
+	>	main.cpp:19   |  dump of s:
+	>				  |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
+	>				  |      0x7fff54376b1a: 60 0a
+	>				  |
+	>
+
+
 $f - print function or member-function call and return labels. Should
 be used inside a function or member-function. Automatically adds and
 removes indentation to the output.
