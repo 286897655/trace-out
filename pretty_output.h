@@ -621,6 +621,20 @@ namespace pretty_output
 		}
 
 
+		out_stream()
+		{
+			lock_output();
+
+			char old_fill = std::cout.fill(' ');
+			std::size_t old_width = std::cout.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+			std::cout << "";
+			std::cout.fill(old_fill);
+			std::cout.width(old_width);
+
+			std::cout << DELIMITER << indentation();
+		}
+
+
 		~out_stream()
 		{
 			std::cout << std::endl;
@@ -874,39 +888,48 @@ namespace pretty_output
 
 	// dump
 
-	inline const std::string dump_to_string(const void *pointer, std::size_t length, std::size_t grouping)
-	{
-		std::size_t size = length * grouping;
-		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
-		std::size_t bytes_printed = 0;
-		std::stringstream stream;
-		for (const std::uint8_t *iterator = bytes; iterator < bytes + size; ++iterator)
-		{
-			stream.fill('0');
-			stream.width(2);
-			stream.flags(std::ios::right);
-			stream << std::hex << std::noshowbase << (int)*iterator;
-			++bytes_printed;
-			if (bytes_printed % grouping == 0)
-			{
-				stream << " ";
-			}
-		}
-
-		return stream.str();
-	}
-
-
 	inline void print_dump(const std::string &filename_line, const char *name, const void *pointer, std::size_t length, std::size_t grouping = 1)
 	{
-		out_stream(filename_line) << name << ": " << dump_to_string(pointer, length, grouping);
+		out_stream(filename_line) << name << ": ";
+
+		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
+		std::size_t size = length * grouping;
+		std::stringstream stream;
+		stream << (void*)bytes << ": ";
+		for (std::size_t index = 0; index < size; )
+		{
+			if (stream.str().length() + grouping + 1 >= 160)
+			{
+				out_stream() << "    " << stream.str();
+				stream.str("");
+				stream << (void*)(bytes + index) << ": ";
+			}
+
+			for (std::size_t index_in_group = 0; index_in_group < grouping; ++index_in_group)
+			{
+				stream.fill('0');
+				stream.width(2);
+				stream.flags(std::ios::right);
+				stream << std::hex << std::noshowbase << (int)bytes[index];
+
+				++index;
+			}
+
+			stream << " ";
+		}
+
+		if (!stream.str().empty())
+		{
+			out_stream() << "    " << stream.str();
+			out_stream();
+		}
 	}
 
 
 	template <typename T>
 	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t length = 1)
 	{
-		out_stream(filename_line) << name << ": " << dump_to_string(pointer, length, sizeof(T));
+		print_dump(filename_line, name, pointer, length, sizeof(T));
 	}
 
 
