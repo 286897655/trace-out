@@ -442,6 +442,32 @@ The name is an abbreviation of 'thread'.
 */
 
 
+/* OPTIONS *
+
+	PRETTY_OUTPUT_WIDTH - width, to which output is wrapped (actually wrapping
+		only a thread header and dump output). Default is 79.
+
+	PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR - char that is used as horizontal
+		separator for a thread header. Default is a '~'.
+
+	PRETTY_OUTPUT_FILENAME_FIELD_WIDTH - width of the file name field of the
+		output. Default is 20.
+
+	PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING - string, that is used to
+		indicate wrapped part of the filename. Default is "~".
+
+	PRETTY_OUTPUT_LINE_FIELD_WIDTH - width of the file line field of the
+		output. Default is 4.
+
+	PRETTY_OUTPUT_DELIMITER - string, that is used a delimiter between file
+		name:line fields and actual output. Default is " |  ".
+
+	PRETTY_OUTPUT_INDENTATION - string, that is used as an indentation for the
+		actual output. Default is "    " (spaces).
+
+*/
+
+
 /* NOTES *
 
 	* Macros $c and $m work only with C++11 and later.
@@ -574,9 +600,9 @@ namespace pretty_output
 	;
 
 
-	static const char THREAD_HEADER_FILL_CHAR =
-#if defined(PRETTY_OUTPUT_THREAD_HEADER_FILL_CHAR)
-		PRETTY_OUTPUT_THREAD_HEADER_FILL_CHAR
+	static const char THREAD_HEADER_SEPARATOR =
+#if defined(PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR)
+		PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR
 #else
 		'~'
 #endif
@@ -663,7 +689,7 @@ namespace pretty_output
 	inline const std::string thread_header(const std::string &thread_id, const std::string &thread_name)
 	{
 		std::stringstream stream;
-		stream.fill(THREAD_HEADER_FILL_CHAR);
+		stream.fill(THREAD_HEADER_SEPARATOR);
 		stream.flags(std::ios::left);
 		stream.width(WIDTH);
 		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
