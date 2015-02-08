@@ -563,21 +563,80 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t WIDTH = 79;
-	static const char THREAD_HEADER_FILL_CHAR = '~';
-	static const std::size_t FILENAME_FIELD_WIDTH = 20;
-	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
-	static const std::size_t LINE_FIELD_WIDTH = 4;
+	// options
+
+	static const std::size_t WIDTH =
+#if defined(PRETTY_OUTPUT_WIDTH)
+		PRETTY_OUTPUT_WIDTH
+#else
+		79
+#endif
+	;
+
+
+	static const char THREAD_HEADER_FILL_CHAR =
+#if defined(PRETTY_OUTPUT_THREAD_HEADER_FILL_CHAR)
+		PRETTY_OUTPUT_THREAD_HEADER_FILL_CHAR
+#else
+		'~'
+#endif
+	;
+
+
+	static const std::size_t FILENAME_FIELD_WIDTH =
+#if defined(PRETTY_OUTPUT_FILENAME_FIELD_WIDTH)
+		PRETTY_OUTPUT_FILENAME_FIELD_WIDTH
+#else
+		20
+#endif
+	;
+
+
+	static const char FILENAME_FIELD_EXCESS_PADDING[] =
+#if defined(PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING)
+		PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING
+#else
+		"~"
+#endif
+	;
+
+
+	static const std::size_t LINE_FIELD_WIDTH =
+#if defined(PRETTY_OUTPUT_LINE_FIELD_WIDTH)
+		PRETTY_OUTPUT_LINE_FIELD_WIDTH
+#else
+		4
+#endif
+	;
+
+
+	static const char DELIMITER[] =
+#if defined(PRETTY_OUTPUT_DELIMITER)
+		PRETTY_OUTPUT_DELIMITER
+#else
+		" |  "
+#endif
+	;
+
+
+	static const char INDENTATION[] =
+#if defined(PRETTY_OUTPUT_INDENTATION)
+		PRETTY_OUTPUT_INDENTATION
+#else
+		"    "
+#endif
+	;
+
+
+	// definitions
+
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
 #else
 	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
 #endif
-	static const char DELIMITER[] = " |  ";
 	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
-	static const char INDENTATION[] = "    ";
 	static const std::size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
-
 
 	std::uint64_t current_thread_id();
 	const std::string current_thread_name();
