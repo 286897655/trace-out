@@ -946,20 +946,6 @@ namespace pretty_output
 
 	// dump
 
-	inline const std::string dump_part(const std::uint8_t *bytes, std::size_t size)
-	{
-		std::stringstream stream;
-		for (std::size_t index = 0; index < size; ++index)
-		{
-			stream.fill('0');
-			stream.width(2);
-			stream << std::hex << std::noshowbase << (int)bytes[index];
-		}
-
-		return stream.str();
-	}
-
-
 	enum dump_base
 	{
 		bin = 2,
