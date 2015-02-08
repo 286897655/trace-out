@@ -1,17 +1,16 @@
 /* ABOUT *
 
 	This is a library for pretty printing information about a code.
-	Those who prefer using console output for debugging purposes might
-	consider this library as a more useful alternative to
-	printf/std::cout/whatever.
+	Those who prefer using console output for debugging purposes might consider
+	this library as a more useful alternative to printf/std::cout/whatever.
 
 
 	Features:
 
 		* Easy to use and extend
 
-		* Uses only C++/C++11. Does not use any additional
-			preprocessors or libraries, except standard library
+		* Uses only C++/C++11. Does not use any additional preprocessors or
+			libraries, except standard library
 
 		* Crossplatform. Tested on Clang 600.0.56, MVS 2010
 
@@ -27,8 +26,8 @@
 
 /* HELP *
 
-$w(epression) - print value of expression and returns that value, so
-can be used inside other expression.
+$w(epression) - print value of expression and returns that value, so can be
+used inside other expression.
 The name is an abbreviation of 'watch'.
 
 	Example:
@@ -82,10 +81,11 @@ The name is an abbreviation of 'watch'.
 	>
 
 
-$d(pointer/variable, size) - print memory under the pointer or memory of a
-variable. When printing contents under the pointer then the argument 'size'
+$d(pointer/variable, size, base) - print memory under the pointer or memory of
+a variable. When printing contents under the pointer then the argument 'size'
 should be provided. When printing memory of the variable then the argument
-'size' should be ommited.
+'size' should be ommited. Parameter 'base' is optional and can have 3 following
+values: pretty_output::hex (default), pretty_output::oct, pretty_output::bin.
 The name is an abbreviation of 'dump'.
 
 	Example:
@@ -135,9 +135,9 @@ The name is an abbreviation of 'dump'.
 	>
 
 
-$f - print function or member-function call and return labels. Should
-be used inside a function or member-function. Automatically adds and
-removes indentation to the output.
+$f - print function or member-function call and return labels. Should be used
+inside a function or member-function. Automatically adds and removes
+indentation to the output.
 The name is an abbreviation of 'function'.
 
 	Example:
@@ -169,9 +169,8 @@ The name is an abbreviation of 'function'.
 	>
 
 
-$c(function) - print function arguments and return value. Should be
-used at function call. Automatically adds and removes indentation to
-the output.
+$c(function) - print function arguments and return value. Should be used at
+function call. Automatically adds and removes indentation to the output.
 The name is an abbreviation of 'call'.
 
 	Example:
@@ -192,9 +191,9 @@ The name is an abbreviation of 'call'.
 	>
 
 
-$m(object, function_name) - print member-function arguments and return
-value.  Should be used at member-function call. 'object' argument can
-be of a pointer or non-pointer type.
+$m(object, function_name) - print member-function arguments and return value.
+Should be used at member-function call. 'object' argument can be of a pointer
+or non-pointer type.
 The name is an abbreviation of 'member-function'.
 
 	Example:
@@ -220,8 +219,7 @@ The name is an abbreviation of 'member-function'.
 	>
 
 
-$return expression - print value of epxression passed to return
-statement.
+$return expression - print value of epxression passed to return statement.
 
 	Example:
 
@@ -241,8 +239,8 @@ statement.
 	>
 
 
-$if (condition) - print value of the if condition. Automatically adds
-and removes indentation to the output.
+$if (condition) - print value of the if condition. Automatically adds and
+removes indentation to the output.
 
 	Example:
 
@@ -258,8 +256,8 @@ and removes indentation to the output.
 	>
 
 
-$for (statements) - print iteration numbers of the for loop.
-Automatically adds and removes indentation to the output.
+$for (statements) - print iteration numbers of the for loop. Automatically
+adds and removes indentation to the output.
 
 	Example:
 
@@ -360,8 +358,7 @@ $p(format, ...) - like printf. The name is an abbreviation of 'printf'.
 	>
 
 
-$t(thread_name) - set thread name, that will be printed in the thread
-header.
+$t(thread_name) - set thread name, that will be printed in the thread header.
 The name is an abbreviation of 'thread'.
 
 	Example:
@@ -459,11 +456,14 @@ The name is an abbreviation of 'thread'.
 	PRETTY_OUTPUT_LINE_FIELD_WIDTH - width of the file line field of the
 		output. Default is 4.
 
-	PRETTY_OUTPUT_DELIMITER - string, that is used a delimiter between file
-		name:line fields and actual output. Default is " |  ".
+	PRETTY_OUTPUT_DELIMITER - string, that is used as a delimiter between file
+		'file name:line' fields and actual output. Default is " |  ".
 
 	PRETTY_OUTPUT_INDENTATION - string, that is used as an indentation for the
-		actual output. Default is "    " (spaces).
+		actual output. Default is "    " (4 spaces).
+
+	PRETTY_OUTPUT_NO_OUTPUT_SYNC - disables output syncronization. Read details
+		in the 'NOTES' section.
 
 */
 
@@ -472,13 +472,12 @@ The name is an abbreviation of 'thread'.
 
 	* Macros $c and $m work only with C++11 and later.
 
-	* There is an output synchronization that prevents outputs from
-		different threads mixing up. By default this feture is turned
-		on. To disable this synchronization define macro
-		PRETTY_OUTPUT_NO_OUTPUT_SYNC.
+	* There is an output synchronization that prevents outputs from different
+		threads mixing up. By default this feture is turned on. To disable this
+		synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
 
-	* If you want to output your class/struct/whatever, you should
-		overload operator <<(std::ostream &, <your_type>)
+	* If you want to output your class/struct/whatever, you should overload
+		operator <<(std::ostream &, <your_type>)
 
 */
 
