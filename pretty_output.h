@@ -26,7 +26,7 @@
 
 /* HELP *
 
-$w(epression) - print value of expression and returns that value, so can be
+$w(epression) - print value of 'expression' and return that value, so can be
 used inside other expression.
 The name is an abbreviation of 'watch'.
 
@@ -36,53 +36,29 @@ The name is an abbreviation of 'watch'.
 	 5|	int i = 455;
 	 6|	$w(i + 1);
 	 7|
-
-	>
-	>	main.cpp:6    |  i + 1 = 456
-	>
-
-
-	 7|
 	 8|	std::string s = "hellomoto!";
 	 9|	$w(s);
-	10|
-
-	>
-	>	main.cpp:9    |  s = "hellomoto!"
-	>
-
-
 	10|
 	11|	float *pf = new float(789.0f);
 	12|	$w(pf);
 	13|
-
-	>
-	>	main.cpp:12   |  pf = 0x7fd9a8c04bf0 -> 789
-	>
-
-
-	13|
 	14|	const char *c = NULL;
 	15|	$w(c);
-	16|
-
-	>
-	>	main.cpp:15   |  c = (null)
-	>
-
-
 	16|
 	17|	int r = 123 + $w(*pf);
 	18|
 
 	>
-	>	main.cpp:9    |  *pf = 789
+	>	main.cpp:6    |  i + 1 = 456
+	>	main.cpp:9    |  s = "hellomoto!"
+	>	main.cpp:12   |  pf = 0x7ff8e2404bf0 -> 789
+	>	main.cpp:15   |  c = (null)
+	>	main.cpp:17   |  *pf = 789
 	>
 
 
-$d(pointer/variable, size, base) - print memory under the pointer or memory of
-a variable. When printing contents under the pointer then the argument 'size'
+$d(pointer/variable, size, base) - print memory under the 'pointer' or memory of
+a 'variable'. When printing contents under the pointer then the argument 'size'
 should be provided. When printing memory of the variable then the argument
 'size' should be ommited. Parameter 'base' is optional and can have 3 following
 values: pretty_output::hex (default), pretty_output::oct, pretty_output::bin.
@@ -91,44 +67,23 @@ The name is an abbreviation of 'dump'.
 	Example:
 
 	 4|
-	 5|	std::uint64_t arr[] = {456, 789, 123, 545, 784, 942, 124, 545, 382};
-	 6|	$d(arr, sizeof(arr)) // Note, size *is* provided
-	 7|
+	 5|	struct s_t
+	 6|	{
+	 7|		int i;
+	 8|		float f;
+	 9|		char c;
+	10|	} s;
+	12|
+	13|	s.i = 456;
+	14|	s.f = 789.123f;
+	15|	s.c = 'r';
+	16|
+	17|
+	18| $d(s);
+	19|
 
 	>
-	>	main.cpp:6    |  dump of arr:
-	>				  |      0x7fff54376b60: c8 01 00 00 00 00 00 00 15 03
-	>				  |      0x7fff54376b6a: 00 00 00 00 00 00 7b 00 00 00
-	>				  |      0x7fff54376b74: 00 00 00 00 21 02 00 00 00 00
-	>				  |      0x7fff54376b7e: 00 00 10 03 00 00 00 00 00 00
-	>				  |      0x7fff54376b88: ae 03 00 00 00 00 00 00 7c 00
-	>				  |      0x7fff54376b92: 00 00 00 00 00 00 21 02 00 00
-	>				  |      0x7fff54376b9c: 00 00 00 00 7e 01 00 00 00 00
-	>				  |      0x7fff54376ba6: 00 00 49 00 00 00 00 00 00 00
-	>				  |      0x7fff54376bb0: 47 00 00 00 00 00 00 00 5a 00
-	>				  |      0x7fff54376bba: 00 00 00 00 00 00 05 00 00 00
-	>				  |      0x7fff54376bc4: 00 00 00 00
-	>				  |
-	>
-
-
-	 7|
-	 8|	struct s_t
-	 9|	{
-	10|		int i;
-	11|		float f;
-	12|		char c;
-	13|	} s;
-	14|
-	15|	s.i = 456;
-	16|	s.f = 789.123f;
-	17|	s.c = 'r';
-	18|
-	19|	$d(s); // Note, 'size' *is not* provided
-	20|
-
-	>
-	>	main.cpp:19   |  dump of s:
+	>	main.cpp:5    |  dump of s:
 	>				  |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
 	>				  |      0x7fff54376b1a: 60 0a
 	>				  |
@@ -136,8 +91,8 @@ The name is an abbreviation of 'dump'.
 
 
 $f - print function or member-function call and return labels. Should be used
-inside a function or member-function. Automatically adds and removes
-indentation to the output.
+inside a function or member-function. Automatically shifts indentation of the
+output.
 The name is an abbreviation of 'function'.
 
 	Example:
@@ -169,8 +124,8 @@ The name is an abbreviation of 'function'.
 	>
 
 
-$c(function) - print function arguments and return value. Should be used at
-function call. Automatically adds and removes indentation to the output.
+$c(function) - print 'function' arguments and return value. Should be used at
+function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
 
 	Example:
@@ -257,49 +212,30 @@ removes indentation to the output.
 
 
 $for (statements) - print iteration numbers of the for loop. Automatically
-adds and removes indentation to the output.
+shifts indentation of the output.
 
 	Example:
 
-	 5|
-	 6|	$for (int i = 0; i < 3; ++i)
-	 7|	{
-	 8|		$w(i);
-	 9|	}
-	10|
+	 4|
+	 5|	$for (int i = 0; i < 3; ++i)
+	 6|	{
+	 7|		$w(i);
+	 8|	}
+	 9|
 
 	>
-	>	main.cpp:6    |  for (int i = 0; i < 3; ++i)
-	>	main.cpp:6    |  [iteration #0]
-	>	main.cpp:8    |      i = 0
-	>	main.cpp:6    |  [iteration #1]
-	>	main.cpp:8    |      i = 1
-	>	main.cpp:6    |  [iteration #2]
-	>	main.cpp:8    |      i = 2
-	>
-
-
-	 5|
-	 6|	int arr[] = {4, 5, 6};
-	 7|	$for (auto i : arr)
-	 8|	{
-	 9|		$w(i);
-	10|	}
-	11|
-
-	>
-	>	main.cpp:7    |  for (auto i : arr)
-	>	main.cpp:7    |  [iteration #0]
-	>	main.cpp:9    |      i = 4
-	>	main.cpp:7    |  [iteration #1]
-	>	main.cpp:9    |      i = 5
-	>	main.cpp:7    |  [iteration #2]
-	>	main.cpp:9    |      i = 6
+	>	main.cpp:5    |  for (int i = 0; i < 3; ++i)
+	>	main.cpp:5    |  [iteration #0]
+	>	main.cpp:7    |      i = 0
+	>	main.cpp:5    |  [iteration #1]
+	>	main.cpp:7    |      i = 1
+	>	main.cpp:5    |  [iteration #2]
+	>	main.cpp:7    |      i = 2
 	>
 
 
 $while (condition) - print iteration conditions of the while loop.
-Automatically adds and removes indentation to the output.
+Automatically shifts indentation of the output.
 
 	Example:
 
@@ -323,7 +259,7 @@ Automatically adds and removes indentation to the output.
 	>
 
 
-$_ - Adds and removes indentation in the containing scope.
+$_ - shift indentation in the containing scope.
 
 	Example:
 
@@ -456,8 +392,8 @@ The name is an abbreviation of 'thread'.
 	PRETTY_OUTPUT_LINE_FIELD_WIDTH - width of the file line field of the
 		output. Default is 4.
 
-	PRETTY_OUTPUT_DELIMITER - string, that is used as a delimiter between file
-		'file name:line' fields and actual output. Default is " |  ".
+	PRETTY_OUTPUT_DELIMITER - string, that is used as a delimiter between
+		'file name:line' field and the actual output. Default is " |  ".
 
 	PRETTY_OUTPUT_INDENTATION - string, that is used as an indentation for the
 		actual output. Default is "    " (4 spaces).
@@ -473,7 +409,7 @@ The name is an abbreviation of 'thread'.
 	* Macros $c and $m work only with C++11 and later.
 
 	* There is an output synchronization that prevents outputs from different
-		threads mixing up. By default this feture is turned on. To disable this
+		threads mixing up. By default this feature is turned on. To disable this
 		synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
 
 	* If you want to output your class/struct/whatever, you should overload
