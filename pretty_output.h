@@ -393,7 +393,8 @@ The name is an abbreviation of 'thread'.
 		output. Default is 4.
 
 	PRETTY_OUTPUT_DELIMITER - string, that is used as a delimiter between
-		'file name:line' field and the actual output. Default is " |  ".
+		'file name:line' field and the actual output. Default is " |  " (space,
+		pipe, 2 spaces).
 
 	PRETTY_OUTPUT_INDENTATION - string, that is used as an indentation for the
 		actual output. Default is "    " (4 spaces).
