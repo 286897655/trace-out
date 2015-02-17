@@ -427,7 +427,7 @@ The name is an abbreviation of 'thread'.
 		file (pretty_output_to_file.{h,cpp}) and for printing to MVS debug
 		output (pretty_output_to_mvs.h). When using pretty_output_to_file, you
 		can define macro 'PRETTY_OUTPUT_TO_FILE' with the name of the
-		destination file.
+		destination file (default is 'pretty_output_log.txt').
 
 */
 
