@@ -420,9 +420,10 @@ The name is an abbreviation of 'thread'.
 		operator <<(std::ostream &, <your_type>)
 
 	* Output redirection is done in a little tricky way. You should declare
-		'pretty_output_print' and 'pretty_output_flush' functions in a separate
-		header file and define macro 'PRETTY_OUTPUT_REDIRECTION_H' with a name
-		of that header file.
+		'void pretty_output_print(const char *)' and
+		'void pretty_output_flush()' functions in a separate header file and
+		define macro 'PRETTY_OUTPUT_REDIRECTION_H' with a name of that header
+		file.
 		For your convinience there's already files for redirecting output to a
 		file (pretty_output_to_file.{h,cpp}) and for printing to MVS debug
 		output (pretty_output_to_mvs.h). When using pretty_output_to_file, you
