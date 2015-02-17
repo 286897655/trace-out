@@ -423,7 +423,6 @@ The name is an abbreviation of 'thread'.
 
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
 #include <utility>
 #include <type_traits>
@@ -513,12 +512,39 @@ The name is an abbreviation of 'thread'.
 			(pretty_output::filename_line_field(pretty_output::filename_from_path(__FILE__), __LINE__))
 
 
+#define PRETTY_OUTPUT__QUOTIZE_IMPL(something) \
+			#something
+
+#define PRETTY_OUTPUT__QUOTIZE(something) \
+			PRETTY_OUTPUT__QUOTIZE_IMPL(something)
+
+
 #if defined(__GNUG__) || defined(__clang__)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #elif defined(_MSC_VER)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __FUNCSIG__
 #else
 	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block.
+#endif
+
+
+#if defined(PRETTY_OUTPUT_REDIRECTION_H)
+	#include PRETTY_OUTPUT__QUOTIZE(PRETTY_OUTPUT_REDIRECTION_H)
+#else
+	#include <iostream>
+
+
+	inline void pretty_output_print(const char *string)
+	{
+		std::cout << string;
+	}
+
+
+	inline void pretty_output_flush()
+	{
+		std::cout.flush();
+	}
+
 #endif
 
 
@@ -594,8 +620,10 @@ namespace pretty_output
 
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
+	static const char *NEWLINE = "\r\n";
 #else
 	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
+	static const char *NEWLINE = "\n";
 #endif
 	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
 	static const std::size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
@@ -686,10 +714,10 @@ namespace pretty_output
 				std::string thread_id = thread_id_field(current_thread_id());
 				const std::string &thread_name = current_thread_name();
 				const std::string &header = thread_header(thread_id, thread_name);
-				std::cout << std::endl << header << std::endl;
+				*this << NEWLINE << header << NEWLINE;
 			}
 
-			std::cout << filename_line << DELIMITER << indentation();
+			*this << filename_line << DELIMITER << indentation();
 		}
 
 
@@ -697,8 +725,16 @@ namespace pretty_output
 		{
 			lock_output();
 
-			std::cout << filename_line << DELIMITER << indentation();
-			std::vprintf(format, arguments);
+			va_list arguments_copy;
+			va_copy(arguments_copy, arguments);
+			std::size_t size = std::vsnprintf(NULL, 0, format, arguments_copy) + 1;
+
+			char *buffer = (char*)std::malloc(size);
+			std::vsnprintf(buffer, size, format, arguments);
+
+			*this << filename_line << DELIMITER << indentation() << buffer;
+
+			std::free(buffer);
 		}
 
 
@@ -706,33 +742,36 @@ namespace pretty_output
 		{
 			lock_output();
 
-			std::cout.fill(' ');
-			std::cout.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
-			std::cout << "";
+			std::stringstream stream;
+			stream.fill(' ');
+			stream.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+			stream << "";
 
-			std::cout << DELIMITER << indentation();
+			*this << stream.str() << DELIMITER << indentation();
 		}
 
 
 		~out_stream()
 		{
-			std::cout << std::endl;
+			*this << NEWLINE;
+
+			pretty_output_flush();
 
 			unlock_output();
 		}
 
 
-		template <typename T>
-		std::ostream &operator <<(const T &value)
+		out_stream &operator <<(const char *string)
 		{
-			return std::cout << value;
+			pretty_output_print(string);
+			return *this;
 		}
 
 
-		template <typename T>
-		std::ostream &operator <<(T &value)
+		out_stream &operator <<(const std::string &string)
 		{
-			return std::cout << value;
+			pretty_output_print(string.c_str());
+			return *this;
 		}
 	};
 
@@ -1485,7 +1524,7 @@ namespace pretty_output
 	inline void print_for_block(const std::string &filename_line, const for_block &block)
 	{
 		indentation_remove();
-		out_stream(filename_line) << "[iteration #" << block.iteration_number() << "]";
+		out_stream(filename_line) << "[iteration #" << to_string(block.iteration_number()) << "]";
 		indentation_add();
 	}
 
