@@ -402,6 +402,9 @@ The name is an abbreviation of 'thread'.
 	PRETTY_OUTPUT_NO_OUTPUT_SYNC - disables output syncronization. Read details
 		in the 'NOTES' section.
 
+	PRETTY_OUTPUT_REDIRECTION_H - header file, which contains overrided printing
+		routines. Read details in the 'NOTES' section.
+
 */
 
 
@@ -415,6 +418,16 @@ The name is an abbreviation of 'thread'.
 
 	* If you want to output your class/struct/whatever, you should overload
 		operator <<(std::ostream &, <your_type>)
+
+	* Output redirection is done in a little tricky way. You should declare
+		'pretty_output_print' and 'pretty_output_flush' functions in a separate
+		header file and define macro 'PRETTY_OUTPUT_REDIRECTION_H' with a name
+		of that header file.
+		For your convinience there's already files for redirecting output to a
+		file (pretty_output_to_file.{h,cpp}) and for printing to MVS debug
+		output (pretty_output_to_mvs.h). When using pretty_output_to_file, you
+		can define macro 'PRETTY_OUTPUT_TO_FILE' with the name of the
+		destination file.
 
 */
 
