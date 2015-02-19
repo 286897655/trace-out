@@ -86,5 +86,17 @@ namespace pretty_output
 		LeaveCriticalSection(&mutex->value);
 	}
 
+
+	std::size_t printf_string_length(const char *format, va_list arguments)
+	{
+		return _vscprintf(format, arguments);
+	}
+
+
+	std::size_t printf_to_string(const char *buffer, std::size_t size, const char *format, va_list arguments)
+	{
+		return _vsnprintf_s(buffer, size, _TRUNCATE, format, arguments);
+	}
+
 }
 

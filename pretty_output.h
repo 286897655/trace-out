@@ -654,6 +654,9 @@ namespace pretty_output
 	void indentation_add();
 	void indentation_remove();
 
+	std::size_t printf_string_length(const char *format, va_list arguments);
+	std::size_t printf_to_string(const char *buffer, std::size_t size, const char *format, va_list arguments);
+
 
 	inline const std::string thread_id_field(std::uint64_t thread_id)
 	{
@@ -741,10 +744,10 @@ namespace pretty_output
 
 			va_list arguments_copy;
 			va_copy(arguments_copy, arguments);
-			std::size_t size = std::vsnprintf(NULL, 0, format, arguments_copy) + 1;
+			std::size_t size = printf_string_length(format, arguments_copy) + 1;
 
 			char *buffer = (char*)std::malloc(size);
-			std::vsnprintf(buffer, size, format, arguments);
+			printf_to_string(buffer, size, format, arguments);
 
 			*this << filename_line << DELIMITER << indentation() << buffer;
 
