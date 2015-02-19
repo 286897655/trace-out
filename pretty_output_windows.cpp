@@ -93,7 +93,7 @@ namespace pretty_output
 	}
 
 
-	std::size_t printf_to_string(const char *buffer, std::size_t size, const char *format, va_list arguments)
+	std::size_t printf_to_string(char *buffer, std::size_t size, const char *format, va_list arguments)
 	{
 		return _vsnprintf_s(buffer, size, _TRUNCATE, format, arguments);
 	}
