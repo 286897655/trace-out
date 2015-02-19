@@ -1033,19 +1033,19 @@ namespace pretty_output
 	template <typename T>
 	struct type_dumping_traits
 	{
-		static const std::size_t GROUPING = 1;
+		typedef T unit_t;
 		static const base_t BASE = BASE_HEX;
-		static const std::size_t WIDTH = 2;
+		static const std::size_t FIELD_WIDTH = 2;
 	};
 
 
-#define TYPE_DUMPING_TRAITS(type, grouping, base, width) \
+#define TYPE_DUMPING_TRAITS(type, unit_size, base, field_width) \
 				template <> \
 				struct type_dumping_traits<type> \
 				{ \
-					static const std::size_t GROUPING = grouping; \
+					typedef type unit_t; \
 					static const base_t BASE = base; \
-					static const std::size_t WIDTH = width; \
+					static const std::size_t FIELD_WIDTH = field_width; \
 				}
 
 	TYPE_DUMPING_TRAITS(std::int8_t, 1, BASE_SDEC, 4);
@@ -1060,6 +1060,14 @@ namespace pretty_output
 //	TYPE_DUMPING_TRAITS(double, 8, BASE_DBL, 20);
 //	TYPE_DUMPING_TRAITS(long double, 8, BASE_LDBL, 20);
 
+	template <>
+	struct type_dumping_traits<void>
+	{
+		typedef std::uint8_t unit_t;
+		static const base_t BASE = BASE_HEX;
+		static const std::size_t FIELD_WIDTH = 2;
+	};
+
 
 	enum endianness_t
 	{
@@ -1069,8 +1077,11 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_field(const T *bytes, std::size_t size, base_t base, endianness_t endiannes)
+	inline const std::string bytes_to_field(const T *bytes, base_t base, endianness_t endiannes)
 	{
+		typedef typename type_dumping_traits<T>::unit_t unit_t;
+
+		std::size_t size = sizeof(unit_t);
 		std::uint8_t buffer[22];
 		std::memcpy(buffer, bytes, size);
 
@@ -1116,16 +1127,19 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = type_dumping_traits<T>::BASE, std::size_t grouping = type_dumping_traits<T>::GROUPING, endianness_t endianness = ENDIANNESS_BIG)
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = type_dumping_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
 	{
 		out_stream(filename_line) << "dump of " << name << ":";
 		indentation_add();
 
 		std::stringstream stream;
 
-		std::size_t column_width = type_dumping_traits<T>::WIDTH;
-		const T *iterator = pointer;
-		std::size_t length = size / sizeof(T);
+		typedef typename type_dumping_traits<T>::unit_t unit_t;
+
+		std::size_t column_width = type_dumping_traits<T>::FIELD_WIDTH;
+
+		const unit_t *iterator = (const unit_t*)pointer;
+		std::size_t length = size / sizeof(unit_t);
 		stream << to_string((void*)iterator) << ":";
 		for (std::size_t index = 0; index < length; ++index)
 		{
@@ -1141,7 +1155,7 @@ namespace pretty_output
 			stream.fill(' ');
 			stream.width(column_width);
 			stream.flags(std::ios::right);
-			stream << bytes_to_field(&iterator[index], grouping, base, endianness);
+			stream << bytes_to_field(&iterator[index], base, endianness);
 		}
 
 		if (!stream.str().empty())
