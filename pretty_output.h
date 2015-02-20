@@ -1071,7 +1071,7 @@ namespace pretty_output
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
-		unit_t *data = (unit_t*)pointer;
+		std::uint8_t *data = (std::uint8_t*)pointer;
 		for (std::size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_binary(data[index]);
@@ -1116,7 +1116,7 @@ namespace pretty_output
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
-		unit_t *data = (unit_t*)pointer;
+		std::uint8_t *data = (std::uint8_t*)pointer;
 		for (std::size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
