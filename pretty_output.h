@@ -1035,38 +1035,29 @@ namespace pretty_output
 	{
 		typedef T unit_t;
 		static const base_t BASE = BASE_HEX;
-		static const std::size_t FIELD_WIDTH = 2;
 	};
 
 
-#define TYPE_DUMPING_TRAITS(type, unit_type, base, field_width) \
+#define TYPE_DUMPING_TRAITS(type, unit_type, base) \
 				template <> \
 				struct type_dumping_traits<type> \
 				{ \
 					typedef unit_type unit_t; \
 					static const base_t BASE = base; \
-					static const std::size_t FIELD_WIDTH = field_width; \
 				}
 
-	TYPE_DUMPING_TRAITS(std::int8_t, std::int8_t, BASE_HEX, 2);
-	TYPE_DUMPING_TRAITS(std::int16_t, std::int16_t, BASE_SDEC, 6);
-	TYPE_DUMPING_TRAITS(std::int32_t, std::int32_t, BASE_SDEC, 11);
-	TYPE_DUMPING_TRAITS(std::int64_t, std::int64_t, BASE_SDEC, 21);
-	TYPE_DUMPING_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX, 2);
-	TYPE_DUMPING_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC, 5);
-	TYPE_DUMPING_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC, 10);
-	TYPE_DUMPING_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC, 20);
-//	TYPE_DUMPING_TRAITS(float, 4, BASE_FLT, 20);
-//	TYPE_DUMPING_TRAITS(double, 8, BASE_DBL, 20);
-//	TYPE_DUMPING_TRAITS(long double, 8, BASE_LDBL, 20);
-
-	template <>
-	struct type_dumping_traits<void>
-	{
-		typedef std::uint8_t unit_t;
-		static const base_t BASE = BASE_HEX;
-		static const std::size_t FIELD_WIDTH = 2;
-	};
+	TYPE_DUMPING_TRAITS(std::int8_t, std::int8_t, BASE_HEX);
+	TYPE_DUMPING_TRAITS(std::int16_t, std::int16_t, BASE_SDEC);
+	TYPE_DUMPING_TRAITS(std::int32_t, std::int32_t, BASE_SDEC);
+	TYPE_DUMPING_TRAITS(std::int64_t, std::int64_t, BASE_SDEC);
+	TYPE_DUMPING_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX);
+	TYPE_DUMPING_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC);
+	TYPE_DUMPING_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC);
+	TYPE_DUMPING_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
+	TYPE_DUMPING_TRAITS(void, std::uint8_t, BASE_HEX);
+//	TYPE_DUMPING_TRAITS(float, 4, BASE_FLT);
+//	TYPE_DUMPING_TRAITS(double, 8, BASE_DBL);
+//	TYPE_DUMPING_TRAITS(long double, 8, BASE_LDBL);
 
 
 	enum endianness_t
@@ -1168,7 +1159,7 @@ namespace pretty_output
 
 		typedef typename type_dumping_traits<T>::unit_t unit_t;
 
-		std::size_t column_width = type_dumping_traits<T>::FIELD_WIDTH;
+		std::size_t column_width = 1; //type_dumping_traits<T>::FIELD_WIDTH;
 
 		const unit_t *iterator = (const unit_t*)pointer;
 		std::size_t length = size / sizeof(unit_t);
