@@ -511,7 +511,7 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t WIDTH = 79;
+	static const std::size_t WIDTH = 120;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const std::size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
@@ -897,7 +897,7 @@ namespace pretty_output
 	enum base_t
 	{
 		BASE_BIN = 2,
-		BASE_OCT = 8,
+//		BASE_OCT = 8,
 		BASE_SDEC = -10,
 		BASE_UDEC = 10,
 		BASE_HEX = 16,
@@ -1039,23 +1039,23 @@ namespace pretty_output
 	};
 
 
-#define TYPE_DUMPING_TRAITS(type, unit_size, base, field_width) \
+#define TYPE_DUMPING_TRAITS(type, unit_type, base, field_width) \
 				template <> \
 				struct type_dumping_traits<type> \
 				{ \
-					typedef type unit_t; \
+					typedef unit_type unit_t; \
 					static const base_t BASE = base; \
 					static const std::size_t FIELD_WIDTH = field_width; \
 				}
 
-	TYPE_DUMPING_TRAITS(std::int8_t, 1, BASE_SDEC, 4);
-	TYPE_DUMPING_TRAITS(std::int16_t, 2, BASE_SDEC, 6);
-	TYPE_DUMPING_TRAITS(std::int32_t, 4, BASE_SDEC, 11);
-	TYPE_DUMPING_TRAITS(std::int64_t, 8, BASE_SDEC, 21);
-	TYPE_DUMPING_TRAITS(std::uint8_t, 1, BASE_UDEC, 3);
-	TYPE_DUMPING_TRAITS(std::uint16_t, 2, BASE_UDEC, 5);
-	TYPE_DUMPING_TRAITS(std::uint32_t, 4, BASE_UDEC, 10);
-	TYPE_DUMPING_TRAITS(std::uint64_t, 8, BASE_UDEC, 20);
+	TYPE_DUMPING_TRAITS(std::int8_t, std::int8_t, BASE_HEX, 2);
+	TYPE_DUMPING_TRAITS(std::int16_t, std::int16_t, BASE_SDEC, 6);
+	TYPE_DUMPING_TRAITS(std::int32_t, std::int32_t, BASE_SDEC, 11);
+	TYPE_DUMPING_TRAITS(std::int64_t, std::int64_t, BASE_SDEC, 21);
+	TYPE_DUMPING_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX, 2);
+	TYPE_DUMPING_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC, 5);
+	TYPE_DUMPING_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC, 10);
+	TYPE_DUMPING_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC, 20);
 //	TYPE_DUMPING_TRAITS(float, 4, BASE_FLT, 20);
 //	TYPE_DUMPING_TRAITS(double, 8, BASE_DBL, 20);
 //	TYPE_DUMPING_TRAITS(long double, 8, BASE_LDBL, 20);
@@ -1077,49 +1077,15 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_field(const T *bytes, base_t base, endianness_t endiannes)
+	const std::string bytes_to_binary(const T *bytes)
 	{
 		typedef typename type_dumping_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
-		std::uint8_t buffer[22];
-		std::memcpy(buffer, bytes, size);
-
 		std::stringstream stream;
-
-		switch (base)
+		for (std::size_t index = 0; index < size; ++index)
 		{
-			case BASE_BIN:
-				for (std::size_t index = 0; index < size; ++index)
-				{
-					stream << byte_to_binary(buffer[index]);
-				}
-
-				break;
-
-			case BASE_OCT:
-				for (std::size_t index = 0; index < size; ++index)
-				{
-					stream << byte_to_octal(buffer[index]);
-				}
-
-				break;
-
-			case BASE_SDEC:
-				stream << (std::int64_t)*(const T*)bytes;
-				break;
-
-			case BASE_UDEC:
-				stream << (std::uint64_t)*(const T*)bytes;
-				break;
-
-			case BASE_HEX:
-				for (std::size_t index = 0; index < size; ++index)
-				{
-					stream << byte_to_hexadecimal(buffer[index]);
-				}
-
-				break;
+			stream << byte_to_binary(bytes[index]);
 		}
 
 		return stream.str();
@@ -1127,8 +1093,74 @@ namespace pretty_output
 
 
 	template <typename T>
+	const std::string bytes_to_signed_decimal(const T *bytes)
+	{
+		typedef typename type_dumping_traits<T>::unit_t unit_t;
+
+		std::size_t size = sizeof(unit_t);
+		std::stringstream stream;
+
+		stream << (std::int64_t)*(const T*)bytes;
+
+		return stream.str();
+	}
+
+
+	template <typename T>
+	const std::string bytes_to_unsigned_decimal(const T *bytes)
+	{
+		typedef typename type_dumping_traits<T>::unit_t unit_t;
+
+		std::size_t size = sizeof(unit_t);
+		std::stringstream stream;
+
+		stream << (std::uint64_t)*(const T*)bytes;
+
+		return stream.str();
+	}
+
+
+	template <typename T>
+	const std::string bytes_to_hexadecimal(const T *bytes)
+	{
+		typedef typename type_dumping_traits<T>::unit_t unit_t;
+
+		std::size_t size = sizeof(unit_t);
+		std::stringstream stream;
+		for (std::size_t index = 0; index < size; ++index)
+		{
+			stream << byte_to_hexadecimal(bytes[index]);
+		}
+
+		return stream.str();
+	}
+
+
+	template <typename T>
+	const std::string (*select_conversion(base_t base))(const T *)
+	{
+		switch (base)
+		{
+			case BASE_BIN:
+				return bytes_to_binary<T>;
+
+			case BASE_SDEC:
+				return bytes_to_signed_decimal<T>;
+
+			case BASE_UDEC:
+				return bytes_to_unsigned_decimal<T>;
+
+			case BASE_HEX:
+				return bytes_to_hexadecimal<T>;
+		}
+	}
+
+
+	template <typename T>
 	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = type_dumping_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
 	{
+		const std::string (*bytes_to_field)(const T *) = select_conversion<T>(base);
+
 		out_stream(filename_line) << "dump of " << name << ":";
 		indentation_add();
 
@@ -1155,7 +1187,8 @@ namespace pretty_output
 			stream.fill(' ');
 			stream.width(column_width);
 			stream.flags(std::ios::right);
-			stream << bytes_to_field(&iterator[index], base, endianness);
+			// correction for endianness
+			stream << bytes_to_field(&iterator[index]);
 		}
 
 		if (!stream.str().empty())
