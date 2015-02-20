@@ -1065,6 +1065,51 @@ namespace pretty_output
 
 
 	template <typename T>
+	struct field_traits
+	{
+		static const std::size_t SIGNED_WIDTH = 0;
+		static const std::size_t UNSIGNED_WIDTH = 0;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
+			template <> \
+			struct field_traits<type> \
+			{ \
+				static const std::size_t SIGNED_WIDTH = 1 + width; \
+				static const std::size_t UNSIGNED_WIDTH = width; \
+			}
+
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int8_t, 4);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int16_t, 6);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int32_t, 11);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int64_t, 21);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint8_t, 3);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint16_t, 5);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint32_t, 10);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint64_t, 20);
+
+
+	template <typename T>
+	inline std::size_t field_width(base_t base)
+	{
+		switch (base)
+		{
+			case BASE_BIN:
+				return sizeof(typename print_traits<T>::unit_t) * 8;
+
+			case BASE_SDEC:
+				return field_traits<T>::SIGNED_WIDTH;
+
+			case BASE_UDEC:
+				return field_traits<T>::UNSIGNED_WIDTH;
+
+			case BASE_HEX:
+				return sizeof(typename print_traits<T>::unit_t) * 2;
+		}
+	}
+
+
+	template <typename T>
 	const std::string bytes_to_binary(const T *pointer)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
@@ -1158,7 +1203,7 @@ namespace pretty_output
 
 		std::stringstream stream;
 
-		std::size_t column_width = 1;
+		std::size_t column_width = field_width<T>(base);
 
 		const unit_t *iterator = (const unit_t*)pointer;
 		std::size_t length = size / sizeof(unit_t);
