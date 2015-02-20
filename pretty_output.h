@@ -907,6 +907,13 @@ namespace pretty_output
 	};
 
 
+	enum endianness_t
+	{
+		ENDIANNESS_LITTLE,
+		ENDIANNESS_BIG
+	};
+
+
 	inline const char *const byte_to_binary(std::uint8_t byte)
 	{
 		static const char *const BINARY_VALUES[] = {
@@ -1057,13 +1064,6 @@ namespace pretty_output
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
 
 
-	enum endianness_t
-	{
-		ENDIANNESS_LITTLE,
-		ENDIANNESS_BIG
-	};
-
-
 	template <typename T>
 	const std::string bytes_to_binary(const T *pointer)
 	{
@@ -1149,6 +1149,8 @@ namespace pretty_output
 	template <typename T>
 	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = print_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
 	{
+		typedef typename print_traits<T>::unit_t unit_t;
+
 		const std::string (*bytes_to_field)(const T *) = select_conversion<T>(base);
 
 		out_stream(filename_line) << "dump of " << name << ":";
@@ -1156,12 +1158,11 @@ namespace pretty_output
 
 		std::stringstream stream;
 
-		typedef typename print_traits<T>::unit_t unit_t;
-
 		std::size_t column_width = 1;
 
 		const unit_t *iterator = (const unit_t*)pointer;
 		std::size_t length = size / sizeof(unit_t);
+
 		stream << to_string((void*)iterator) << ":";
 		for (std::size_t index = 0; index < length; ++index)
 		{
