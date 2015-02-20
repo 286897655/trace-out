@@ -1031,33 +1031,30 @@ namespace pretty_output
 
 
 	template <typename T>
-	struct type_dumping_traits
+	struct print_traits
 	{
 		typedef T unit_t;
 		static const base_t BASE = BASE_HEX;
 	};
 
-
-#define TYPE_DUMPING_TRAITS(type, unit_type, base) \
+#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type, unit_type, base) \
 				template <> \
-				struct type_dumping_traits<type> \
+				struct print_traits<type> \
 				{ \
 					typedef unit_type unit_t; \
 					static const base_t BASE = base; \
 				}
 
-	TYPE_DUMPING_TRAITS(std::int8_t, std::int8_t, BASE_HEX);
-	TYPE_DUMPING_TRAITS(std::int16_t, std::int16_t, BASE_SDEC);
-	TYPE_DUMPING_TRAITS(std::int32_t, std::int32_t, BASE_SDEC);
-	TYPE_DUMPING_TRAITS(std::int64_t, std::int64_t, BASE_SDEC);
-	TYPE_DUMPING_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX);
-	TYPE_DUMPING_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC);
-	TYPE_DUMPING_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC);
-	TYPE_DUMPING_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
-	TYPE_DUMPING_TRAITS(void, std::uint8_t, BASE_HEX);
-//	TYPE_DUMPING_TRAITS(float, 4, BASE_FLT);
-//	TYPE_DUMPING_TRAITS(double, 8, BASE_DBL);
-//	TYPE_DUMPING_TRAITS(long double, 8, BASE_LDBL);
+
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(void, std::uint8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int8_t, std::int8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int16_t, std::int16_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int32_t, std::int32_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int64_t, std::int64_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
 
 
 	enum endianness_t
@@ -1070,7 +1067,7 @@ namespace pretty_output
 	template <typename T>
 	const std::string bytes_to_binary(const T *pointer)
 	{
-		typedef typename type_dumping_traits<T>::unit_t unit_t;
+		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
@@ -1087,7 +1084,7 @@ namespace pretty_output
 	template <typename T>
 	const std::string bytes_to_signed_decimal(const T *bytes)
 	{
-		typedef typename type_dumping_traits<T>::unit_t unit_t;
+		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
@@ -1101,7 +1098,7 @@ namespace pretty_output
 	template <typename T>
 	const std::string bytes_to_unsigned_decimal(const T *bytes)
 	{
-		typedef typename type_dumping_traits<T>::unit_t unit_t;
+		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
@@ -1115,7 +1112,7 @@ namespace pretty_output
 	template <typename T>
 	const std::string bytes_to_hexadecimal(const T *pointer)
 	{
-		typedef typename type_dumping_traits<T>::unit_t unit_t;
+		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
@@ -1150,7 +1147,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = type_dumping_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = print_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
 	{
 		const std::string (*bytes_to_field)(const T *) = select_conversion<T>(base);
 
@@ -1159,9 +1156,9 @@ namespace pretty_output
 
 		std::stringstream stream;
 
-		typedef typename type_dumping_traits<T>::unit_t unit_t;
+		typedef typename print_traits<T>::unit_t unit_t;
 
-		std::size_t column_width = 1; //type_dumping_traits<T>::FIELD_WIDTH;
+		std::size_t column_width = 1;
 
 		const unit_t *iterator = (const unit_t*)pointer;
 		std::size_t length = size / sizeof(unit_t);
