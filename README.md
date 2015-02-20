@@ -1,10 +1,12 @@
 About pretty_output
 ===================
+
 This is a library for pretty printing information about a code. Those who prefer using console output for debugging purposes might consider this library as a more useful alternative to printf/std::cout/whatever.
 
 
 Features:
-* Easy to use and extend
+
+* Easy to use, but right now not easy to extend
 * Uses only C++/C++11. Does not use any additional preprocessors or libraries, except standard library
 * Crossplatform. Tested on Clang 600.0.56, MVS 2010
 * Free for all
@@ -12,63 +14,69 @@ Features:
 Usage
 =====
 
-`$w(epression)` - print value of the `expression` and return that value. Can be used inside other expression. The name is an abbreviation of 'watch'.
+`$w(epression)` - print value of `expression` and returns that value, so can be used inside other expression.
+The name is an abbreviation of 'watch'.
 
-Examples:
-
+Code:
 ```C++
 int i = 455;
 $w(i + 1);
-```
 
-```
-main.cpp:6    |  i + 1 = 456
-```
-<br>
-
-```C++
 std::string s = "hellomoto!";
 $w(s);
-```
 
-```
-main.cpp:9    |  s = "hellomoto!"
-```
-<br>
-
-```C++
 float *pf = new float(789.0f);
 $w(pf);
-```
 
-```
-main.cpp:12   |  pf = 0x7fd9a8c04bf0 -> 789
-```
-<br>
-
-```C++
 const char *c = NULL;
 $w(c);
-```
 
-```
-main.cpp:15   |  c = (null)
-```
-<br>
-
-```C++
 int r = 123 + $w(*pf);
 ```
 
+Output:
 ```
-main.cpp:9    |  *pf = 789
+main.cpp:6    |  i + 1 = 456
+main.cpp:9    |  s = "hellomoto!"
+main.cpp:12   |  pf = 0x7ff8e2404bf0 -> 789
+main.cpp:15   |  c = (null)
+main.cpp:17   |  *pf = 789
 ```
---
+---
 
-`$f` - print function or member-function 'call' and 'return' labels. Should be used inside a function or member-function. Automatically shifts indentation of the output. The name is an abbreviation of 'function'.
+`$d(pointer/variable, size, base)` - print memory under the `pointer` or memory of a `variable`. When printing contents under the `pointer` then the argument `size` should be provided. When printing memory of the `variable` then the argument `size` should be ommited. Parameter `base` is optional and can have 3 following values: `pretty_output::hex` (default), `pretty_output::oct`, `pretty_output::bin`.
+The name is an abbreviation of 'dump'.
 
-Example:
+Code:
+```C++
+	struct s_t
+	{
+		int i;
+		float f;
+		char c;
+	} s;
 
+	s.i = 456;
+	s.f = 789.123f;
+	s.c = 'r';
+
+
+$d(s);
+```
+
+Output:
+```
+main.cpp:5    |  dump of s:
+              |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
+              |      0x7fff54376b1a: 60 0a
+              |
+```
+---
+
+`$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
+The name is an abbreviation of 'function'.
+
+Code:
 ```C++
 void func()
 {$f
@@ -82,10 +90,11 @@ int main()
 	$w(i);
 	func();
 
-  return 0;
+	return 0;
 }
 ```
 
+Output:
 ```
 main.cpp:10   |  [call] int main()
 main.cpp:12   |      i = 456
@@ -94,32 +103,31 @@ main.cpp:6    |          f = 789
 main.cpp:4    |      [ret]  void func()
 main.cpp:10   |  [ret]  int main()
 ```
---
+---
 
-`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output. The name is an abbreviation of 'call'.
+`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
+The name is an abbreviation of 'call'.
 
-Example:
-
+Code:
 ```C++
 void func(int i, float f, const std::string &s)
 {
 }
 
-...
-
 int i = 456;
 $c(func)(i, 789, "hellomoto!");
 ```
 
+Output:
 ```
 main.cpp:11   |  func(456, 789, hellomoto!)
 ```
---
+---
 
-`$m(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type. The name is an abbreviation of 'member-function'.
+`$m(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
+The name is an abbreviation of 'member-function'.
 
-Example:
-
+Code:
 ```C++
 class some
 {
@@ -129,42 +137,38 @@ public:
 	}
 };
 
-...
-
 some obj;
 int i = 456;
 $m(obj, some::func)(i, 789, "hellomoto!");
 ```
 
+Output:
 ```
 main.cpp:15   |  some::func(456, 789, hellomoto!)
 ```
---
+---
 
-`$return` expression - print value of epxression passed to the return statement.
+`$return expression` - print value of `epxression` passed to return statement.
 
-Example:
-
+Code:
 ```C++
 int add(int a, int b)
 {
 	$return a + b;
 }
 
-...
-
 add(456, 789);
 ```
 
+Output:
 ```
 main.cpp:5    |  return 1245
 ```
---
+---
 
 `$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
 
-Example:
-
+Code:
 ```C++
 int i = 0;
 $if (i < 2)
@@ -172,15 +176,15 @@ $if (i < 2)
 }
 ```
 
+Output:
 ```
 main.cpp:7    |  if (i < 2) => true
 ```
---
+---
 
 `$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
 
-Example:
-
+Code:
 ```C++
 $for (int i = 0; i < 3; ++i)
 {
@@ -188,40 +192,21 @@ $for (int i = 0; i < 3; ++i)
 }
 ```
 
+Output:
 ```
-main.cpp:6    |  for (int i = 0; i < 3; ++i)
-main.cpp:6    |  [iteration #0]
-main.cpp:8    |      i = 0
-main.cpp:6    |  [iteration #1]
-main.cpp:8    |      i = 1
-main.cpp:6    |  [iteration #2]
-main.cpp:8    |      i = 2
+main.cpp:5    |  for (int i = 0; i < 3; ++i)
+main.cpp:5    |  [iteration #0]
+main.cpp:7    |      i = 0
+main.cpp:5    |  [iteration #1]
+main.cpp:7    |      i = 1
+main.cpp:5    |  [iteration #2]
+main.cpp:7    |      i = 2
 ```
-<br>
-
-```C++
-int arr[] = {4, 5, 6};
-$for (auto i : arr)
-{
-	$w(i);
-}
-```
-
-```
-main.cpp:7    |  for (auto i : arr)
-main.cpp:7    |  [iteration #0]
-main.cpp:9    |      i = 4
-main.cpp:7    |  [iteration #1]
-main.cpp:9    |      i = 5
-main.cpp:7    |  [iteration #2]
-main.cpp:9    |      i = 6
-```
---
+---
 
 `$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
 
-Example:
-
+Code:
 ```C++
 int i = 0;
 $while (i < 3)
@@ -231,6 +216,7 @@ $while (i < 3)
 }
 ```
 
+Output:
 ```
 main.cpp:7    |  while (i < 3) => true
 main.cpp:9    |      i = 0
@@ -240,12 +226,11 @@ main.cpp:7    |  while (i < 3) => true
 main.cpp:9    |      i = 2
 main.cpp:7    |  while (i < 3) => false
 ```
---
+---
 
-`$_` - Adds and removes indentation in the containing scope.
+`$_` - shift indentation in the containing scope.
 
-Example:
-
+Code:
 ```C++
 int i = 456;
 $w(i);
@@ -257,30 +242,30 @@ $w(i);
 $w(i);
 ```
 
+Output:
 ```
 main.cpp:7    |  i = 456
 main.cpp:10   |      i = 456
 main.cpp:13   |  i = 456
 ```
---
+---
 
-`$p(format, ...)` - like `printf`. The name is an abbreviation of 'printf'.
+`$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
 
-Example:
-
+Code:
 ```C++
 $p("%i %f %s", 456, 789.0f, "hellomoto!")
 ```
 
+Output:
 ```
 main.cpp:14   |  456 789.000000 hellomoto!
 ```
---
+---
 
 `$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
 
-Example:
-
+Code:
 ```C++
 void func()
 {$t(worker)
@@ -303,6 +288,7 @@ int main()
 }
 ```
 
+Output:
 ```
 [Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             main.cpp:16   |  [call] int main()
@@ -354,15 +340,31 @@ int main()
             main.cpp:16   |  [ret]  int main()
 ```
 
-Noes
+
+Options
+=======
+
+`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and dump output). Default is 79.
+
+`PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR` - char that is used as horizontal separator for a thread header. Default is a `'~'`.
+
+`PRETTY_OUTPUT_FILENAME_FIELD_WIDTH` - width of the file name field of the output. Default is 20.
+
+`PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING` - string, that is used to indicate wrapped part of the filename. Default is `"~"`.
+
+`PRETTY_OUTPUT_LINE_FIELD_WIDTH` - width of the file line field of the output. Default is 4.
+
+`PRETTY_OUTPUT_DELIMITER` - string, that is used as a delimiter between 'file_name:line' field and the actual output. Default is `" |  "`.
+
+`PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
+
+`PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
+
+Notes
 =====
+
 * Macros `$c` and `$m` work only with C++11 and later.
-* There is an output synchronization that prevents outputs from different threads mixing up. By default this feture is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
-* If you want to output your class/struct/whatever, you should overload `std::ostream &operator <<(std::ostream &, <your_type>)`.
 
-Future possible features
-========================
-* `$time` and `$cpu_time` macros to measure the time for which the code is executed
-* `$d(ptr, size)` for printing memory hex dump
-* output redirection
+* There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
 
+* If you want to output your class/struct/whatever, you should overload operator `<<(std::ostream &, <your_type>)`

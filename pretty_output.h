@@ -1,17 +1,16 @@
 /* ABOUT *
 
 	This is a library for pretty printing information about a code.
-	Those who prefer using console output for debugging purposes might
-	consider this library as a more useful alternative to
-	printf/std::cout/whatever.
+	Those who prefer using console output for debugging purposes might consider
+	this library as a more useful alternative to printf/std::cout/whatever.
 
 
 	Features:
 
-		* Easy to use and extend
+		* Easy to use, but right now not easy to extend
 
-		* Uses only C++/C++11. Does not use any additional
-			preprocessors or libraries, except standard library
+		* Uses only C++/C++11. Does not use any additional preprocessors or
+			libraries, except standard library
 
 		* Crossplatform. Tested on Clang 600.0.56, MVS 2010
 
@@ -27,84 +26,93 @@
 
 /* HELP *
 
-$w(epression) - print value of expression and returns that value, so
-can be used inside other expression.
+$w(epression) - print value of 'expression' and return that value, so can be
+used inside other expression.
 The name is an abbreviation of 'watch'.
 
 	Example:
 
-	 4|
-	 5|	int i = 455;
-	 6|	$w(i + 1);
-	 7|
+	| 4|
+	| 5|	int i = 455;
+	| 6|	$w(i + 1);
+	| 7|
+	| 8|	std::string s = "hellomoto!";
+	| 9|	$w(s);
+	|10|
+	|11|	float *pf = new float(789.0f);
+	|12|	$w(pf);
+	|13|
+	|14|	const char *c = NULL;
+	|15|	$w(c);
+	|16|
+	|17|	int r = 123 + $w(*pf);
+	|18|
 
 	>
 	>	main.cpp:6    |  i + 1 = 456
-	>
-
-
-	 7|
-	 8|	std::string s = "hellomoto!";
-	 9|	$w(s);
-	10|
-
-	>
 	>	main.cpp:9    |  s = "hellomoto!"
-	>
-
-
-	10|
-	11|	float *pf = new float(789.0f);
-	12|	$w(pf);
-	13|
-
-	>
-	>	main.cpp:12   |  pf = 0x7fd9a8c04bf0 -> 789
-	>
-
-
-	13|
-	14|	const char *c = NULL;
-	15|	$w(c);
-	16|
-
-	>
+	>	main.cpp:12   |  pf = 0x7ff8e2404bf0 -> 789
 	>	main.cpp:15   |  c = (null)
+	>	main.cpp:17   |  *pf = 789
 	>
 
 
-	16|
-	17|	int r = 123 + $w(*pf);
-	18|
+$d(pointer/variable, size, base) - print memory under the 'pointer' or memory of
+a 'variable'. When printing contents under the pointer then the argument 'size'
+should be provided. When printing memory of the variable then the argument
+'size' should be ommited. Parameter 'base' is optional and can have 3 following
+values: pretty_output::hex (default), pretty_output::oct, pretty_output::bin.
+The name is an abbreviation of 'dump'.
+
+	Example:
+
+	| 4|
+	| 5|	struct s_t
+	| 6|	{
+	| 7|		int i;
+	| 8|		float f;
+	| 9|		char c;
+	|10|	} s;
+	|12|
+	|13|	s.i = 456;
+	|14|	s.f = 789.123f;
+	|15|	s.c = 'r';
+	|16|
+	|17|
+	|18| $d(s);
+	|19|
 
 	>
-	>	main.cpp:9    |  *pf = 789
+	>	main.cpp:5    |  dump of s:
+	>				  |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
+	>				  |      0x7fff54376b1a: 60 0a
+	>				  |
 	>
 
 
-$f - print function or member-function call and return labels. Should
-be used inside a function or member-function. Automatically adds and
-removes indentation to the output.
+$f - print function or member-function call and return labels. Should be used
+inside a function or member-function. Automatically shifts indentation of the
+output.
 The name is an abbreviation of 'function'.
 
 	Example:
 
-	 2|
-	 3|	void func()
-	 4|	{$f
-	 5|		float f = 789.0f;
-	 6|		$w(f);
-	 7|	}
-	 8|
-	 9|	int main()
-	10|	{$f
-	11|		int i = 456;
-	12|		$w(i);
-	13|		func();
-	14|
-	15|		return 0;
-	16|	}
-	17|
+	| 2|
+	| 3|	void func()
+	| 4|	{$f
+	| 5|		float f = 789.0f;
+	| 6|		$w(f);
+	| 7|	}
+	| 8|
+	| 9|	int main()
+	|10|	{$f
+	|11|		int i = 456;
+	|12|		$w(i);
+	|13|		func();
+	|14|
+	|15|		return 0;
+	|16|	}
+	|17|
 
 	>
 	>	main.cpp:10   |  [call] int main()
@@ -116,150 +124,129 @@ The name is an abbreviation of 'function'.
 	>
 
 
-$c(function) - print function arguments and return value. Should be
-used at function call. Automatically adds and removes indentation to
-the output.
+$c(function) - print 'function' arguments and return value. Should be used at
+function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
 
 	Example:
 
-	 2|
-	 3|	void func(int i, float f, const std::string &s)
-	 4|	{
-	 5|	}
-	 6|
+	| 2|
+	| 3|	void func(int i, float f, const std::string &s)
+	| 4|	{
+	| 5|	}
+	| 6|
 	...
-	 8|
-	 9|	int i = 456;
-	10|	$c(func)(i, 789, "hellomoto!");
-	11|
+	| 8|
+	| 9|	int i = 456;
+	|10|	$c(func)(i, 789, "hellomoto!");
+	|11|
 
 	>
 	>	main.cpp:11   |  func(456, 789, hellomoto!)
 	>
 
 
-$m(object, function_name) - print member-function arguments and return
-value.  Should be used at member-function call. 'object' argument can
-be of a pointer or non-pointer type.
+$m(object, function_name) - print member-function arguments and return value.
+Should be used at member-function call. 'object' argument can be of a pointer
+or non-pointer type.
 The name is an abbreviation of 'member-function'.
 
 	Example:
 
-	 2|
-	 3|	class some
-	 4|	{
-	 5|	public:
-	 6|		void func(int i, float f, const std::string &s)
-	 7|		{
-	 8|		}
-	 9|	};
-	10|
+	| 2|
+	| 3|	class some
+	| 4|	{
+	| 5|	public:
+	| 6|		void func(int i, float f, const std::string &s)
+	| 7|		{
+	| 8|		}
+	| 9|	};
+	|10|
 	...
-	12|
-	13|	some obj;
-	14|	int i = 456;
-	15|	$m(obj, some::func)(i, 789, "hellomoto!");
-	16|
+	|12|
+	|13|	some obj;
+	|14|	int i = 456;
+	|15|	$m(obj, some::func)(i, 789, "hellomoto!");
+	|16|
 
 	>
 	>	main.cpp:15   |  some::func(456, 789, hellomoto!)
 	>
 
 
-$return expression - print value of epxression passed to return
-statement.
+$return expression - print value of epxression passed to return statement.
 
 	Example:
 
-	 2|
-	 3|	int add(int a, int b)
-	 4|	{
-	 5|		$return a + b;
-	 6|	}
-	 7|
+	| 2|
+	| 3|	int add(int a, int b)
+	| 4|	{
+	| 5|		$return a + b;
+	| 6|	}
+	| 7|
 	...
-	 9|
-	10|	add(456, 789);
-	11|
+	| 9|
+	|10|	add(456, 789);
+	|11|
 
 	>
 	>	main.cpp:5    |  return 1245
 	>
 
 
-$if (condition) - print value of the if condition. Automatically adds
-and removes indentation to the output.
+$if (condition) - print value of the if condition. Automatically adds and
+removes indentation to the output.
 
 	Example:
 
-	 5|
-	 6|	int i = 0;
-	 7|	$if (i < 2)
-	 8|	{
-	 9|	}
-	10|
+	| 5|
+	| 6|	int i = 0;
+	| 7|	$if (i < 2)
+	| 8|	{
+	| 9|	}
+	|10|
 
 	>
 	>	main.cpp:7    |  if (i < 2) => true
 	>
 
 
-$for (statements) - print iteration numbers of the for loop.
-Automatically adds and removes indentation to the output.
+$for (statements) - print iteration numbers of the for loop. Automatically
+shifts indentation of the output.
 
 	Example:
 
-	 5|
-	 6|	$for (int i = 0; i < 3; ++i)
-	 7|	{
-	 8|		$w(i);
-	 9|	}
-	10|
+	| 4|
+	| 5|	$for (int i = 0; i < 3; ++i)
+	| 6|	{
+	| 7|		$w(i);
+	| 8|	}
+	| 9|
 
 	>
-	>	main.cpp:6    |  for (int i = 0; i < 3; ++i)
-	>	main.cpp:6    |  [iteration #0]
-	>	main.cpp:8    |      i = 0
-	>	main.cpp:6    |  [iteration #1]
-	>	main.cpp:8    |      i = 1
-	>	main.cpp:6    |  [iteration #2]
-	>	main.cpp:8    |      i = 2
-	>
-
-
-	 5|
-	 6|	int arr[] = {4, 5, 6};
-	 7|	$for (auto i : arr)
-	 8|	{
-	 9|		$w(i);
-	10|	}
-	11|
-
-	>
-	>	main.cpp:7    |  for (auto i : arr)
-	>	main.cpp:7    |  [iteration #0]
-	>	main.cpp:9    |      i = 4
-	>	main.cpp:7    |  [iteration #1]
-	>	main.cpp:9    |      i = 5
-	>	main.cpp:7    |  [iteration #2]
-	>	main.cpp:9    |      i = 6
+	>	main.cpp:5    |  for (int i = 0; i < 3; ++i)
+	>	main.cpp:5    |  [iteration #0]
+	>	main.cpp:7    |      i = 0
+	>	main.cpp:5    |  [iteration #1]
+	>	main.cpp:7    |      i = 1
+	>	main.cpp:5    |  [iteration #2]
+	>	main.cpp:7    |      i = 2
 	>
 
 
 $while (condition) - print iteration conditions of the while loop.
-Automatically adds and removes indentation to the output.
+Automatically shifts indentation of the output.
 
 	Example:
 
-	 5|
-	 6|	int i = 0;
-	 7|	$while (i < 3)
-	 8|	{
-	 9|		$w(i);
-	10|		++i;
-	11|	}
-	12|
+	| 5|
+	| 6|	int i = 0;
+	| 7|	$while (i < 3)
+	| 8|	{
+	| 9|		$w(i);
+	|10|		++i;
+	|11|	}
+	|12|
 
 	>
 	>	main.cpp:7    |  while (i < 3) => true
@@ -272,20 +259,20 @@ Automatically adds and removes indentation to the output.
 	>
 
 
-$_ - Adds and removes indentation in the containing scope.
+$_ - shift indentation in the containing scope.
 
 	Example:
 
-	 5|
-	 6|	int i = 456;
-	 7|	$w(i);
-	 8|
-	 9|	{$_
-	10|		$w(i);
-	11|	}
-	12|
-	13|	$w(i);
-	14|
+	| 5|
+	| 6|	int i = 456;
+	| 7|	$w(i);
+	| 8|
+	| 9|	{$_
+	|10|		$w(i);
+	|11|	}
+	|12|
+	|13|	$w(i);
+	|14|
 
 	>
 	>	main.cpp:7    |  i = 456
@@ -298,42 +285,41 @@ $p(format, ...) - like printf. The name is an abbreviation of 'printf'.
 
 	Example:
 
-	13|
-	14|	$p("%i %f %s", 456, 789.0f, "hellomoto!")
-	15|
+	|13|
+	|14|	$p("%i %f %s", 456, 789.0f, "hellomoto!")
+	|15|
 
 	>
 	>	main.cpp:14   |  456 789.000000 hellomoto!
 	>
 
 
-$t(thread_name) - set thread name, that will be printed in the thread
-header.
+$t(thread_name) - set thread name, that will be printed in the thread header.
 The name is an abbreviation of 'thread'.
 
 	Example:
 
-	 5|
-	 6|	void func()
-	 7|	{$t(worker)
-	 8|		int arr[] = {1, 2, 3};
-	 9|		$for (auto i : arr)
-	10|		{
-	11|			$w(i);
-	12|		}
-	13|	}
-	14|
-	15|	int main()
-	16|	{$t(main) $f
-	17|
-	18|		std::thread t1(func);
-	19|		std::thread t2(func);
-	20|		t1.join();
-	21|		t2.join();
-	22|
-	23|		$return 0;
-	24|	}
-	25|
+	| 5|
+	| 6|	void func()
+	| 7|	{$t(worker)
+	| 8|		int arr[] = {1, 2, 3};
+	| 9|		$for (auto i : arr)
+	|10|		{
+	|11|			$w(i);
+	|12|		}
+	|13|	}
+	|14|
+	|15|	int main()
+	|16|	{$t(main) $f
+	|17|
+	|18|		std::thread t1(func);
+	|19|		std::thread t2(func);
+	|20|		t1.join();
+	|21|		t2.join();
+	|22|
+	|23|		$return 0;
+	|24|	}
+	|25|
 
 	>
 	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -389,17 +375,46 @@ The name is an abbreviation of 'thread'.
 */
 
 
+/* OPTIONS *
+
+	PRETTY_OUTPUT_WIDTH - width, to which output is wrapped (actually wrapping
+		only a thread header and dump output). Default is 79.
+
+	PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR - char that is used as horizontal
+		separator for a thread header. Default is a '~'.
+
+	PRETTY_OUTPUT_FILENAME_FIELD_WIDTH - width of the file name field of the
+		output. Default is 20.
+
+	PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING - string, that is used to
+		indicate wrapped part of the filename. Default is "~".
+
+	PRETTY_OUTPUT_LINE_FIELD_WIDTH - width of the file line field of the
+		output. Default is 4.
+
+	PRETTY_OUTPUT_DELIMITER - string, that is used as a delimiter between
+		'file name:line' field and the actual output. Default is " |  " (space,
+		pipe, 2 spaces).
+
+	PRETTY_OUTPUT_INDENTATION - string, that is used as an indentation for the
+		actual output. Default is "    " (4 spaces).
+
+	PRETTY_OUTPUT_NO_OUTPUT_SYNC - disables output syncronization. Read details
+		in the 'NOTES' section.
+
+*/
+
+
 /* NOTES *
 
 	* Macros $c and $m work only with C++11 and later.
 
-	* There is an output synchronization that prevents outputs from
-		different threads mixing up. By default this feture is turned
-		on. To disable this synchronization define macro
-		PRETTY_OUTPUT_NO_OUTPUT_SYNC.
+	* There is an output synchronization that prevents outputs from different
+		threads mixing up. By default this feature is turned on. To disable this
+		synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
 
-	* If you want to output your class/struct/whatever, you should
-		overload operator <<(std::ostream &, <your_type>)
+	* If you want to output your class/struct/whatever, you should overload
+		operator <<(std::ostream &, <your_type>)
 
 */
 
@@ -415,7 +430,6 @@ The name is an abbreviation of 'thread'.
 #include <cstdint>
 #include <cstdarg>
 #include <cstdio>
-#include <cstring>
 
 #if __cplusplus >= 201103L
 #include <tuple>
@@ -511,21 +525,80 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t WIDTH = 120;
-	static const char THREAD_HEADER_FILL_CHAR = '~';
-	static const std::size_t FILENAME_FIELD_WIDTH = 20;
-	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
-	static const std::size_t LINE_FIELD_WIDTH = 4;
+	// options
+
+	static const std::size_t WIDTH =
+#if defined(PRETTY_OUTPUT_WIDTH)
+		PRETTY_OUTPUT_WIDTH
+#else
+		79
+#endif
+	;
+
+
+	static const char THREAD_HEADER_SEPARATOR =
+#if defined(PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR)
+		PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR
+#else
+		'~'
+#endif
+	;
+
+
+	static const std::size_t FILENAME_FIELD_WIDTH =
+#if defined(PRETTY_OUTPUT_FILENAME_FIELD_WIDTH)
+		PRETTY_OUTPUT_FILENAME_FIELD_WIDTH
+#else
+		20
+#endif
+	;
+
+
+	static const char FILENAME_FIELD_EXCESS_PADDING[] =
+#if defined(PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING)
+		PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING
+#else
+		"~"
+#endif
+	;
+
+
+	static const std::size_t LINE_FIELD_WIDTH =
+#if defined(PRETTY_OUTPUT_LINE_FIELD_WIDTH)
+		PRETTY_OUTPUT_LINE_FIELD_WIDTH
+#else
+		4
+#endif
+	;
+
+
+	static const char DELIMITER[] =
+#if defined(PRETTY_OUTPUT_DELIMITER)
+		PRETTY_OUTPUT_DELIMITER
+#else
+		" |  "
+#endif
+	;
+
+
+	static const char INDENTATION[] =
+#if defined(PRETTY_OUTPUT_INDENTATION)
+		PRETTY_OUTPUT_INDENTATION
+#else
+		"    "
+#endif
+	;
+
+
+	// definitions
+
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
 #else
 	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
 #endif
-	static const char DELIMITER[] = " |  ";
 	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
-	static const char INDENTATION[] = "    ";
 	static const std::size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
-
 
 	std::uint64_t current_thread_id();
 	const std::string current_thread_name();
@@ -552,7 +625,7 @@ namespace pretty_output
 	inline const std::string thread_header(const std::string &thread_id, const std::string &thread_name)
 	{
 		std::stringstream stream;
-		stream.fill(THREAD_HEADER_FILL_CHAR);
+		stream.fill(THREAD_HEADER_SEPARATOR);
 		stream.flags(std::ios::left);
 		stream.width(WIDTH);
 		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
@@ -894,23 +967,11 @@ namespace pretty_output
 
 	// dump
 
-	enum base_t
+	enum dump_base
 	{
-		BASE_BIN = 2,
-//		BASE_OCT = 8,
-		BASE_SDEC = -10,
-		BASE_UDEC = 10,
-		BASE_HEX = 16,
-//		BASE_FLT = 17,
-//		BASE_DBL = 18,
-//		BASE_LDBL = 19
-	};
-
-
-	enum endianness_t
-	{
-		ENDIANNESS_LITTLE,
-		ENDIANNESS_BIG
+		bin = 2,
+		oct = 8,
+		hex = 16
 	};
 
 
@@ -1038,228 +1099,45 @@ namespace pretty_output
 
 
 	template <typename T>
-	struct print_traits
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), dump_base base = hex)
 	{
-		typedef T unit_t;
-		static const base_t BASE = BASE_HEX;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type, unit_type, base) \
-				template <> \
-				struct print_traits<type> \
-				{ \
-					typedef unit_type unit_t; \
-					static const base_t BASE = base; \
-				}
-
-
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(void, std::uint8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int8_t, std::int8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int16_t, std::int16_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int32_t, std::int32_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int64_t, std::int64_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
-
-
-	template <typename T>
-	struct field_traits
-	{
-		static const std::size_t SIGNED_WIDTH = 0;
-		static const std::size_t UNSIGNED_WIDTH = 0;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
-			template <> \
-			struct field_traits<type> \
-			{ \
-				static const std::size_t SIGNED_WIDTH = 1 + width; \
-				static const std::size_t UNSIGNED_WIDTH = width; \
-			}
-
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int8_t, 4);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int16_t, 6);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int32_t, 11);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int64_t, 21);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint8_t, 3);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint16_t, 5);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint32_t, 10);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint64_t, 20);
-
-
-	template <typename T>
-	struct to_signed
-	{
-		typedef T type;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(source_type, promotion) \
-		template <> \
-		struct to_signed<source_type> \
-		{ \
-			typedef promotion type; \
-		}
-
-
-	template <typename T>
-	struct to_unsigned
-	{
-		typedef T type;
-	};
-
-
-#define PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(source_type, promotion) \
-		template <> \
-		struct to_signed<source_type> \
-		{ \
-			typedef promotion type; \
-		}
-
-
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint8_t, std::int8_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint16_t, std::int16_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint32_t, std::int32_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint64_t, std::int64_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int8_t, std::uint8_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int16_t, std::uint16_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int32_t, std::uint32_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int64_t, std::uint64_t);
-
-
-	template <typename T>
-	inline std::size_t field_width(base_t base)
-	{
-		switch (base)
-		{
-			case BASE_BIN:
-				return sizeof(typename print_traits<T>::unit_t) * 8;
-
-			case BASE_SDEC:
-				return field_traits<T>::SIGNED_WIDTH;
-
-			case BASE_UDEC:
-				return field_traits<T>::UNSIGNED_WIDTH;
-
-			case BASE_HEX:
-				return sizeof(typename print_traits<T>::unit_t) * 2;
-		}
-	}
-
-
-	template <typename T>
-	const std::string bytes_to_binary(const T *pointer)
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)pointer;
-		std::size_t size = sizeof(unit_t);
-		for (std::size_t index = 0; index < size; ++index)
-		{
-			stream << byte_to_binary(data[index]);
-		}
-
-		return stream.str();
-	}
-
-
-	template <typename T>
-	const std::string bytes_to_signed_decimal(const T *bytes)
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		std::stringstream stream;
-		stream << (const typename to_signed<unit_t>::type)*(const unit_t*)bytes;
-
-		return stream.str();
-	}
-
-
-	template <typename T>
-	const std::string bytes_to_unsigned_decimal(const T *bytes)
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		std::stringstream stream;
-		stream << (const typename to_unsigned<unit_t>::type)*(const unit_t*)bytes;
-
-		return stream.str();
-	}
-
-
-	template <typename T>
-	const std::string bytes_to_hexadecimal(const T *pointer)
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)pointer;
-		std::size_t size = sizeof(unit_t);
-		for (std::size_t index = 0; index < size; ++index)
-		{
-			stream << byte_to_hexadecimal(data[index]);
-		}
-
-		return stream.str();
-	}
-
-
-	template <typename T>
-	const std::string (*select_conversion(base_t base))(const T *)
-	{
-		switch (base)
-		{
-			case BASE_BIN:
-				return bytes_to_binary<T>;
-
-			case BASE_SDEC:
-				return bytes_to_signed_decimal<T>;
-
-			case BASE_UDEC:
-				return bytes_to_unsigned_decimal<T>;
-
-			case BASE_HEX:
-				return bytes_to_hexadecimal<T>;
-		}
-	}
-
-
-	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = print_traits<T>::BASE, endianness_t endianness = ENDIANNESS_BIG)
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		const std::string (*bytes_to_field)(const T *) = select_conversion<T>(base);
-
 		out_stream(filename_line) << "dump of " << name << ":";
 		indentation_add();
 
+		const char *const (*convert)(std::uint8_t);
+		std::size_t column_width;
+		switch (base)
+		{
+			case bin:
+				convert = byte_to_binary;
+				column_width = 8;
+				break;
+
+			case oct:
+				convert = byte_to_octal;
+				column_width = 4;
+				break;
+
+			default:
+				convert = byte_to_hexadecimal;
+				column_width = 2;
+		}
+
 		std::stringstream stream;
 
-		std::size_t column_width = field_width<T>(base);
-
-		const unit_t *iterator = (const unit_t*)pointer;
-		std::size_t length = size / sizeof(unit_t);
-
-		stream << to_string((void*)iterator) << ":";
-		for (std::size_t index = 0; index < length; ++index)
+		const std::uint8_t *bytes = (const std::uint8_t*)pointer;
+		stream << to_string((void*)bytes) << ":";
+		for (std::size_t index = 0; index < size; ++index)
 		{
 			if (output_width_left() < stream.str().length() + column_width)
 			{
 				out_stream() << stream.str();
 				stream.str("");
 
-				stream << to_string((void*)&iterator[index]) << ":";
+				stream << to_string((void*)&bytes[index]) << ":";
 			}
 
-			stream << " ";
-			stream.fill(' ');
-			stream.width(column_width);
-			stream.flags(std::ios::right);
-			// correction for endianness
-			stream << bytes_to_field(&iterator[index]);
+			stream << " " << convert(bytes[index]);
 		}
 
 		if (!stream.str().empty())
@@ -1272,11 +1150,11 @@ namespace pretty_output
 	}
 
 
-//	template <typename T>
-//	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, dump_base base = hex)
-//	{
-//		print_dump(filename_line, name, &variable, sizeof(variable));
-//	}
+	template <typename T>
+	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, dump_base base = hex)
+	{
+		print_dump(filename_line, name, &variable, sizeof(variable));
+	}
 
 
 #if __cplusplus >= 201103L
