@@ -1153,9 +1153,9 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 		std::uint8_t *data = (std::uint8_t*)pointer;
+		std::size_t size = sizeof(unit_t);
 		for (std::size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_binary(data[index]);
@@ -1170,9 +1170,7 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
-
 		stream << (const typename to_signed<unit_t>::type)*(const unit_t*)bytes;
 
 		return stream.str();
@@ -1184,9 +1182,7 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
-
 		stream << (const typename to_unsigned<unit_t>::type)*(const unit_t*)bytes;
 
 		return stream.str();
@@ -1198,9 +1194,9 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 		std::uint8_t *data = (std::uint8_t*)pointer;
+		std::size_t size = sizeof(unit_t);
 		for (std::size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
