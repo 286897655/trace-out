@@ -1068,15 +1068,16 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_binary(const T *bytes)
+	const std::string bytes_to_binary(const T *pointer)
 	{
 		typedef typename type_dumping_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
+		unit_t *data = (unit_t*)pointer;
 		for (std::size_t index = 0; index < size; ++index)
 		{
-			stream << byte_to_binary(bytes[index]);
+			stream << byte_to_binary(data[index]);
 		}
 
 		return stream.str();
@@ -1091,7 +1092,7 @@ namespace pretty_output
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 
-		stream << (std::int64_t)*(const T*)bytes;
+		stream << (std::int64_t)*(const unit_t*)bytes;
 
 		return stream.str();
 	}
@@ -1105,22 +1106,23 @@ namespace pretty_output
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 
-		stream << (std::uint64_t)*(const T*)bytes;
+		stream << (std::uint64_t)*(const unit_t*)bytes;
 
 		return stream.str();
 	}
 
 
 	template <typename T>
-	const std::string bytes_to_hexadecimal(const T *bytes)
+	const std::string bytes_to_hexadecimal(const T *pointer)
 	{
 		typedef typename type_dumping_traits<T>::unit_t unit_t;
 
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
+		unit_t *data = (unit_t*)pointer;
 		for (std::size_t index = 0; index < size; ++index)
 		{
-			stream << byte_to_hexadecimal(bytes[index]);
+			stream << byte_to_hexadecimal(data[index]);
 		}
 
 		return stream.str();
