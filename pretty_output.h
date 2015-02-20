@@ -1090,6 +1090,45 @@ namespace pretty_output
 
 
 	template <typename T>
+	struct to_signed
+	{
+		typedef T type;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(source_type, promotion) \
+		template <> \
+		struct to_signed<source_type> \
+		{ \
+			typedef promotion type; \
+		}
+
+
+	template <typename T>
+	struct to_unsigned
+	{
+		typedef T type;
+	};
+
+
+#define PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(source_type, promotion) \
+		template <> \
+		struct to_signed<source_type> \
+		{ \
+			typedef promotion type; \
+		}
+
+
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint8_t, std::int8_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint16_t, std::int16_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint32_t, std::int32_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint64_t, std::int64_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int8_t, std::uint8_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int16_t, std::uint16_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int32_t, std::uint32_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int64_t, std::uint64_t);
+
+
+	template <typename T>
 	inline std::size_t field_width(base_t base)
 	{
 		switch (base)
@@ -1134,7 +1173,7 @@ namespace pretty_output
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 
-		stream << (std::int64_t)*(const unit_t*)bytes;
+		stream << (const typename to_signed<unit_t>::type)*(const unit_t*)bytes;
 
 		return stream.str();
 	}
@@ -1148,7 +1187,7 @@ namespace pretty_output
 		std::size_t size = sizeof(unit_t);
 		std::stringstream stream;
 
-		stream << (std::uint64_t)*(const unit_t*)bytes;
+		stream << (const typename to_unsigned<unit_t>::type)*(const unit_t*)bytes;
 
 		return stream.str();
 	}
