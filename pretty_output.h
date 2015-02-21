@@ -511,7 +511,7 @@ The name is an abbreviation of 'thread'.
 namespace pretty_output
 {
 
-	static const std::size_t WIDTH = 120;
+	static const std::size_t WIDTH = 79;
 	static const char THREAD_HEADER_FILL_CHAR = '~';
 	static const std::size_t FILENAME_FIELD_WIDTH = 20;
 	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
@@ -1149,12 +1149,12 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_binary(const T *pointer)
+	const std::string bytes_to_binary_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)pointer;
+		std::uint8_t *data = (std::uint8_t*)bytes;
 		std::size_t size = sizeof(unit_t);
 		for (std::size_t index = 0; index < size; ++index)
 		{
@@ -1166,7 +1166,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_signed_decimal(const T *bytes)
+	const std::string bytes_to_signed_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -1178,7 +1178,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_unsigned_decimal(const T *bytes)
+	const std::string bytes_to_unsigned_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -1190,12 +1190,12 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_hexadecimal(const T *pointer)
+	const std::string bytes_to_hexadecimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)pointer;
+		std::uint8_t *data = (std::uint8_t*)bytes;
 		std::size_t size = sizeof(unit_t);
 		for (std::size_t index = 0; index < size; ++index)
 		{
@@ -1212,16 +1212,16 @@ namespace pretty_output
 		switch (base)
 		{
 			case BASE_BIN:
-				return bytes_to_binary<T>;
+				return bytes_to_binary_string<T>;
 
 			case BASE_SDEC:
-				return bytes_to_signed_decimal<T>;
+				return bytes_to_signed_decimal_string<T>;
 
 			case BASE_UDEC:
-				return bytes_to_unsigned_decimal<T>;
+				return bytes_to_unsigned_decimal_string<T>;
 
 			case BASE_HEX:
-				return bytes_to_hexadecimal<T>;
+				return bytes_to_hexadecimal_string<T>;
 		}
 	}
 
@@ -1272,7 +1272,7 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		const std::string (*bytes_to_field)(const T *) = select_conversion<T>(base);
+		const std::string (*bytes_to_string)(const T *) = select_conversion<T>(base);
 
 		out_stream(filename_line) << "dump of " << name << ":";
 		indentation_add();
@@ -1303,7 +1303,7 @@ namespace pretty_output
 			unit_t ordered_bytes;
 			order_bytes(&ordered_bytes, &iterator[index], sizeof(unit_t), byte_order);
 
-			stream << bytes_to_field(&ordered_bytes);
+			stream << bytes_to_string(&ordered_bytes);
 		}
 
 		if (!stream.str().empty())
