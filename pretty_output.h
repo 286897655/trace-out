@@ -402,6 +402,9 @@ The name is an abbreviation of 'thread'.
 	PRETTY_OUTPUT_NO_OUTPUT_SYNC - disables output syncronization. Read details
 		in the 'NOTES' section.
 
+	PRETTY_OUTPUT_REDIRECTION_H - header file, which contains overrided printing
+		routines. Read details in the 'NOTES' section.
+
 */
 
 
@@ -416,6 +419,17 @@ The name is an abbreviation of 'thread'.
 	* If you want to output your class/struct/whatever, you should overload
 		operator <<(std::ostream &, <your_type>)
 
+	* Output redirection is done in a little tricky way. You should declare
+		'void pretty_output_print(const char *)' and
+		'void pretty_output_flush()' functions in a separate header file and
+		define macro 'PRETTY_OUTPUT_REDIRECTION_H' with a name of that header
+		file.
+		For your convinience there's already files for redirecting output to a
+		file (pretty_output_to_file.{h,cpp}) and for printing to MVS debug
+		output (pretty_output_to_mvs.h). When using pretty_output_to_file, you
+		can define macro 'PRETTY_OUTPUT_TO_FILE' with the name of the
+		destination file (default is 'pretty_output_log.txt').
+
 */
 
 
@@ -423,7 +437,6 @@ The name is an abbreviation of 'thread'.
 
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
 #include <utility>
 #include <type_traits>
@@ -514,12 +527,39 @@ The name is an abbreviation of 'thread'.
 			(pretty_output::filename_line_field(pretty_output::filename_from_path(__FILE__), __LINE__))
 
 
+#define PRETTY_OUTPUT__QUOTIZE_IMPL(something) \
+			#something
+
+#define PRETTY_OUTPUT__QUOTIZE(something) \
+			PRETTY_OUTPUT__QUOTIZE_IMPL(something)
+
+
 #if defined(__GNUG__) || defined(__clang__)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #elif defined(_MSC_VER)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __FUNCSIG__
 #else
 	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block.
+#endif
+
+
+#if defined(PRETTY_OUTPUT_REDIRECTION_H)
+	#include PRETTY_OUTPUT__QUOTIZE(PRETTY_OUTPUT_REDIRECTION_H)
+#else
+	#include <iostream>
+
+
+	inline void pretty_output_print(const char *string)
+	{
+		std::cout << string;
+	}
+
+
+	inline void pretty_output_flush()
+	{
+		std::cout.flush();
+	}
+
 #endif
 
 
@@ -613,6 +653,9 @@ namespace pretty_output
 	void indentation_add();
 	void indentation_remove();
 
+	std::size_t printf_string_length(const char *format, va_list arguments);
+	std::size_t printf_to_string(char *buffer, std::size_t size, const char *format, va_list arguments);
+
 
 	inline const std::string thread_id_field(std::uint64_t thread_id)
 	{
@@ -687,10 +730,10 @@ namespace pretty_output
 				std::string thread_id = thread_id_field(current_thread_id());
 				const std::string &thread_name = current_thread_name();
 				const std::string &header = thread_header(thread_id, thread_name);
-				std::cout << std::endl << header << std::endl;
+				*this << "\n" << header << "\n";
 			}
 
-			std::cout << filename_line << DELIMITER << indentation();
+			*this << filename_line << DELIMITER << indentation();
 		}
 
 
@@ -698,8 +741,16 @@ namespace pretty_output
 		{
 			lock_output();
 
-			std::cout << filename_line << DELIMITER << indentation();
-			std::vprintf(format, arguments);
+			va_list arguments_copy;
+			va_copy(arguments_copy, arguments);
+			std::size_t size = printf_string_length(format, arguments_copy) + 1;
+
+			char *buffer = (char*)std::malloc(size);
+			printf_to_string(buffer, size, format, arguments);
+
+			*this << filename_line << DELIMITER << indentation() << buffer;
+
+			std::free(buffer);
 		}
 
 
@@ -707,33 +758,36 @@ namespace pretty_output
 		{
 			lock_output();
 
-			std::cout.fill(' ');
-			std::cout.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
-			std::cout << "";
+			std::stringstream stream;
+			stream.fill(' ');
+			stream.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+			stream << "";
 
-			std::cout << DELIMITER << indentation();
+			*this << stream.str() << DELIMITER << indentation();
 		}
 
 
 		~out_stream()
 		{
-			std::cout << std::endl;
+			*this << "\n";
+
+			pretty_output_flush();
 
 			unlock_output();
 		}
 
 
-		template <typename T>
-		std::ostream &operator <<(const T &value)
+		out_stream &operator <<(const char *string)
 		{
-			return std::cout << value;
+			pretty_output_print(string);
+			return *this;
 		}
 
 
-		template <typename T>
-		std::ostream &operator <<(T &value)
+		out_stream &operator <<(const std::string &string)
 		{
-			return std::cout << value;
+			pretty_output_print(string.c_str());
+			return *this;
 		}
 	};
 
@@ -1724,7 +1778,7 @@ namespace pretty_output
 	inline void print_for_block(const std::string &filename_line, const for_block &block)
 	{
 		indentation_remove();
-		out_stream(filename_line) << "[iteration #" << block.iteration_number() << "]";
+		out_stream(filename_line) << "[iteration #" << to_string(block.iteration_number()) << "]";
 		indentation_add();
 	}
 
