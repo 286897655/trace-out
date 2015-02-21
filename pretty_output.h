@@ -1315,11 +1315,11 @@ namespace pretty_output
 	}
 
 
-//	template <typename T>
-//	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, dump_base base = hex)
-//	{
-//		print_dump(filename_line, name, &variable, sizeof(variable));
-//	}
+	template <typename T>
+	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	{
+		print_dump(filename_line, name, (std::uint8_t*)&variable, sizeof(T), base, byte_order);
+	}
 
 
 #if __cplusplus >= 201103L
