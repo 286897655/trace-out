@@ -86,17 +86,5 @@ namespace pretty_output
 		pthread_mutex_unlock(&mutex->value);
 	}
 
-
-	std::size_t printf_string_length(const char *format, va_list arguments)
-	{
-		return std::vsnprintf(NULL, 0, format, arguments);
-	}
-
-
-	std::size_t printf_to_string(char *buffer, std::size_t size, const char *format, va_list arguments)
-	{
-		return std::vsnprintf(buffer, size, format, arguments);
-	}
-
 }
 
