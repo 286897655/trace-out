@@ -62,9 +62,10 @@ $d(variable, base, byte_order) - print memory of the 'variable'.
 
 'pointer' - address of the memory to be printed. The type of the pointer
 determines the grouping of bytes and default 'base'. For example memory under
-the 'unsigned char*' pointer will be grouped in 1 byte and use hexadecimal
-numbers; memory under 'int*' will be grouped in 4 bytes and use signed decimal
-numbers. For unknown types default grouping is 1 byte and base is hexadecimal.
+the 'unsigned char*' pointer will be grouped by 1 byte and use hexadecimal
+numbers; memory under 'int*' will be grouped by 4 bytes and use signed decimal
+numbers. For unknown types default grouping is by 1 byte and base is
+hexadecimal.
 
 'variable' - variable, memory of which will be printed. Parameter 'size' should
 not be provided. Default grouping is 1 byte, default 'base' is hexadecimal.
@@ -216,8 +217,8 @@ $return expression - print value of epxression passed to return statement.
 	>
 
 
-$if (condition) - print value of the if condition. Automatically adds and
-removes indentation to the output.
+$if (condition) - print value of the if condition. Automatically shifts
+indentation of the output.
 
 	Example:
 
