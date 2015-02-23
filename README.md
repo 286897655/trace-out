@@ -44,7 +44,28 @@ main.cpp:17   |  *pf = 789
 ```
 ---
 
-`$d(pointer/variable, size, base)` - print memory under the `pointer` or memory of a `variable`. When printing contents under the `pointer` then the argument `size` should be provided. When printing memory of the `variable` then the argument `size` should be ommited. Parameter `base` is optional and can have 3 following values: `pretty_output::hex` (default), `pretty_output::oct`, `pretty_output::bin`.
+`$d(pointer, size, base, byte_order)` - print memory under the `pointer`.
+
+`$d(variable, base, byte_order)` - print memory of the `variable`.
+
+`pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
+
+`variable` - variable, memory of which will be printed. Parameter `size` should not be provided. Default grouping is 1 byte, default `base` is hexadecimal.
+
+`size` - size of memory is bytes.
+
+`base` (optional) - numeric base for value representation. Can have following values:
+* `pretty_output::BASE_BIN` - binary
+* `pretty_output::BASE_SDEC` - signed decimal
+* `pretty_output::BASE_UDEC` - unsigned decimal
+* `pretty_output::BASE_HEX` - hexadecimal (default)
+
+`byte_order` - order of the bytes to use when converting bytes to the numeric values. Can have following values:
+* `pretty_output::BYTE_ORDER_LITTLE_ENDIAN`
+* `pretty_output::BYTE_ORDER_BIG_ENDIAN`
+
+Default value is determined automatically.
+
 The name is an abbreviation of 'dump'.
 
 Code:
