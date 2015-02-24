@@ -471,13 +471,13 @@ The name is an abbreviation of 'thread'.
 #include <iomanip>
 #include <utility>
 #include <type_traits>
+#include <cstdlib>
 #include <cstdint>
 #include <cstdarg>
-#include <cstdio>
 #include <cstring>
 
 #if __cplusplus >= 201103L
-#include <tuple>
+	#include <tuple>
 #endif
 
 
@@ -1095,7 +1095,6 @@ namespace pretty_output
 			out_stream(_filename_line) << "[ret]  " << _function_signature;
 		}
 
-
 	private:
 		std::string _filename_line;
 		std::string _function_signature;
@@ -1331,6 +1330,7 @@ namespace pretty_output
 	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint16_t, std::int16_t);
 	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint32_t, std::int32_t);
 	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint64_t, std::int64_t);
+
 	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int8_t, std::uint8_t);
 	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int16_t, std::uint16_t);
 	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int32_t, std::uint32_t);
@@ -1556,7 +1556,6 @@ namespace pretty_output
 			return return_value;
 		}
 
-
 	private:
 		std::string _filename_line;
 		std::string _function_name;
@@ -1582,7 +1581,6 @@ namespace pretty_output
 			_function_pointer(std::forward<A2>(arguments)...);
 			out_stream(_filename_line) << _function_name << "(" << to_string(arguments...) << ")";
 		}
-
 
 	private:
 		std::string _filename_line;
@@ -1620,7 +1618,6 @@ namespace pretty_output
 			return return_value;
 		}
 
-
 	private:
 		std::string _filename_line;
 		std::string _function_name;
@@ -1647,7 +1644,6 @@ namespace pretty_output
 			(_object.*_function_pointer)(std::forward<A2>(arguments)...);
 			out_stream(_filename_line) << _function_name << "(" << to_string(arguments...) << ")";
 		}
-
 
 	private:
 		std::string _filename_line;
@@ -1694,7 +1690,6 @@ namespace pretty_output
 			return return_value;
 		}
 
-
 	private:
 		std::string _filename_line;
 		std::string _function_name;
@@ -1721,7 +1716,6 @@ namespace pretty_output
 			(_object.*_function_pointer)(std::forward<A2>(arguments)...);
 			out_stream(_filename_line) << _function_name << "(" << to_string(arguments...) << ")";
 		}
-
 
 	private:
 		std::string _filename_line;
@@ -1763,7 +1757,6 @@ namespace pretty_output
 			out_stream(_filename_line) << "return " << to_string(value);
 			return value;
 		}
-
 
 	private:
 		std::string _filename_line;
@@ -1810,7 +1803,6 @@ namespace pretty_output
 		{
 			return _condition;
 		}
-
 
 	private:
 		bool _condition;
@@ -1905,7 +1897,6 @@ namespace pretty_output
 		{
 			return _condition;
 		}
-
 
 	private:
 		bool _condition;
