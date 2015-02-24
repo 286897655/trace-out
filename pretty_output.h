@@ -400,6 +400,10 @@ The name is an abbreviation of 'thread'.
 
 /* OPTIONS *
 
+	PRETTY_OUTPUT_ON - turn pretty_output on.
+
+	PRETTY_OUTPUT_OFF - turn pretty_output off.
+
 	PRETTY_OUTPUT_WIDTH - width, to which output is wrapped (actually wrapping
 		only a thread header and dump output). Default is 79.
 
@@ -432,6 +436,10 @@ The name is an abbreviation of 'thread'.
 
 
 /* NOTES *
+
+	* If macro 'NDEBUG' is not defined or 'PRETTY_OUTPUT_ON' is defined then the
+		pretty_output is turned on. If 'NDEBUG' or 'PRETTY_OUTPUT_OFF' is
+		defined then the pretty_output is turned off.
 
 	* Macros $c and $m work only with C++11 and later.
 
@@ -475,62 +483,113 @@ The name is an abbreviation of 'thread'.
 
 // public macros:
 
-#define $w(...) \
-			pretty_output::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
+#if (!defined(NDEBUG) && !defined(PRETTY_OUTPUT_OFF)) || defined(PRETTY_OUTPUT_ON)
+
+	#define $w(...) \
+				pretty_output::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
 
 
-#define $d(pointer, ...) \
-			pretty_output::print_dump(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
+	#define $d(pointer, ...) \
+				pretty_output::print_dump(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
 
 
-#define $f \
-			pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
+	#define $f \
+				pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
-#if __cplusplus >= 201103L
+	#if __cplusplus >= 201103L
 
-#define $c(function_name) \
-			pretty_output::function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
-
-
-#define $m(object, function_name) \
-			pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
-
-#endif // __cplusplus >= 201103L
+	#define $c(function_name) \
+				pretty_output::function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
 
 
-#define $return \
-			return pretty_output::return_printer(PRETTY_OUTPUT_FILENAME_LINE) ,
+	#define $m(object, function_name) \
+				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
+
+	#endif // __cplusplus >= 201103L
 
 
-#define $if(...) \
-			if (pretty_output::print_if_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+	#define $return \
+				return pretty_output::return_printer(PRETTY_OUTPUT_FILENAME_LINE) ,
 
 
-// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
-	#define pretty_output_for(block, ...) \
-				if (pretty_output::for_block block = pretty_output::for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
-					for (__VA_ARGS__) \
-						if (pretty_output::print_for_block(PRETTY_OUTPUT_FILENAME_LINE, block), block.next_iteration(), false) {} else
-
-#define $for(...) \
-			pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
+	#define $if(...) \
+				if (pretty_output::print_if_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
-#define $while(...) \
-			while (pretty_output::print_while_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
+		#define pretty_output_for(block, ...) \
+					if (pretty_output::for_block block = pretty_output::for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+						for (__VA_ARGS__) \
+							if (pretty_output::print_for_block(PRETTY_OUTPUT_FILENAME_LINE, block), block.next_iteration(), false) {} else
+
+	#define $for(...) \
+				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
 
 
-#define $_ \
-			pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
+	#define $while(...) \
+				while (pretty_output::print_while_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
-#define $p(format, ...) \
-			pretty_output::print(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
+	#define $_ \
+				pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
 
 
-#define $t(name) \
-			pretty_output::set_current_thread_name(#name);
+	#define $p(format, ...) \
+				pretty_output::print(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
+
+
+	#define $t(name) \
+				pretty_output::set_current_thread_name(#name);
+
+#elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
+
+	#define $w(...)
+
+
+	#define $d(pointer, ...)
+
+
+	#define $f
+
+
+	#if __cplusplus >= 201103L
+
+	#define $c(function_name) \
+				function_name
+
+
+	#define $m(object, function_name) \
+				(object.*&std::remove_pointer<decltype(object)>::type::function_name)
+
+	#endif // __cplusplus >= 201103L
+
+
+	#define $return \
+				return
+
+
+	#define $if(...) \
+				if (__VA_ARGS__)
+
+
+	#define $for(...) \
+				for (__VA_ARGS__)
+
+
+	#define $while(...) \
+				while (__VA_ARGS__)
+
+
+	#define $_
+
+
+	#define $p(format, ...)
+
+
+	#define $t(name)
+
+#endif
 
 
 // private macros:

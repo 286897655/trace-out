@@ -365,6 +365,10 @@ Output:
 Options
 =======
 
+`PRETTY_OUTPUT_ON` - turn pretty_output on.
+
+`PRETTY_OUTPUT_OFF` - turn pretty_output off.
+
 `PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and dump output). Default is 79.
 
 `PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR` - char that is used as horizontal separator for a thread header. Default is a `'~'`.
@@ -386,6 +390,8 @@ Options
 
 Notes
 =====
+
+* If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
 
 * Macros `$c` and `$m` work only with C++11 and later.
 
