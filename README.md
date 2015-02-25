@@ -70,18 +70,18 @@ The name is an abbreviation of 'dump'.
 
 Code:
 ```C++
-	struct s_t
-	{
-		int i;
-		float f;
-		char c;
-	} s;
+struct s_t
+{
+	int i;
+	float f;
+	char c;
+} s;
 
-	s.i = 456;
-	s.f = 789.123f;
-	s.c = 'r';
+s.i = 456;
+s.f = 789.123f;
+s.c = 'r';
 
-	$d(s);
+$d(s);
 ```
 
 Output:
