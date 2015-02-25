@@ -101,12 +101,11 @@ The name is an abbreviation of 'dump'.
 	|14|	s.f = 789.123f;
 	|15|	s.c = 'r';
 	|16|
-	|17|
-	|18| $d(s);
-	|19|
+	|17|	$d(s);
+	|18|
 
 	>
-	>	main.cpp:5    |  dump of s:
+	>	main.cpp:17   |  dump of s:
 	>				  |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
 	>				  |      0x7fff54376b1a: 60 0a
 	>				  |

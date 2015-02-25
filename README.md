@@ -81,13 +81,12 @@ Code:
 	s.f = 789.123f;
 	s.c = 'r';
 
-
-$d(s);
+	$d(s);
 ```
 
 Output:
 ```
-main.cpp:5    |  dump of s:
+main.cpp:17   |  dump of s:
               |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
               |      0x7fff54376b1a: 60 0a
               |
