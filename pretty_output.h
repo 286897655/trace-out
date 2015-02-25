@@ -1934,20 +1934,20 @@ namespace pretty_output
 
 	// helper stuff
 
-	struct _tlskey_t;
+	struct tlskey_t;
 
-	_tlskey_t *_tls_new_key();
-	void _tls_delete_key(_tlskey_t *key);
-	void *_tls_get(_tlskey_t *key);
-	void _tls_set(_tlskey_t *key, void *data);
+	tlskey_t *tls_new_key();
+	void tls_delete_key(tlskey_t *key);
+	void *tls_get(tlskey_t *key);
+	void tls_set(tlskey_t *key, void *data);
 
 
-	struct _mutex_t;
+	struct mutex_t;
 
-	_mutex_t *_mutex_new();
-	void _mutex_delete(_mutex_t *mutex);
-	void _mutex_lock(_mutex_t *mutex);
-	void _mutex_unlock(_mutex_t *mutex);
+	mutex_t *mutex_new();
+	void mutex_delete(mutex_t *mutex);
+	void mutex_lock(mutex_t *mutex);
+	void mutex_unlock(mutex_t *mutex);
 
 }
 
