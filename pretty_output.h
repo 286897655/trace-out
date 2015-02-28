@@ -825,6 +825,8 @@ namespace pretty_output
 	}
 
 
+#if __cplusplus >= 201103L
+
 	template <typename...>
 	struct values_t;
 
@@ -863,6 +865,8 @@ namespace pretty_output
 	{
 		return values_t<T...>(delimiter, values...);
 	}
+
+#endif
 
 
 	struct endl_t
