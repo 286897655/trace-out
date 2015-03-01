@@ -446,9 +446,6 @@ The name is an abbreviation of 'thread'.
 		threads mixing up. By default this feature is turned on. To disable this
 		synchronization define macro PRETTY_OUTPUT_NO_OUTPUT_SYNC.
 
-	* If you want to output your class/struct/whatever, you should overload
-		operator <<(std::ostream &, <your_type>)
-
 	* Output redirection is done in a little tricky way. You should declare
 		'void pretty_output_print(const char *)' and
 		'void pretty_output_flush()' functions in a separate header file and
