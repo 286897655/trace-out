@@ -949,6 +949,12 @@ namespace pretty_output
 
 			return *this << "\n" << stream.str().c_str() << DELIMITER << indentation().c_str();
 		}
+
+
+		void flush()
+		{
+			pretty_output_flush();
+		}
 	};
 
 
