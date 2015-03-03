@@ -26,7 +26,7 @@
 
 /* HELP *
 
-$w(epression) - print value of 'expression' and return that value, so can be
+$w(expression) - print value of 'expression' and return that value, so can be
 used inside other expression.
 The name is an abbreviation of 'watch'.
 
@@ -466,11 +466,10 @@ The name is an abbreviation of 'thread'.
 #include <sstream>
 #include <iomanip>
 #include <utility>
-#include <type_traits>
 #include <cstdlib>
-#include <cstdint>
 #include <cstdarg>
 #include <cstring>
+#include <stdint.h>
 
 #if __cplusplus >= 201103L
 	#include <tuple>
@@ -646,7 +645,7 @@ namespace pretty_output
 
 	// options
 
-	static const std::size_t WIDTH =
+	static const size_t WIDTH =
 #if defined(PRETTY_OUTPUT_WIDTH)
 		PRETTY_OUTPUT_WIDTH
 #else
@@ -664,7 +663,7 @@ namespace pretty_output
 	;
 
 
-	static const std::size_t FILENAME_FIELD_WIDTH =
+	static const size_t FILENAME_FIELD_WIDTH =
 #if defined(PRETTY_OUTPUT_FILENAME_FIELD_WIDTH)
 		PRETTY_OUTPUT_FILENAME_FIELD_WIDTH
 #else
@@ -682,7 +681,7 @@ namespace pretty_output
 	;
 
 
-	static const std::size_t LINE_FIELD_WIDTH =
+	static const size_t LINE_FIELD_WIDTH =
 #if defined(PRETTY_OUTPUT_LINE_FIELD_WIDTH)
 		PRETTY_OUTPUT_LINE_FIELD_WIDTH
 #else
@@ -716,11 +715,10 @@ namespace pretty_output
 #else
 	static const char FILE_PATH_COMPONENT_DELIMITER = '/';
 #endif
-	static const std::size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
-	static const std::size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
+	static const size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
+	static const size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
 
-
-	std::uint64_t current_thread_id();
+	uint64_t current_thread_id();
 	const std::string current_thread_name();
 	void set_current_thread_name(const std::string &name);
 	bool is_running_same_thread();
@@ -732,11 +730,11 @@ namespace pretty_output
 	void indentation_add();
 	void indentation_remove();
 
-	std::size_t printf_string_length(const char *format, va_list arguments);
-	std::size_t printf_to_string(char *buffer, std::size_t size, const char *format, va_list arguments);
+	size_t printf_string_length(const char *format, va_list arguments);
+	size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments);
 
 
-	inline const std::string thread_id_field(std::uint64_t thread_id)
+	inline const std::string thread_id_field(uint64_t thread_id)
 	{
 		std::stringstream stream;
 		stream << (void*)thread_id;
@@ -791,7 +789,7 @@ namespace pretty_output
 	}
 
 
-	inline std::size_t output_width_left()
+	inline size_t output_width_left()
 	{
 		return WIDTH - (FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH + DELIMITER_WIDTH + indentation().length());
 	}
@@ -899,7 +897,7 @@ namespace pretty_output
 
 			va_list arguments_copy;
 			va_copy(arguments_copy, arguments);
-			std::size_t size = printf_string_length(format, arguments_copy) + 1;
+			size_t size = printf_string_length(format, arguments_copy) + 1;
 
 			char *buffer = (char*)std::malloc(size);
 			printf_to_string(buffer, size, format, arguments);
@@ -1289,7 +1287,7 @@ namespace pretty_output
 	};
 
 
-	inline const char *const byte_to_binary(std::uint8_t byte)
+	inline const char *const byte_to_binary(uint8_t byte)
 	{
 		static const char *const BINARY_VALUES[] = {
 			"00000000", "00000001", "00000010", "00000011", "00000100", "00000101", "00000110", "00000111",
@@ -1330,7 +1328,7 @@ namespace pretty_output
 	}
 
 
-	inline const char *const byte_to_octal(std::uint8_t byte)
+	inline const char *const byte_to_octal(uint8_t byte)
 	{
 		static const char *const OCTAL_VALUES[] = {
 			"0000", "0001", "0002", "0003", "0004", "0005", "0006", "0007",
@@ -1371,7 +1369,7 @@ namespace pretty_output
 	}
 
 
-	inline const char *const byte_to_hexadecimal(std::uint8_t byte)
+	inline const char *const byte_to_hexadecimal(uint8_t byte)
 	{
 		static const char *const HEXADECIMAL_VALUES[] = {
 			"00", "01", "02", "03", "04", "05", "06", "07",
@@ -1415,7 +1413,7 @@ namespace pretty_output
 	template <typename T>
 	struct print_traits
 	{
-		typedef std::uint8_t unit_t;
+		typedef uint8_t unit_t;
 		static const base_t BASE = BASE_HEX;
 	};
 
@@ -1428,39 +1426,37 @@ namespace pretty_output
 				}
 
 
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int8_t, std::int8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int16_t, std::int16_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int32_t, std::int32_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::int64_t, std::int64_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint8_t, std::uint8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint16_t, std::uint16_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint32_t, std::uint32_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(std::uint64_t, std::uint64_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int8_t, int8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int16_t, int16_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int32_t, int32_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int64_t, int64_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint8_t, uint8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint16_t, uint16_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint32_t, uint32_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint64_t, uint64_t, BASE_UDEC);
 
 
 	template <typename T>
 	struct field_traits
 	{
-		static const std::size_t SIGNED_WIDTH = 0;
-		static const std::size_t UNSIGNED_WIDTH = 0;
+		static const size_t WIDTH = 0;
 	};
 
 #define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
 			template <> \
 			struct field_traits<type> \
 			{ \
-				static const std::size_t SIGNED_WIDTH = 1 + width; \
-				static const std::size_t UNSIGNED_WIDTH = width; \
+				static const size_t WIDTH = width; \
 			}
 
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int8_t, 4);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int16_t, 6);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int32_t, 11);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::int64_t, 21);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint8_t, 3);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint16_t, 5);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint32_t, 10);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(std::uint64_t, 20);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int8_t, 4);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int16_t, 6);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int32_t, 11);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int64_t, 21);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint8_t, 3);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint16_t, 5);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint32_t, 10);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint64_t, 20);
 
 
 	template <typename T>
@@ -1486,25 +1482,25 @@ namespace pretty_output
 
 #define PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(source_type, promotion) \
 		template <> \
-		struct to_signed<source_type> \
+		struct to_unsigned<source_type> \
 		{ \
 			typedef promotion type; \
 		}
 
 
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint8_t, std::int8_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint16_t, std::int16_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint32_t, std::int32_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(std::uint64_t, std::int64_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint8_t, int8_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint16_t, int16_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint32_t, int32_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint64_t, int64_t);
 
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int8_t, std::uint8_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int16_t, std::uint16_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int32_t, std::uint32_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(std::int64_t, std::uint64_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int8_t, uint8_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int16_t, uint16_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int32_t, uint32_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int64_t, uint64_t);
 
 
 	template <typename T>
-	inline std::size_t field_width(base_t base)
+	inline size_t field_width(base_t base)
 	{
 		switch (base)
 		{
@@ -1512,10 +1508,8 @@ namespace pretty_output
 				return sizeof(typename print_traits<T>::unit_t) * 8;
 
 			case BASE_SDEC:
-				return field_traits<T>::SIGNED_WIDTH;
-
 			case BASE_UDEC:
-				return field_traits<T>::UNSIGNED_WIDTH;
+				return field_traits<T>::WIDTH;
 
 			case BASE_HEX:
 				return sizeof(typename print_traits<T>::unit_t) * 2;
@@ -1529,9 +1523,9 @@ namespace pretty_output
 		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)bytes;
-		std::size_t size = sizeof(unit_t);
-		for (std::size_t index = 0; index < size; ++index)
+		uint8_t *data = (uint8_t*)bytes;
+		size_t size = sizeof(unit_t);
+		for (size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_binary(data[index]);
 		}
@@ -1570,9 +1564,9 @@ namespace pretty_output
 		typedef typename print_traits<T>::unit_t unit_t;
 
 		std::stringstream stream;
-		std::uint8_t *data = (std::uint8_t*)bytes;
-		std::size_t size = sizeof(unit_t);
-		for (std::size_t index = 0; index < size; ++index)
+		uint8_t *data = (uint8_t*)bytes;
+		size_t size = sizeof(unit_t);
+		for (size_t index = 0; index < size; ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
 		}
@@ -1603,8 +1597,8 @@ namespace pretty_output
 
 	inline byteorder_t current_byte_order()
 	{
-		static const std::uint16_t VALUE = 0x0001;
-		static const std::uint8_t FIRST_BYTE = *(std::uint8_t*)&VALUE;
+		static const uint16_t VALUE = 0x0001;
+		static const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
 
 		if (FIRST_BYTE == 0x01)
 		{
@@ -1617,12 +1611,12 @@ namespace pretty_output
 	}
 
 
-	inline void order_bytes(void *ordered_bytes, const void *unordered_bytes, std::size_t size, byteorder_t byte_order)
+	inline void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
 	{
 		if (current_byte_order() != byte_order)
 		{
-			std::uint8_t *ordered_bytes_iterator = (std::uint8_t*)ordered_bytes;
-			const std::uint8_t *unordered_bytes_iterator = (const std::uint8_t*)unordered_bytes + size - 1;
+			uint8_t *ordered_bytes_iterator = (uint8_t*)ordered_bytes;
+			const uint8_t *unordered_bytes_iterator = (const uint8_t*)unordered_bytes + size - 1;
 			for (;;)
 			{
 				if (unordered_bytes_iterator < unordered_bytes)
@@ -1643,7 +1637,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, std::size_t size = sizeof(T), base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -1656,10 +1650,10 @@ namespace pretty_output
 
 		std::stringstream string_stream;
 
-		std::size_t column_width = field_width<T>(base);
+		size_t column_width = field_width<T>(base);
 
 		const unit_t *iterator = (const unit_t*)pointer;
-		std::size_t length = size / sizeof(unit_t);
+		size_t length = size / sizeof(unit_t);
 
 		stream << make_value((void*)iterator) << ":";
 		for (std::size_t index = 0; index < length; ++index)
@@ -1695,7 +1689,7 @@ namespace pretty_output
 	template <typename T>
 	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
 	{
-		print_dump(filename_line, name, (std::uint8_t*)&variable, sizeof(T), base, byte_order);
+		print_dump(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
 	}
 
 
@@ -2000,7 +1994,7 @@ namespace pretty_output
 		}
 
 
-		std::size_t iteration_number() const
+		size_t iteration_number() const
 		{
 			return _iteration_number;
 		}
@@ -2012,7 +2006,7 @@ namespace pretty_output
 		}
 
 	private:
-		std::size_t _iteration_number;
+		size_t _iteration_number;
 	};
 
 

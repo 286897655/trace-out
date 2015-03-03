@@ -14,7 +14,7 @@ Features:
 Usage
 =====
 
-`$w(epression)` - print value of `expression` and returns that value, so can be used inside other expression.
+`$w(expression)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
 
 Code:
