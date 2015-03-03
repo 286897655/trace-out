@@ -1178,17 +1178,17 @@ namespace pretty_output
 
 
 	template <std::size_t I, typename ...T>
-	typename std::enable_if<I == sizeof...(T), out_stream&>::type tuple_to_string(out_stream &stream, const std::tuple<T...> &)
+	typename std::enable_if<I == sizeof...(T), out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &)
 	{
 		return stream << ")";
 	}
 
 
 	template <std::size_t I, typename ...T>
-	typename std::enable_if<I < sizeof...(T), out_stream&>::type tuple_to_string(out_stream &stream, const std::tuple<T...> &tuple)
+	typename std::enable_if<I < sizeof...(T), out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
 	{
 		stream << ", " << make_value(std::get<I>(tuple));
-		return tuple_to_string<I + 1>(stream, tuple);
+		return print_tuple<I + 1>(stream, tuple);
 	}
 
 
@@ -1196,7 +1196,7 @@ namespace pretty_output
 	out_stream &operator <<(out_stream &stream, value_t<std::tuple<T...> > value)
 	{
 		stream << "(" << make_value(std::get<0>(value.data));
-		return tuple_to_string<1>(stream, value.data);
+		return print_tuple<1>(stream, value.data);
 	}
 
 
