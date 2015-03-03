@@ -1122,9 +1122,14 @@ namespace pretty_output
 	template <typename T>
 	out_stream &operator <<(out_stream &stream, value_t<const T*> value)
 	{
-		stream << make_value((const void*)value.data) << " -> ";
-		stream.flush();
-		return stream << make_value(*(value.data));
+		stream << make_value((const void*)value.data) << " ";
+		if (value.data != NULL)
+		{
+			stream.flush();
+			stream << "-> " << make_value(*(value.data));
+		}
+
+		return stream;
 	}
 
 
