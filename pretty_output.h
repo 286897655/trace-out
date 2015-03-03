@@ -312,7 +312,7 @@ $p(format, ...) - like printf. The name is an abbreviation of 'printf'.
 	|15|
 
 	>
-	>	main.cpp:14   |  456 789.000000 hellomoto!
+	>	main.cpp:14   |  // 456 789.000000 hellomoto!
 	>
 
 
@@ -531,7 +531,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $p(format, ...) \
-				pretty_output::print(PRETTY_OUTPUT_FILENAME_LINE, format, ##__VA_ARGS__);
+				pretty_output::out_stream(PRETTY_OUTPUT_FILENAME_LINE).printf(format, ##__VA_ARGS__);
 
 
 	#define $t(name) \
@@ -891,23 +891,6 @@ namespace pretty_output
 		}
 
 
-		out_stream(const std::string &filename_line, const char *format, va_list arguments)
-		{
-			lock_output();
-
-			va_list arguments_copy;
-			va_copy(arguments_copy, arguments);
-			size_t size = printf_string_length(format, arguments_copy) + 1;
-
-			char *buffer = (char*)std::malloc(size);
-			printf_to_string(buffer, size, format, arguments);
-
-			*this << filename_line.c_str() << DELIMITER << indentation().c_str() << buffer;
-
-			std::free(buffer);
-		}
-
-
 		out_stream()
 		{
 			lock_output();
@@ -946,6 +929,26 @@ namespace pretty_output
 			stream << "";
 
 			return *this << "\n" << stream.str().c_str() << DELIMITER << indentation().c_str();
+		}
+
+
+		void printf(const char *format, ...)
+		{
+			va_list arguments;
+			va_list arguments_copy;
+
+			va_start(arguments, format);
+			va_start(arguments_copy, format);
+
+			size_t size = printf_string_length(format, arguments_copy) + 1;
+
+			char *buffer = (char*)std::malloc(size);
+			printf_to_string(buffer, size, format, arguments);
+			*this << "// " << buffer;
+
+			va_end(arguments);
+			va_end(arguments_copy);
+			std::free(buffer);
 		}
 
 
@@ -2079,18 +2082,6 @@ namespace pretty_output
 			indentation_remove();
 		}
 	};
-
-
-	// print
-
-	inline void print(const std::string &filename_line, const char *format, ...)
-	{
-		va_list arguments;
-
-		va_start(arguments, format);
-		out_stream(filename_line, format, arguments);
-		va_end(arguments);
-	}
 
 
 	// helper stuff

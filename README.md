@@ -279,7 +279,7 @@ $p("%i %f %s", 456, 789.0f, "hellomoto!")
 
 Output:
 ```
-main.cpp:14   |  456 789.000000 hellomoto!
+main.cpp:14   |  // 456 789.000000 hellomoto!
 ```
 ---
 
