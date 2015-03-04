@@ -1113,7 +1113,7 @@ namespace pretty_output
 		}
 
 		std::stringstream string_stream;
-		std::size_t numeric_value = (std::uintptr_t)value.data;
+		std::size_t numeric_value = (uintptr_t)value.data;
 		string_stream << std::hex << std::showbase << numeric_value;
 
 		return stream << string_stream.str().c_str();
