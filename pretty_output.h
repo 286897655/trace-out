@@ -1514,7 +1514,7 @@ namespace pretty_output
 			case BASE_UDEC:
 				return field_traits<T>::WIDTH;
 
-			case BASE_HEX:
+			default: // BASE_HEX
 				return sizeof(typename print_traits<T>::unit_t) * 2;
 		}
 	}
@@ -1592,7 +1592,7 @@ namespace pretty_output
 			case BASE_UDEC:
 				return bytes_to_unsigned_decimal_string<T>;
 
-			case BASE_HEX:
+			default: // BASE_HEX
 				return bytes_to_hexadecimal_string<T>;
 		}
 	}
