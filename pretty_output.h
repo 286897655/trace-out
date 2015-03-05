@@ -1276,7 +1276,7 @@ namespace pretty_output
 //		BASE_OCT = 8,
 		BASE_SDEC = -10,
 		BASE_UDEC = 10,
-		BASE_HEX = 16,
+		BASE_HEX = 16
 //		BASE_FLT = 17,
 //		BASE_DBL = 18,
 //		BASE_LDBL = 19
