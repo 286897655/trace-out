@@ -527,7 +527,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $_ \
-				pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
+				const pretty_output::block_t &PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block();
 
 
 	#define $p(format, ...) \
@@ -708,7 +708,7 @@ namespace pretty_output
 	;
 
 
-	// definitions
+	// declarations
 
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
@@ -2098,19 +2098,17 @@ namespace pretty_output
 
 	// block
 
-	struct block
+	struct block_t
 	{
-		block()
-		{
-			indentation_add();
-		}
-
-
-		~block()
-		{
-			indentation_remove();
-		}
+		block_t();
+		~block_t();
 	};
+
+
+	inline const block_t block()
+	{
+		return block_t();
+	}
 
 
 	// helper stuff
@@ -2129,6 +2127,22 @@ namespace pretty_output
 	void mutex_delete(mutex_t *mutex);
 	void mutex_lock(mutex_t *mutex);
 	void mutex_unlock(mutex_t *mutex);
+
+
+	// definitions
+
+	// block
+
+	inline block_t::block_t()
+	{
+		indentation_add();
+	}
+
+
+	inline block_t::~block_t()
+	{
+		indentation_remove();
+	}
 
 }
 
