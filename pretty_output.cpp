@@ -85,7 +85,7 @@ namespace pretty_output
 	endl_t endl;
 
 	tls<std::string> _indentation;
-	uint64_t _current_thread_id;
+	std::uint64_t _current_thread_id;
 	tls<std::string> _thread_name;
 	mutex _output_mutex;
 
