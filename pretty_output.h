@@ -514,9 +514,9 @@ The name is an abbreviation of 'thread'.
 
 	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
 		#define pretty_output_for(block, ...) \
-					if (pretty_output::for_block block = pretty_output::for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+					if (pretty_output::for_block_t block = pretty_output::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 						for (__VA_ARGS__) \
-							if (pretty_output::print_for_block(PRETTY_OUTPUT_FILENAME_LINE, block), block.next_iteration(), false) {} else
+							if (block.iteration(), false) {} else
 
 	#define $for(...) \
 				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
@@ -2004,49 +2004,23 @@ namespace pretty_output
 
 	// for block
 
-	struct for_block
+	struct for_block_t
 	{
-		for_block(const std::string &filename_line, const char *expression)
-			: _iteration_number(0)
-		{
-			out_stream(filename_line) << "for (" << expression << ")";
-			indentation_add();
-		}
-
-
-		~for_block()
-		{
-			indentation_remove();
-		}
-
-
-		operator bool() const
-		{
-			return false;
-		}
-
-
-		size_t iteration_number() const
-		{
-			return _iteration_number;
-		}
-
-
-		void next_iteration()
-		{
-			++_iteration_number;
-		}
+		inline for_block_t(const std::string &filename_line, const char *expression);
+		inline ~for_block_t();
+		inline operator bool() const;
+		inline void iteration();
 
 	private:
+		std::string _filename_line;
+		std::string _expression;
 		size_t _iteration_number;
 	};
 
 
-	inline void print_for_block(const std::string &filename_line, const for_block &block)
+	inline const for_block_t for_block(const std::string &filename_line, const char *expression)
 	{
-		indentation_remove();
-		out_stream(filename_line) << "[iteration #" << make_value(block.iteration_number()) << "]";
-		indentation_add();
+		return for_block_t(filename_line, expression);
 	}
 
 
@@ -2177,5 +2151,36 @@ namespace pretty_output
 		return _condition;
 	}
 
+
+	// for
+
+	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
+		: _filename_line(filename_line), _expression(expression), _iteration_number(0)
+	{
+		out_stream(_filename_line) << "for (" << _expression.c_str() << ")";
+		indentation_add();
+	}
+
+
+	for_block_t::~for_block_t()
+	{
+		indentation_remove();
+	}
+
+
+	for_block_t::operator bool() const
+	{
+		return false;
+	}
+
+
+	void for_block_t::iteration()
+	{
+		indentation_remove();
+		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
+		indentation_add();
+
+		++_iteration_number;
+	}
 }
 
