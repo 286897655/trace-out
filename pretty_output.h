@@ -509,7 +509,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $if(...) \
-				if (pretty_output::print_if_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				if (pretty_output::print_if_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
@@ -1958,48 +1958,43 @@ namespace pretty_output
 
 	// if block
 
-	struct print_if_block
+	struct print_if_block_t
 	{
 		template <typename T>
-		print_if_block(const std::string &filename_line, const char *expression, const T &value)
-			: _condition(value)
-		{
-			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-			indentation_add();
-		}
-
+		inline print_if_block_t(const std::string &filename_line, const char *expression, const T &value);
 
 		template <typename T>
-		print_if_block(const std::string &filename_line, const char *expression, T &value)
-			: _condition(value)
-		{
-			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-			indentation_add();
-		}
+		inline print_if_block_t(const std::string &filename_line, const char *expression, T &value);
 
+		inline print_if_block_t(const std::string &filename_line, const char *expression, bool value);
 
-		print_if_block(const std::string &filename_line, const char *expression, bool value)
-			: _condition(value)
-		{
-			out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
-			indentation_add();
-		}
+		inline ~print_if_block_t();
 
-
-		~print_if_block()
-		{
-			indentation_remove();
-		}
-
-
-		operator bool() const
-		{
-			return _condition;
-		}
+		inline operator bool() const;
 
 	private:
 		bool _condition;
 	};
+
+
+	template <typename T>
+	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, const T &value)
+	{
+		return print_if_block_t(filename_line, expression, value);
+	}
+
+
+	template <typename T>
+	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, T &value)
+	{
+		return print_if_block_t(filename_line, expression, value);
+	}
+
+
+	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, bool value)
+	{
+		return print_if_block_t(filename_line, expression, value);
+	}
 
 
 	// for block
@@ -2098,17 +2093,75 @@ namespace pretty_output
 
 	// definitions
 
-	// block
+	// if
 
-	block_t::block_t()
+	template <typename T>
+	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, const T &value)
+		: _condition(value)
 	{
+		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
 		indentation_add();
 	}
 
 
-	block_t::~block_t()
+	template <typename T>
+	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, T &value)
+		: _condition(value)
+	{
+		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+		indentation_add();
+	}
+
+
+	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, bool value)
+		: _condition(value)
+	{
+		out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
+		indentation_add();
+	}
+
+
+	print_if_block_t::~print_if_block_t()
 	{
 		indentation_remove();
+	}
+
+
+	print_if_block_t::operator bool() const
+	{
+		return _condition;
+	}
+
+
+	// for
+
+	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
+		: _filename_line(filename_line), _expression(expression), _iteration_number(0)
+	{
+		out_stream(_filename_line) << "for (" << _expression.c_str() << ")";
+		indentation_add();
+	}
+
+
+	for_block_t::~for_block_t()
+	{
+		indentation_remove();
+	}
+
+
+	for_block_t::operator bool() const
+	{
+		return false;
+	}
+
+
+	void for_block_t::iteration()
+	{
+		indentation_remove();
+		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
+		indentation_add();
+
+		++_iteration_number;
 	}
 
 
@@ -2152,35 +2205,18 @@ namespace pretty_output
 	}
 
 
-	// for
+	// block
 
-	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
-		: _filename_line(filename_line), _expression(expression), _iteration_number(0)
+	block_t::block_t()
 	{
-		out_stream(_filename_line) << "for (" << _expression.c_str() << ")";
 		indentation_add();
 	}
 
 
-	for_block_t::~for_block_t()
+	block_t::~block_t()
 	{
 		indentation_remove();
 	}
 
-
-	for_block_t::operator bool() const
-	{
-		return false;
-	}
-
-
-	void for_block_t::iteration()
-	{
-		indentation_remove();
-		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
-		indentation_add();
-
-		++_iteration_number;
-	}
 }
 
