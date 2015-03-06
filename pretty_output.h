@@ -523,11 +523,11 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $while(...) \
-				while (const pretty_output::print_while_block_t &PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				while (pretty_output::print_while_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	#define $_ \
-				const pretty_output::block_t &PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block();
+				pretty_output::block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block();
 
 
 	#define $p(format, ...) \
@@ -2018,7 +2018,7 @@ namespace pretty_output
 	};
 
 
-	inline const for_block_t for_block(const std::string &filename_line, const char *expression)
+	inline for_block_t for_block(const std::string &filename_line, const char *expression)
 	{
 		return for_block_t(filename_line, expression);
 	}
@@ -2046,18 +2046,18 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const print_while_block_t print_while_block(const std::string &filename_line, const char *expression, const T &value)
+	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, const T &value)
 	{
 		return print_while_block_t(filename_line, expression, value);
 	}
 
 	template <typename T>
-	inline const print_while_block_t print_while_block(const std::string &filename_line, const char *expression, T &value)
+	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, T &value)
 	{
 		return print_while_block_t(filename_line, expression, value);
 	}
 
-	inline const print_while_block_t print_while_block(const std::string &filename_line, const char *expression, bool value)
+	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, bool value)
 	{
 		return print_while_block_t(filename_line, expression, value);
 	}
@@ -2067,12 +2067,12 @@ namespace pretty_output
 
 	struct block_t
 	{
-		block_t();
-		~block_t();
+		inline block_t();
+		inline ~block_t();
 	};
 
 
-	inline const block_t block()
+	inline block_t block()
 	{
 		return block_t();
 	}
@@ -2100,13 +2100,13 @@ namespace pretty_output
 
 	// block
 
-	inline block_t::block_t()
+	block_t::block_t()
 	{
 		indentation_add();
 	}
 
 
-	inline block_t::~block_t()
+	block_t::~block_t()
 	{
 		indentation_remove();
 	}
@@ -2115,7 +2115,7 @@ namespace pretty_output
 	// while
 
 	template <typename T>
-	inline print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, const T &value)
+	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, const T &value)
 		: _condition(value)
 	{
 		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
@@ -2124,7 +2124,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, T &value)
+	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, T &value)
 		: _condition(value)
 	{
 		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
@@ -2132,7 +2132,7 @@ namespace pretty_output
 	}
 
 
-	inline print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, bool value)
+	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, bool value)
 		: _condition(value)
 	{
 		out_stream(filename_line) << "while (" << expression << ") => " << make_value(value);
@@ -2140,13 +2140,13 @@ namespace pretty_output
 	}
 
 
-	inline print_while_block_t::~print_while_block_t()
+	print_while_block_t::~print_while_block_t()
 	{
 		indentation_remove();
 	}
 
 
-	inline print_while_block_t::operator bool() const
+	print_while_block_t::operator bool() const
 	{
 		return _condition;
 	}
