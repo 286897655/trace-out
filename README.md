@@ -164,7 +164,7 @@ $m(obj, some::func)(i, 789, "hellomoto!");
 
 Output:
 ```
-main.cpp:15   |  some::func(456, 789, hellomoto!)
+main.cpp:15   |  obj.func(456, 789, hellomoto!)
 ```
 ---
 
