@@ -1936,24 +1936,22 @@ namespace pretty_output
 
 	// return
 
-	struct return_printer
+	struct return_printer_t
 	{
-		return_printer(const std::string &filename_line)
-			: _filename_line(filename_line)
-		{
-		}
-
+		inline return_printer_t(const std::string &filename_line);
 
 		template <typename T>
-		const T &operator ,(const T &value)
-		{
-			out_stream(_filename_line) << "return " << make_value(value);
-			return value;
-		}
+		inline const T &operator ,(const T &value);
 
 	private:
 		std::string _filename_line;
 	};
+
+
+	inline return_printer_t return_printer(const std::string &filename_line)
+	{
+		return return_printer_t(filename_line);
+	}
 
 
 	// if block
@@ -2092,6 +2090,21 @@ namespace pretty_output
 
 
 	// definitions
+
+	// return
+
+	return_printer_t::return_printer_t(const std::string &filename_line)
+		: _filename_line(filename_line)
+	{
+	}
+
+
+	template <typename T>
+	const T &return_printer_t::operator ,(const T &value)
+	{
+		out_stream(_filename_line) << "return " << make_value(value);
+		return value;
+	}
 
 	// if
 
