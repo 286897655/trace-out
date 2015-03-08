@@ -509,25 +509,25 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $if(...) \
-				if (pretty_output::print_if_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				if (pretty_output::print_if_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
 		#define pretty_output_for(block, ...) \
-					if (pretty_output::for_block_t block = pretty_output::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+					if (pretty_output::for_block block = pretty_output::for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 						for (__VA_ARGS__) \
-							if (block.iteration(), false) {} else
+							if (pretty_output::print_for_block(PRETTY_OUTPUT_FILENAME_LINE, block), block.next_iteration(), false) {} else
 
 	#define $for(...) \
 				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
 
 
 	#define $while(...) \
-				while (pretty_output::print_while_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				while (pretty_output::print_while_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	#define $_ \
-				pretty_output::block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block();
+				pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
 
 
 	#define $p(format, ...) \
@@ -708,7 +708,7 @@ namespace pretty_output
 	;
 
 
-	// declarations
+	// definitions
 
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
@@ -1629,10 +1629,10 @@ namespace pretty_output
 
 	inline byteorder_t current_byte_order()
 	{
-		static const uint16_t VALUE = 0x0001;
-		static const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
+		const uint16_t VALUE = (uint16_t)0x0001;
+		const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
 
-		if (FIRST_BYTE == 0x01)
+		if (FIRST_BYTE == (uint8_t)0x01)
 		{
 			return BYTE_ORDER_BIG_ENDIAN;
 		}
@@ -1936,139 +1936,181 @@ namespace pretty_output
 
 	// return
 
-	struct return_printer_t
+	struct return_printer
 	{
-		inline return_printer_t(const std::string &filename_line);
+		return_printer(const std::string &filename_line)
+			: _filename_line(filename_line)
+		{
+		}
+
 
 		template <typename T>
-		inline const T &operator ,(const T &value);
+		const T &operator ,(const T &value)
+		{
+			out_stream(_filename_line) << "return " << make_value(value);
+			return value;
+		}
 
 	private:
 		std::string _filename_line;
 	};
 
 
-	inline return_printer_t return_printer(const std::string &filename_line)
-	{
-		return return_printer_t(filename_line);
-	}
-
-
 	// if block
 
-	struct print_if_block_t
+	struct print_if_block
 	{
 		template <typename T>
-		inline print_if_block_t(const std::string &filename_line, const char *expression, const T &value);
+		print_if_block(const std::string &filename_line, const char *expression, const T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
+
 
 		template <typename T>
-		inline print_if_block_t(const std::string &filename_line, const char *expression, T &value);
+		print_if_block(const std::string &filename_line, const char *expression, T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
 
-		inline print_if_block_t(const std::string &filename_line, const char *expression, bool value);
 
-		inline ~print_if_block_t();
+		print_if_block(const std::string &filename_line, const char *expression, bool value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
+			indentation_add();
+		}
 
-		inline operator bool() const;
+
+		~print_if_block()
+		{
+			indentation_remove();
+		}
+
+
+		operator bool() const
+		{
+			return _condition;
+		}
 
 	private:
 		bool _condition;
 	};
 
 
-	template <typename T>
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, const T &value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
-	template <typename T>
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, T &value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, bool value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
 	// for block
 
-	struct for_block_t
+	struct for_block
 	{
-		inline for_block_t(const std::string &filename_line, const char *expression);
-		inline ~for_block_t();
-		inline operator bool() const;
-		inline void iteration();
+		for_block(const std::string &filename_line, const char *expression)
+			: _iteration_number(0)
+		{
+			out_stream(filename_line) << "for (" << expression << ")";
+			indentation_add();
+		}
+
+
+		~for_block()
+		{
+			indentation_remove();
+		}
+
+
+		operator bool() const
+		{
+			return false;
+		}
+
+
+		size_t iteration_number() const
+		{
+			return _iteration_number;
+		}
+
+
+		void next_iteration()
+		{
+			++_iteration_number;
+		}
 
 	private:
-		std::string _filename_line;
-		std::string _expression;
 		size_t _iteration_number;
 	};
 
 
-	inline for_block_t for_block(const std::string &filename_line, const char *expression)
+	inline void print_for_block(const std::string &filename_line, const for_block &block)
 	{
-		return for_block_t(filename_line, expression);
+		indentation_remove();
+		out_stream(filename_line) << "[iteration #" << make_value(block.iteration_number()) << "]";
+		indentation_add();
 	}
 
 
 	// while block
 
-	struct print_while_block_t
+	struct print_while_block
 	{
 		template <typename T>
-		inline print_while_block_t(const std::string &filename_line, const char *expression, const T &value);
+		print_while_block(const std::string &filename_line, const char *expression, const T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
+
 
 		template <typename T>
-		inline print_while_block_t(const std::string &filename_line, const char *expression, T &value);
+		print_while_block(const std::string &filename_line, const char *expression, T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
 
-		inline print_while_block_t(const std::string &filename_line, const char *expression, bool value);
 
-		inline ~print_while_block_t();
+		print_while_block(const std::string &filename_line, const char *expression, bool value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value(value);
+			indentation_add();
+		}
 
-		inline operator bool() const;
+
+		~print_while_block()
+		{
+			indentation_remove();
+		}
+
+
+		operator bool() const
+		{
+			return _condition;
+		}
 
 	private:
 		bool _condition;
 	};
 
 
-	template <typename T>
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, const T &value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-	template <typename T>
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, T &value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, bool value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-
 	// block
 
-	struct block_t
+	struct block
 	{
-		inline block_t();
-		inline ~block_t();
+		block()
+		{
+			indentation_add();
+		}
+
+
+		~block()
+		{
+			indentation_remove();
+		}
 	};
-
-
-	inline block_t block()
-	{
-		return block_t();
-	}
 
 
 	// helper stuff
@@ -2087,149 +2129,6 @@ namespace pretty_output
 	void mutex_delete(mutex_t *mutex);
 	void mutex_lock(mutex_t *mutex);
 	void mutex_unlock(mutex_t *mutex);
-
-
-	// definitions
-
-	// return
-
-	return_printer_t::return_printer_t(const std::string &filename_line)
-		: _filename_line(filename_line)
-	{
-	}
-
-
-	template <typename T>
-	const T &return_printer_t::operator ,(const T &value)
-	{
-		out_stream(_filename_line) << "return " << make_value(value);
-		return value;
-	}
-
-	// if
-
-	template <typename T>
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, const T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	template <typename T>
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, bool value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
-		indentation_add();
-	}
-
-
-	print_if_block_t::~print_if_block_t()
-	{
-		indentation_remove();
-	}
-
-
-	print_if_block_t::operator bool() const
-	{
-		return _condition;
-	}
-
-
-	// for
-
-	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
-		: _filename_line(filename_line), _expression(expression), _iteration_number(0)
-	{
-		out_stream(_filename_line) << "for (" << _expression.c_str() << ")";
-		indentation_add();
-	}
-
-
-	for_block_t::~for_block_t()
-	{
-		indentation_remove();
-	}
-
-
-	for_block_t::operator bool() const
-	{
-		return false;
-	}
-
-
-	void for_block_t::iteration()
-	{
-		indentation_remove();
-		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
-		indentation_add();
-
-		++_iteration_number;
-	}
-
-
-	// while
-
-	template <typename T>
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, const T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	template <typename T>
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, bool value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value(value);
-		indentation_add();
-	}
-
-
-	print_while_block_t::~print_while_block_t()
-	{
-		indentation_remove();
-	}
-
-
-	print_while_block_t::operator bool() const
-	{
-		return _condition;
-	}
-
-
-	// block
-
-	block_t::block_t()
-	{
-		indentation_add();
-	}
-
-
-	block_t::~block_t()
-	{
-		indentation_remove();
-	}
 
 }
 
