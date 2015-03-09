@@ -489,7 +489,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $f \
-				pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
+				pretty_output::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 	#if __cplusplus >= 201103L
@@ -1275,26 +1275,22 @@ namespace pretty_output
 
 	// function
 
-	struct function_printer
+	struct function_printer_t
 	{
-		function_printer(const std::string &filename_line, const char *function_signature)
-			: _filename_line(filename_line), _function_signature(function_signature)
-		{
-			out_stream(_filename_line) << "[call] " << _function_signature.c_str();
-			indentation_add();
-		}
+		inline function_printer_t(const std::string &filename_line, const char *function_signature);
 
-
-		~function_printer()
-		{
-			indentation_remove();
-			out_stream(_filename_line) << "[ret]  " << _function_signature.c_str();
-		}
+		inline ~function_printer_t();
 
 	private:
 		std::string _filename_line;
 		std::string _function_signature;
 	};
+
+
+	inline function_printer_t function_printer(const std::string &filename_line, const char *function_signature)
+	{
+		return function_printer_t(filename_line, function_signature);
+	}
 
 
 	// dump
@@ -1816,6 +1812,21 @@ namespace pretty_output
 
 
 	// definitions
+
+	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
+		: _filename_line(filename_line), _function_signature(function_signature)
+	{
+		out_stream(_filename_line) << "[call] " << _function_signature.c_str();
+		indentation_add();
+	}
+
+
+	function_printer_t::~function_printer_t()
+	{
+		indentation_remove();
+		out_stream(_filename_line) << "[ret]  " << _function_signature.c_str();
+	}
+
 
 	// dump
 
