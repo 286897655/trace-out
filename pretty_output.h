@@ -192,7 +192,7 @@ The name is an abbreviation of 'member-function'.
 	|16|
 
 	>
-	>	main.cpp:15   |  obj.func(456, 789, hellomoto!)
+	>	main.cpp:15   |  some::func(456, 789, hellomoto!)
 	>
 
 
@@ -489,7 +489,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $f \
-				pretty_output::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
+				pretty_output::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f)(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 	#if __cplusplus >= 201103L
@@ -499,7 +499,7 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $m(object, function_name) \
-				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
+				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // __cplusplus >= 201103L
 
@@ -509,25 +509,25 @@ The name is an abbreviation of 'thread'.
 
 
 	#define $if(...) \
-				if (pretty_output::print_if_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				if (pretty_output::print_if_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
 		#define pretty_output_for(block, ...) \
-					if (pretty_output::for_block_t block = pretty_output::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+					if (pretty_output::for_block block = pretty_output::for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 						for (__VA_ARGS__) \
-							if (block.iteration(), false) {} else
+							if (pretty_output::print_for_block(PRETTY_OUTPUT_FILENAME_LINE, block), block.next_iteration(), false) {} else
 
 	#define $for(...) \
 				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
 
 
 	#define $while(...) \
-				while (pretty_output::print_while_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
+				while (pretty_output::print_while_block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
 	#define $_ \
-				pretty_output::block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block();
+				pretty_output::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block);
 
 
 	#define $p(format, ...) \
@@ -708,7 +708,7 @@ namespace pretty_output
 	;
 
 
-	// declarations
+	// definitions
 
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';
@@ -1005,9 +1005,13 @@ namespace pretty_output
 
 	inline out_stream &operator <<(out_stream &stream, value_t<unsigned long> value);
 
+#if __cplusplus >= 201103L
+
 	inline out_stream &operator <<(out_stream &stream, value_t<long long> value);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<unsigned long long> value);
+
+#endif // __cpluspluc >= 201103L
 
 	inline out_stream &operator <<(out_stream &stream, value_t<float> value);
 
@@ -1104,6 +1108,8 @@ namespace pretty_output
 	}
 
 
+#if __cplusplus >= 201103L
+
 	out_stream &operator <<(out_stream &stream, value_t<long long> value)
 	{
 		return stream << fundamental_to_string(value.data).c_str();
@@ -1114,6 +1120,8 @@ namespace pretty_output
 	{
 		return stream << fundamental_to_string(value.data).c_str();
 	}
+
+#endif // __cplusplus >= 201103L
 
 
 	out_stream &operator <<(out_stream &stream, value_t<float> value)
@@ -1275,22 +1283,26 @@ namespace pretty_output
 
 	// function
 
-	struct function_printer_t
+	struct function_printer
 	{
-		inline function_printer_t(const std::string &filename_line, const char *function_signature);
+		function_printer(const std::string &filename_line, const char *function_signature)
+			: _filename_line(filename_line), _function_signature(function_signature)
+		{
+			out_stream(_filename_line) << "[call] " << _function_signature.c_str();
+			indentation_add();
+		}
 
-		inline ~function_printer_t();
+
+		~function_printer()
+		{
+			indentation_remove();
+			out_stream(_filename_line) << "[ret]  " << _function_signature.c_str();
+		}
 
 	private:
 		std::string _filename_line;
 		std::string _function_signature;
 	};
-
-
-	inline function_printer_t function_printer(const std::string &filename_line, const char *function_signature)
-	{
-		return function_printer_t(filename_line, function_signature);
-	}
 
 
 	// dump
@@ -1314,521 +1326,6 @@ namespace pretty_output
 		BYTE_ORDER_BIG_ENDIAN
 	};
 
-
-	template <typename T>
-	struct print_traits
-	{
-		typedef uint8_t unit_t;
-		static const base_t BASE = BASE_HEX;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type, unit_type, base) \
-				template <> \
-				struct print_traits<type> \
-				{ \
-					typedef unit_type unit_t; \
-					static const base_t BASE = base; \
-				}
-
-
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int8_t, int8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int16_t, int16_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int32_t, int32_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int64_t, int64_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint8_t, uint8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint16_t, uint16_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint32_t, uint32_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint64_t, uint64_t, BASE_UDEC);
-
-
-	template <typename T>
-	struct field_traits
-	{
-		static const size_t WIDTH = 0;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
-			template <> \
-			struct field_traits<type> \
-			{ \
-				static const size_t WIDTH = width; \
-			}
-
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int8_t, 4);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int16_t, 6);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int32_t, 11);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int64_t, 21);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint8_t, 3);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint16_t, 5);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint32_t, 10);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint64_t, 20);
-
-
-	template <typename T>
-	struct to_signed
-	{
-		typedef T type;
-	};
-
-#define PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(source_type, promotion) \
-		template <> \
-		struct to_signed<source_type> \
-		{ \
-			typedef promotion type; \
-		}
-
-
-	template <typename T>
-	struct to_unsigned
-	{
-		typedef T type;
-	};
-
-
-#define PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(source_type, promotion) \
-		template <> \
-		struct to_unsigned<source_type> \
-		{ \
-			typedef promotion type; \
-		}
-
-
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint8_t, int8_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint16_t, int16_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint32_t, int32_t);
-	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint64_t, int64_t);
-
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int8_t, uint8_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int16_t, uint16_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int32_t, uint32_t);
-	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int64_t, uint64_t);
-
-
-	inline const char *const byte_to_binary(uint8_t byte);
-
-	inline const char *const byte_to_octal(uint8_t byte);
-
-	inline const char *const byte_to_hexadecimal(uint8_t byte);
-
-	template <typename T>
-	inline size_t field_width(base_t base);
-
-	template <typename T>
-	inline const std::string bytes_to_binary_string(const T *bytes);
-
-	template <typename T>
-	inline const std::string bytes_to_signed_decimal_string(const T *bytes);
-
-	template <typename T>
-	inline const std::string bytes_to_unsigned_decimal_string(const T *bytes);
-
-	template <typename T>
-	inline const std::string bytes_to_hexadecimal_string(const T *bytes);
-
-	template <typename T>
-	inline const std::string (*select_conversion(base_t base))(const T *);
-
-	inline byteorder_t current_byte_order();
-
-	inline void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
-
-
-	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
-	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
-		const std::string (*bytes_to_string)(const T *) = select_conversion<T>(base);
-
-		out_stream stream(filename_line);
-		stream << "dump of " << name << ":";
-		indentation_add();
-		stream << endl;
-
-		std::stringstream string_stream;
-
-		size_t column_width = field_width<T>(base);
-
-		const unit_t *iterator = (const unit_t*)pointer;
-		size_t length = size / sizeof(unit_t);
-
-		stream << make_value((void*)iterator) << ":";
-		for (std::size_t index = 0; index < length; ++index)
-		{
-			if (string_stream.str().length() + column_width + 1 > stream.width_left())
-			{
-				stream << string_stream.str().c_str();
-				string_stream.str("");
-
-				stream << endl << make_value((void*)&iterator[index]) << ":";
-			}
-
-			string_stream << " ";
-			string_stream.fill(' ');
-			string_stream.width(column_width);
-			string_stream.flags(std::ios::right);
-
-			unit_t ordered_bytes;
-			order_bytes(&ordered_bytes, &iterator[index], sizeof(unit_t), byte_order);
-
-			string_stream << bytes_to_string(&ordered_bytes);
-		}
-
-		if (!string_stream.str().empty())
-		{
-			stream << string_stream.str().c_str() << endl;
-		}
-
-		indentation_remove();
-	}
-
-
-	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
-	{
-		print_dump(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
-	}
-
-
-#if __cplusplus >= 201103L
-
-	// function call
-
-	template <typename R, typename ...A>
-	struct function_call_printer_t
-	{
-		typedef R (*funcptr_t)(A...);
-
-
-		inline function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline R operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _function_name;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename ...A>
-	struct function_call_printer_t<void, A...>
-	{
-		typedef void (*funcptr_t)(A...);
-
-
-		inline function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline void operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _function_name;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename R, typename ...A>
-	inline function_call_printer_t<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A...))
-	{
-		return function_call_printer_t<R, A...>(filename_line, function_name, function_pointer);
-	}
-
-
-	// const member function call
-
-	template <typename T, typename R, typename ...A>
-	struct const_member_function_call_printer_t
-	{
-		typedef R (T::*funcptr_t)(A...) const;
-
-
-		inline const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline R operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _object_name;
-		std::string _accessor;
-		std::string _function_name;
-		T &_object;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename T, typename ...A>
-	struct const_member_function_call_printer_t<T, void, A...>
-	{
-		typedef void (T::*funcptr_t)(A...) const;
-
-
-		inline const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline void operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _object_name;
-		std::string _accessor;
-		std::string _function_name;
-		const T &_object;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename T, typename R, typename ...A>
-	inline const_member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const T &object, R (T::*function_pointer)(A...) const)
-	{
-		return const_member_function_call_printer_t<T, R, A...>(filename_line, object_name, ".", function_name, object, function_pointer);
-	}
-
-
-	template <typename T, typename R, typename ...A>
-	inline const_member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const T *object, R (T::*function_pointer)(A...) const)
-	{
-		return const_member_function_call_printer_t<T, R, A...>(filename_line, object_name, "->", function_name, *object, function_pointer);
-	}
-
-
-
-	// non const member function call
-
-	template <typename T, typename R, typename ...A>
-	struct member_function_call_printer_t
-	{
-		typedef R (T::*funcptr_t)(A...);
-
-
-		inline member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline R operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _object_name;
-		std::string _accessor;
-		std::string _function_name;
-		T &_object;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename T, typename ...A>
-	struct member_function_call_printer_t<T, void, A...>
-	{
-		typedef void (T::*funcptr_t)(A...);
-
-
-		inline member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer);
-
-		template <typename ...A2>
-		inline void operator ()(A2 &&...arguments);
-
-	private:
-		std::string _filename_line;
-		std::string _object_name;
-		std::string _accessor;
-		std::string _function_name;
-		T &_object;
-		funcptr_t _function_pointer;
-	};
-
-
-	template <typename T, typename R, typename ...A>
-	inline member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, T &object, R (T::*function_pointer)(A...))
-	{
-		return member_function_call_printer_t<T, R, A...>(filename_line, object_name, ".", function_name, object, function_pointer);
-	}
-
-
-	template <typename T, typename R, typename ...A>
-	inline member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, T *object, R (T::*function_pointer)(A...))
-	{
-		return member_function_call_printer_t<T, R, A...>(filename_line, object_name, "->", function_name, *object, function_pointer);
-	}
-
-#endif // __cplusplus >= 201103L
-
-
-	// return
-
-	struct return_printer_t
-	{
-		inline return_printer_t(const std::string &filename_line);
-
-		template <typename T>
-		inline const T &operator ,(const T &value);
-
-	private:
-		std::string _filename_line;
-	};
-
-
-	inline return_printer_t return_printer(const std::string &filename_line)
-	{
-		return return_printer_t(filename_line);
-	}
-
-
-	// if block
-
-	struct print_if_block_t
-	{
-		template <typename T>
-		inline print_if_block_t(const std::string &filename_line, const char *expression, const T &value);
-
-		template <typename T>
-		inline print_if_block_t(const std::string &filename_line, const char *expression, T &value);
-
-		inline print_if_block_t(const std::string &filename_line, const char *expression, bool value);
-
-		inline ~print_if_block_t();
-
-		inline operator bool() const;
-
-	private:
-		bool _condition;
-	};
-
-
-	template <typename T>
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, const T &value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
-	template <typename T>
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, T &value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
-	inline print_if_block_t print_if_block(const std::string &filename_line, const char *expression, bool value)
-	{
-		return print_if_block_t(filename_line, expression, value);
-	}
-
-
-	// for block
-
-	struct for_block_t
-	{
-		inline for_block_t(const std::string &filename_line, const char *expression);
-		inline ~for_block_t();
-		inline operator bool() const;
-		inline void iteration();
-
-	private:
-		std::string _filename_line;
-		std::string _expression;
-		size_t _iteration_number;
-	};
-
-
-	inline for_block_t for_block(const std::string &filename_line, const char *expression)
-	{
-		return for_block_t(filename_line, expression);
-	}
-
-
-	// while block
-
-	struct print_while_block_t
-	{
-		template <typename T>
-		inline print_while_block_t(const std::string &filename_line, const char *expression, const T &value);
-
-		template <typename T>
-		inline print_while_block_t(const std::string &filename_line, const char *expression, T &value);
-
-		inline print_while_block_t(const std::string &filename_line, const char *expression, bool value);
-
-		inline ~print_while_block_t();
-
-		inline operator bool() const;
-
-	private:
-		bool _condition;
-	};
-
-
-	template <typename T>
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, const T &value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-	template <typename T>
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, T &value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-	inline print_while_block_t print_while_block(const std::string &filename_line, const char *expression, bool value)
-	{
-		return print_while_block_t(filename_line, expression, value);
-	}
-
-
-	// block
-
-	struct block_t
-	{
-		inline block_t();
-		inline ~block_t();
-	};
-
-
-	inline block_t block()
-	{
-		return block_t();
-	}
-
-
-	// helper stuff
-
-	struct tlskey_t;
-
-	tlskey_t *tls_new_key();
-	void tls_delete_key(tlskey_t *key);
-	void *tls_get(tlskey_t *key);
-	void tls_set(tlskey_t *key, void *data);
-
-
-	struct mutex_t;
-
-	mutex_t *mutex_new();
-	void mutex_delete(mutex_t *mutex);
-	void mutex_lock(mutex_t *mutex);
-	void mutex_unlock(mutex_t *mutex);
-
-
-	// definitions
-
-	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
-		: _filename_line(filename_line), _function_signature(function_signature)
-	{
-		out_stream(_filename_line) << "[call] " << _function_signature.c_str();
-		indentation_add();
-	}
-
-
-	function_printer_t::~function_printer_t()
-	{
-		indentation_remove();
-		out_stream(_filename_line) << "[ret]  " << _function_signature.c_str();
-	}
-
-
-	// dump
 
 	inline const char *const byte_to_binary(uint8_t byte)
 	{
@@ -1954,6 +1451,95 @@ namespace pretty_output
 
 
 	template <typename T>
+	struct print_traits
+	{
+		typedef uint8_t unit_t;
+		static const base_t BASE = BASE_HEX;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type, unit_type, base) \
+				template <> \
+				struct print_traits<type> \
+				{ \
+					typedef unit_type unit_t; \
+					static const base_t BASE = base; \
+				}
+
+
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int8_t, int8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int16_t, int16_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int32_t, int32_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int64_t, int64_t, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint8_t, uint8_t, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint16_t, uint16_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint32_t, uint32_t, BASE_UDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint64_t, uint64_t, BASE_UDEC);
+
+
+	template <typename T>
+	struct field_traits
+	{
+		static const size_t WIDTH = 0;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
+			template <> \
+			struct field_traits<type> \
+			{ \
+				static const size_t WIDTH = width; \
+			}
+
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int8_t, 4);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int16_t, 6);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int32_t, 11);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int64_t, 21);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint8_t, 3);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint16_t, 5);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint32_t, 10);
+	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint64_t, 20);
+
+
+	template <typename T>
+	struct to_signed
+	{
+		typedef T type;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(source_type, promotion) \
+		template <> \
+		struct to_signed<source_type> \
+		{ \
+			typedef promotion type; \
+		}
+
+
+	template <typename T>
+	struct to_unsigned
+	{
+		typedef T type;
+	};
+
+
+#define PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(source_type, promotion) \
+		template <> \
+		struct to_unsigned<source_type> \
+		{ \
+			typedef promotion type; \
+		}
+
+
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint8_t, int8_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint16_t, int16_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint32_t, int32_t);
+	PRETTY_OUTPUT__DEFINE_SIGNED_PROMOTIONS(uint64_t, int64_t);
+
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int8_t, uint8_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int16_t, uint16_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int32_t, uint32_t);
+	PRETTY_OUTPUT__DEFINE_UNSIGNED_PROMOTIONS(int64_t, uint64_t);
+
+
+	template <typename T>
 	inline size_t field_width(base_t base)
 	{
 		switch (base)
@@ -2051,10 +1637,10 @@ namespace pretty_output
 
 	inline byteorder_t current_byte_order()
 	{
-		static const uint16_t VALUE = 0x0001;
-		static const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
+		const uint16_t VALUE = (uint16_t)0x0001;
+		const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
 
-		if (FIRST_BYTE == 0x01)
+		if (FIRST_BYTE == (uint8_t)0x01)
 		{
 			return BYTE_ORDER_BIG_ENDIAN;
 		}
@@ -2090,250 +1676,467 @@ namespace pretty_output
 	}
 
 
+	template <typename T>
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	{
+		typedef typename print_traits<T>::unit_t unit_t;
+
+		const std::string (*bytes_to_string)(const T *) = select_conversion<T>(base);
+
+		out_stream stream(filename_line);
+		stream << "dump of " << name << ":";
+		indentation_add();
+		stream << endl;
+
+		std::stringstream string_stream;
+
+		size_t column_width = field_width<T>(base);
+
+		const unit_t *iterator = (const unit_t*)pointer;
+		size_t length = size / sizeof(unit_t);
+
+		stream << make_value((void*)iterator) << ":";
+		for (std::size_t index = 0; index < length; ++index)
+		{
+			if (string_stream.str().length() + column_width + 1 > stream.width_left())
+			{
+				stream << string_stream.str().c_str();
+				string_stream.str("");
+
+				stream << endl << make_value((void*)&iterator[index]) << ":";
+			}
+
+			string_stream << " ";
+			string_stream.fill(' ');
+			string_stream.width(column_width);
+			string_stream.flags(std::ios::right);
+
+			unit_t ordered_bytes;
+			order_bytes(&ordered_bytes, &iterator[index], sizeof(unit_t), byte_order);
+
+			string_stream << bytes_to_string(&ordered_bytes);
+		}
+
+		if (!string_stream.str().empty())
+		{
+			stream << string_stream.str().c_str() << endl;
+		}
+
+		indentation_remove();
+	}
+
+
+	template <typename T>
+	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	{
+		print_dump(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
+	}
+
+
+#if __cplusplus >= 201103L
+
 	// function call
 
 	template <typename R, typename ...A>
-	function_call_printer_t<R, A...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
-		: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
+	struct function_call_printer
 	{
-	}
+		typedef R (*funcptr_t)(A...);
+
+
+		function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		R operator ()(A2 &&...arguments)
+		{
+			R return_value = _function_pointer(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+			return return_value;
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		funcptr_t _function_pointer;
+	};
+
+
+	template <typename ...A>
+	struct function_call_printer<void, A...>
+	{
+		typedef void (*funcptr_t)(A...);
+
+
+		function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		void operator ()(A2 &&...arguments)
+		{
+			_function_pointer(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		funcptr_t _function_pointer;
+	};
 
 
 	template <typename R, typename ...A>
-	template <typename ...A2>
-	R function_call_printer_t<R, A...>::operator ()(A2 &&...arguments)
+	inline function_call_printer<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A...))
 	{
-		R return_value = _function_pointer(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
-		return return_value;
-	}
-
-
-	template <typename ...A>
-	function_call_printer_t<void, A...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
-		: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
-	{
-	}
-
-
-	template <typename ...A>
-	template <typename ...A2>
-	void function_call_printer_t<void, A...>::operator ()(A2 &&...arguments)
-	{
-		_function_pointer(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		return function_call_printer<R, A...>(filename_line, function_name, function_pointer);
 	}
 
 
 	// const member function call
 
 	template <typename T, typename R, typename ...A>
-	const_member_function_call_printer_t<T, R, A...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer)
-		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+	struct const_member_function_call_printer
 	{
+		typedef R (T::*funcptr_t)(A...) const;
+
+
+		const_member_function_call_printer(const std::string &filename_line, const char *function_name, const T &object, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		R operator ()(A2 &&...arguments)
+		{
+			R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+			return return_value;
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		T &_object;
+		funcptr_t _function_pointer;
+	};
+
+
+	template <typename T, typename ...A>
+	struct const_member_function_call_printer<T, void, A...>
+	{
+		typedef void (T::*funcptr_t)(A...) const;
+
+
+		const_member_function_call_printer(const std::string &filename_line, const char *function_name, const T &object, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		void operator ()(A2 &&...arguments)
+		{
+			(_object.*_function_pointer)(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		const T &_object;
+		funcptr_t _function_pointer;
+	};
+
+
+	template <typename T, typename R, typename ...A>
+	inline const_member_function_call_printer<T, R, A...> member_function_call(const std::string &filename_line, const char *function_name, const T &object, R (T::*function_pointer)(A...) const)
+	{
+		return const_member_function_call_printer<T, R, A...>(filename_line, function_name, object, function_pointer);
 	}
 
 
 	template <typename T, typename R, typename ...A>
-	template <typename ...A2>
-	R const_member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
+	inline const_member_function_call_printer<T, R, A...> member_function_call(const std::string &filename_line, const char *function_name, const T *object, R (T::*function_pointer)(A...) const)
 	{
-		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
-		return return_value;
+		return const_member_function_call_printer<T, R, A...>(filename_line, function_name, *object, function_pointer);
 	}
 
-
-	template <typename T, typename ...A>
-	const_member_function_call_printer_t<T, void, A...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer)
-		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
-	{
-	}
-
-
-	template <typename T, typename ...A>
-	template <typename ...A2>
-	void const_member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
-	{
-		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
-	}
 
 
 	// non const member function call
 
 	template <typename T, typename R, typename ...A>
-	member_function_call_printer_t<T, R, A...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer)
-		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+	struct member_function_call_printer
 	{
+		typedef R (T::*funcptr_t)(A...);
+
+
+		member_function_call_printer(const std::string &filename_line, const char *function_name, T &object, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		R operator ()(A2 &&...arguments)
+		{
+			R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+			return return_value;
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		T &_object;
+		funcptr_t _function_pointer;
+	};
+
+
+	template <typename T, typename ...A>
+	struct member_function_call_printer<T, void, A...>
+	{
+		typedef void (T::*funcptr_t)(A...);
+
+
+		member_function_call_printer(const std::string &filename_line, const char *function_name, T &object, funcptr_t function_pointer)
+			: _filename_line(filename_line), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename ...A2>
+		void operator ()(A2 &&...arguments)
+		{
+			(_object.*_function_pointer)(std::forward<A2>(arguments)...);
+			out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		}
+
+	private:
+		std::string _filename_line;
+		std::string _function_name;
+		T &_object;
+		funcptr_t _function_pointer;
+	};
+
+
+	template <typename T, typename R, typename ...A>
+	inline member_function_call_printer<T, R, A...> member_function_call(const std::string &filename_line, const char *function_name, T &object, R (T::*function_pointer)(A...))
+	{
+		return member_function_call_printer<T, R, A...>(filename_line, function_name, object, function_pointer);
 	}
 
 
 	template <typename T, typename R, typename ...A>
-	template <typename ...A2>
-	R member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
+	inline member_function_call_printer<T, R, A...> member_function_call(const std::string &filename_line, const char *function_name, T *object, R (T::*function_pointer)(A...))
 	{
-		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
-		return return_value;
+		return member_function_call_printer<T, R, A...>(filename_line, function_name, *object, function_pointer);
 	}
 
-
-	template <typename T, typename ...A>
-	member_function_call_printer_t<T, void, A...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer)
-		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
-	{
-	}
-
-
-	template <typename T, typename ...A>
-	template <typename ...A2>
-	void member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
-	{
-		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
-	}
+#endif // __cplusplus >= 201103L
 
 
 	// return
 
-	return_printer_t::return_printer_t(const std::string &filename_line)
-		: _filename_line(filename_line)
+	struct return_printer
 	{
-	}
+		return_printer(const std::string &filename_line)
+			: _filename_line(filename_line)
+		{
+		}
 
 
-	template <typename T>
-	const T &return_printer_t::operator ,(const T &value)
+		template <typename T>
+		const T &operator ,(const T &value)
+		{
+			out_stream(_filename_line) << "return " << make_value(value);
+			return value;
+		}
+
+	private:
+		std::string _filename_line;
+	};
+
+
+	// if block
+
+	struct print_if_block
 	{
-		out_stream(_filename_line) << "return " << make_value(value);
-		return value;
-	}
+		template <typename T>
+		print_if_block(const std::string &filename_line, const char *expression, const T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
 
-	// if
 
-	template <typename T>
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, const T &value)
-		: _condition(value)
+		template <typename T>
+		print_if_block(const std::string &filename_line, const char *expression, T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
+
+
+		print_if_block(const std::string &filename_line, const char *expression, bool value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
+			indentation_add();
+		}
+
+
+		~print_if_block()
+		{
+			indentation_remove();
+		}
+
+
+		operator bool() const
+		{
+			return _condition;
+		}
+
+	private:
+		bool _condition;
+	};
+
+
+	// for block
+
+	struct for_block
 	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
+		for_block(const std::string &filename_line, const char *expression)
+			: _iteration_number(0)
+		{
+			out_stream(filename_line) << "for (" << expression << ")";
+			indentation_add();
+		}
 
 
-	template <typename T>
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
+		~for_block()
+		{
+			indentation_remove();
+		}
 
 
-	print_if_block_t::print_if_block_t(const std::string &filename_line, const char *expression, bool value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "if (" << expression << ") => " << make_value(value);
-		indentation_add();
-	}
+		operator bool() const
+		{
+			return false;
+		}
 
 
-	print_if_block_t::~print_if_block_t()
-	{
-		indentation_remove();
-	}
+		size_t iteration_number() const
+		{
+			return _iteration_number;
+		}
 
 
-	print_if_block_t::operator bool() const
-	{
-		return _condition;
-	}
+		void next_iteration()
+		{
+			++_iteration_number;
+		}
+
+	private:
+		size_t _iteration_number;
+	};
 
 
-	// for
-
-	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
-		: _filename_line(filename_line), _expression(expression), _iteration_number(0)
-	{
-		out_stream(_filename_line) << "for (" << _expression.c_str() << ")";
-		indentation_add();
-	}
-
-
-	for_block_t::~for_block_t()
-	{
-		indentation_remove();
-	}
-
-
-	for_block_t::operator bool() const
-	{
-		return false;
-	}
-
-
-	void for_block_t::iteration()
-	{
-		indentation_remove();
-		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
-		indentation_add();
-
-		++_iteration_number;
-	}
-
-
-	// while
-
-	template <typename T>
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, const T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	template <typename T>
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, T &value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
-		indentation_add();
-	}
-
-
-	print_while_block_t::print_while_block_t(const std::string &filename_line, const char *expression, bool value)
-		: _condition(value)
-	{
-		out_stream(filename_line) << "while (" << expression << ") => " << make_value(value);
-		indentation_add();
-	}
-
-
-	print_while_block_t::~print_while_block_t()
+	inline void print_for_block(const std::string &filename_line, const for_block &block)
 	{
 		indentation_remove();
+		out_stream(filename_line) << "[iteration #" << make_value(block.iteration_number()) << "]";
+		indentation_add();
 	}
 
 
-	print_while_block_t::operator bool() const
+	// while block
+
+	struct print_while_block
 	{
-		return _condition;
-	}
+		template <typename T>
+		print_while_block(const std::string &filename_line, const char *expression, const T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
+
+
+		template <typename T>
+		print_while_block(const std::string &filename_line, const char *expression, T &value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value((bool)value) << " (" << make_value(value) << ")";
+			indentation_add();
+		}
+
+
+		print_while_block(const std::string &filename_line, const char *expression, bool value)
+			: _condition(value)
+		{
+			out_stream(filename_line) << "while (" << expression << ") => " << make_value(value);
+			indentation_add();
+		}
+
+
+		~print_while_block()
+		{
+			indentation_remove();
+		}
+
+
+		operator bool() const
+		{
+			return _condition;
+		}
+
+	private:
+		bool _condition;
+	};
 
 
 	// block
 
-	block_t::block_t()
+	struct block
 	{
-		indentation_add();
-	}
+		block()
+		{
+			indentation_add();
+		}
 
 
-	block_t::~block_t()
-	{
-		indentation_remove();
-	}
+		~block()
+		{
+			indentation_remove();
+		}
+	};
+
+
+	// helper stuff
+
+	struct tlskey_t;
+
+	tlskey_t *tls_new_key();
+	void tls_delete_key(tlskey_t *key);
+	void *tls_get(tlskey_t *key);
+	void tls_set(tlskey_t *key, void *data);
+
+
+	struct mutex_t;
+
+	mutex_t *mutex_new();
+	void mutex_delete(mutex_t *mutex);
+	void mutex_lock(mutex_t *mutex);
+	void mutex_unlock(mutex_t *mutex);
 
 }
 
