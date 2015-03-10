@@ -1830,7 +1830,7 @@ namespace pretty_output
 
 	// dump
 
-	inline const char *const byte_to_binary(uint8_t byte)
+	const char *const byte_to_binary(uint8_t byte)
 	{
 		static const char *const BINARY_VALUES[] = {
 			"00000000", "00000001", "00000010", "00000011", "00000100", "00000101", "00000110", "00000111",
@@ -1871,7 +1871,7 @@ namespace pretty_output
 	}
 
 
-	inline const char *const byte_to_octal(uint8_t byte)
+	const char *const byte_to_octal(uint8_t byte)
 	{
 		static const char *const OCTAL_VALUES[] = {
 			"0000", "0001", "0002", "0003", "0004", "0005", "0006", "0007",
@@ -1912,7 +1912,7 @@ namespace pretty_output
 	}
 
 
-	inline const char *const byte_to_hexadecimal(uint8_t byte)
+	const char *const byte_to_hexadecimal(uint8_t byte)
 	{
 		static const char *const HEXADECIMAL_VALUES[] = {
 			"00", "01", "02", "03", "04", "05", "06", "07",
@@ -1954,7 +1954,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline size_t field_width(base_t base)
+	size_t field_width(base_t base)
 	{
 		switch (base)
 		{
@@ -1972,7 +1972,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_binary_string(const T *bytes)
+	const std::string bytes_to_binary_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -1989,7 +1989,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_signed_decimal_string(const T *bytes)
+	const std::string bytes_to_signed_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -2001,7 +2001,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_unsigned_decimal_string(const T *bytes)
+	const std::string bytes_to_unsigned_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -2013,7 +2013,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string bytes_to_hexadecimal_string(const T *bytes)
+	const std::string bytes_to_hexadecimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -2030,7 +2030,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline const std::string (*select_conversion(base_t base))(const T *)
+	const std::string (*select_conversion(base_t base))(const T *)
 	{
 		switch (base)
 		{
@@ -2049,7 +2049,7 @@ namespace pretty_output
 	}
 
 
-	inline byteorder_t current_byte_order()
+	byteorder_t current_byte_order()
 	{
 		static const uint16_t VALUE = 0x0001;
 		static const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
@@ -2065,7 +2065,7 @@ namespace pretty_output
 	}
 
 
-	inline void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
+	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
 	{
 		if (current_byte_order() != byte_order)
 		{
