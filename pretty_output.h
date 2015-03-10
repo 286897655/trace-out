@@ -886,24 +886,6 @@ namespace pretty_output
 		}
 
 
-		out_stream(const std::string &filename_line, const char *format, va_list arguments)
-			: _current_line_length(0)
-		{
-			lock_output();
-
-			va_list arguments_copy;
-			va_copy(arguments_copy, arguments);
-			std::size_t size = printf_string_length(format, arguments_copy) + 1;
-
-			char *buffer = (char*)std::malloc(size);
-			printf_to_string(buffer, size, format, arguments);
-
-			*this << filename_line.c_str() << DELIMITER << indentation().c_str() << buffer;
-
-			std::free(buffer);
-		}
-
-
 		out_stream()
 			: _current_line_length(0)
 		{
