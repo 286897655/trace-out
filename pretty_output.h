@@ -476,6 +476,20 @@ The name is an abbreviation of 'thread'.
 #endif
 
 
+#if defined(__clang__)
+
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
+	#pragma clang diagnostic ignored "-Wvariadic-macros"
+	#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+
+	#pragma gnu diagnostic push
+
+#endif
+
+
 // public macros:
 
 #if (!defined(NDEBUG) && !defined(PRETTY_OUTPUT_OFF)) || defined(PRETTY_OUTPUT_ON)
@@ -2121,4 +2135,15 @@ namespace pretty_output
 	void mutex_unlock(mutex_t *mutex);
 
 }
+
+
+#if defined(__clang__)
+
+	#pragma clang diagnostic pop
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+
+	#pragma gnu diagnostic pop
+
+#endif
 
