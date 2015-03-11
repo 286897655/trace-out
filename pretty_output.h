@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -883,27 +884,31 @@ namespace pretty_output
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint64_t, uint64_t, BASE_UDEC);
 
 
-	template <typename T>
-	struct field_traits
+	template <size_t S>
+	struct width_for_numeric_size
 	{
-		static const size_t WIDTH = 0;
+		static const size_t VALUE = 0;
 	};
 
-#define PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(type, width) \
+#define PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(size, width) \
 			template <> \
-			struct field_traits<type> \
+			struct width_for_numeric_size<size> \
 			{ \
-				static const size_t WIDTH = width; \
+				static const size_t VALUE = width; \
 			}
 
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int8_t, 4);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int16_t, 6);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int32_t, 11);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(int64_t, 21);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint8_t, 3);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint16_t, 5);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint32_t, 10);
-	PRETTY_OUTPUT__DEFINE_FIELD_TRAITS(uint64_t, 20);
+
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(1, 3);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(2, 5);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(4, 10);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(8, 20);
+
+
+	template <typename T>
+	struct width_for_type
+	{
+		static const size_t VALUE = (std::numeric_limits<T>::is_signed ? 1 : 0) + width_for_numeric_size<sizeof(typename print_traits<T>::unit_t)>::VALUE;
+	};
 
 
 	template <typename T>
@@ -1505,7 +1510,7 @@ namespace pretty_output
 
 			case BASE_SDEC:
 			case BASE_UDEC:
-				return field_traits<T>::WIDTH;
+				return width_for_type<T>::VALUE;
 
 			default: // BASE_HEX
 				return sizeof(typename print_traits<T>::unit_t) * 2;
