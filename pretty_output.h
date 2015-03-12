@@ -885,29 +885,29 @@ namespace pretty_output
 
 
 	template <size_t S>
-	struct width_for_numeric_size
+	struct width_for_integer_size
 	{
 		static const size_t VALUE = 0;
 	};
 
-#define PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(size, width) \
+#define PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(size, width) \
 			template <> \
-			struct width_for_numeric_size<size> \
+			struct width_for_integer_size<size> \
 			{ \
 				static const size_t VALUE = width; \
 			}
 
 
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(1, 3);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(2, 5);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(4, 10);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_NUMERIC_TYPE_SIZE(8, 20);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(1, 3);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(2, 5);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(4, 10);
+	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(8, 20);
 
 
 	template <typename T>
 	struct width_for_type
 	{
-		static const size_t VALUE = (std::numeric_limits<T>::is_signed ? 1 : 0) + width_for_numeric_size<sizeof(typename print_traits<T>::unit_t)>::VALUE;
+		static const size_t VALUE = (std::numeric_limits<T>::is_signed ? 1 : 0) + width_for_integer_size<sizeof(typename print_traits<T>::unit_t)>::VALUE;
 	};
 
 
