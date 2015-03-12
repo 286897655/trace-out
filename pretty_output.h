@@ -961,19 +961,19 @@ namespace pretty_output
 	inline size_t field_width(base_t base);
 
 	template <typename T>
-	inline const std::string bytes_to_binary_string(const T *bytes);
+	inline const std::string bytes_to_binary_string(T value);
 
 	template <typename T>
-	inline const std::string bytes_to_signed_decimal_string(const T *bytes);
+	inline const std::string bytes_to_signed_decimal_string(T value);
 
 	template <typename T>
-	inline const std::string bytes_to_unsigned_decimal_string(const T *bytes);
+	inline const std::string bytes_to_unsigned_decimal_string(T value);
 
 	template <typename T>
-	inline const std::string bytes_to_hexadecimal_string(const T *bytes);
+	inline const std::string bytes_to_hexadecimal_string(T value);
 
 	template <typename T>
-	inline const std::string (*select_conversion(base_t base))(const T *);
+	inline const std::string (*select_conversion(base_t base))(T);
 
 	inline byteorder_t current_byte_order();
 
@@ -985,7 +985,7 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
-		const std::string (*bytes_to_string)(const T *) = select_conversion<T>(base);
+		const std::string (*bytes_to_string)(T) = select_conversion<T>(base);
 
 		out_stream stream(filename_line);
 		stream << "dump of " << name << ":";
@@ -1018,7 +1018,7 @@ namespace pretty_output
 			unit_t ordered_bytes;
 			order_bytes(&ordered_bytes, &iterator[index], sizeof(unit_t), byte_order);
 
-			string_stream << bytes_to_string(&ordered_bytes);
+			string_stream << bytes_to_string(ordered_bytes);
 		}
 
 		if (!string_stream.str().empty())
@@ -1519,14 +1519,11 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_binary_string(const T *bytes)
+	const std::string bytes_to_binary_string(T value)
 	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
 		std::stringstream stream;
-		uint8_t *data = (uint8_t*)bytes;
-		size_t size = sizeof(unit_t);
-		for (size_t index = 0; index < size; ++index)
+		uint8_t *data = (uint8_t*)&value;
+		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_binary(data[index]);
 		}
@@ -1536,12 +1533,10 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_signed_decimal_string(const T *bytes)
+	const std::string bytes_to_signed_decimal_string(T value)
 	{
-		typedef typename print_traits<T>::unit_t unit_t;
-		typedef typename to_signed<unit_t>::type signed_promotion_t;
+		typedef typename to_signed<T>::type signed_promotion_t;
 
-		unit_t value = *(const unit_t*)bytes;
 		signed_promotion_t signed_value = (signed_promotion_t)value;
 		int64_t signed_integer = (int64_t)signed_value;
 
@@ -1553,12 +1548,10 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_unsigned_decimal_string(const T *bytes)
+	const std::string bytes_to_unsigned_decimal_string(T value)
 	{
-		typedef typename print_traits<T>::unit_t unit_t;
-		typedef typename to_unsigned<unit_t>::type unsigned_promotion_t;
+		typedef typename to_unsigned<T>::type unsigned_promotion_t;
 
-		unit_t value = *(const unit_t*)bytes;
 		unsigned_promotion_t unsigned_value = (unsigned_promotion_t)value;
 		uint64_t unsigned_integer = (uint64_t)unsigned_value;
 
@@ -1570,14 +1563,11 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string bytes_to_hexadecimal_string(const T *bytes)
+	const std::string bytes_to_hexadecimal_string(T value)
 	{
-		typedef typename print_traits<T>::unit_t unit_t;
-
 		std::stringstream stream;
-		uint8_t *data = (uint8_t*)bytes;
-		size_t size = sizeof(unit_t);
-		for (size_t index = 0; index < size; ++index)
+		uint8_t *data = (uint8_t*)&value;
+		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
 		}
@@ -1587,7 +1577,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	const std::string (*select_conversion(base_t base))(const T *)
+	const std::string (*select_conversion(base_t base))(T)
 	{
 		switch (base)
 		{
