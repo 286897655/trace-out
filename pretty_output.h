@@ -1539,9 +1539,14 @@ namespace pretty_output
 	const std::string bytes_to_signed_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
+		typedef typename to_signed<unit_t>::type signed_promotion_t;
+
+		unit_t value = *(const unit_t*)bytes;
+		signed_promotion_t signed_value = (signed_promotion_t)value;
+		int64_t signed_integer = (int64_t)signed_value;
 
 		std::stringstream stream;
-		stream << (const typename to_signed<unit_t>::type)*(const unit_t*)bytes;
+		stream << signed_integer;
 
 		return stream.str();
 	}
@@ -1551,9 +1556,14 @@ namespace pretty_output
 	const std::string bytes_to_unsigned_decimal_string(const T *bytes)
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
+		typedef typename to_unsigned<unit_t>::type unsigned_promotion_t;
+
+		unit_t value = *(const unit_t*)bytes;
+		unsigned_promotion_t unsigned_value = (unsigned_promotion_t)value;
+		uint64_t unsigned_integer = (uint64_t)unsigned_value;
 
 		std::stringstream stream;
-		stream << (const typename to_unsigned<unit_t>::type)*(const unit_t*)bytes;
+		stream << unsigned_integer;
 
 		return stream.str();
 	}
