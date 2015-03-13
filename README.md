@@ -44,9 +44,9 @@ main.cpp:17   |  *pf = 789
 ```
 ---
 
-`$d(pointer, size, base, byte_order)` - print memory under the `pointer`.
+`$m(pointer, size, base, byte_order)` - print memory under the `pointer`.
 
-`$d(variable, base, byte_order)` - print memory of the `variable`.
+`$m(variable, base, byte_order)` - print memory of the `variable`.
 
 `pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
 
@@ -66,7 +66,7 @@ main.cpp:17   |  *pf = 789
 
 Default value is determined automatically.
 
-The name is an abbreviation of 'dump'.
+The name is an abbreviation of 'memory'.
 
 Code:
 ```C++
@@ -81,7 +81,7 @@ s.i = 456;
 s.f = 789.123f;
 s.c = 'r';
 
-$d(s);
+$m(s);
 ```
 
 Output:
@@ -144,7 +144,7 @@ main.cpp:11   |  func(456, 789, hellomoto!)
 ```
 ---
 
-`$m(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
+`$cm(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
 The name is an abbreviation of 'member-function'.
 
 Code:
@@ -159,7 +159,7 @@ public:
 
 some obj;
 int i = 456;
-$m(obj, some::func)(i, 789, "hellomoto!");
+$cm(obj, some::func)(i, 789, "hellomoto!");
 ```
 
 Output:
@@ -392,7 +392,7 @@ Notes
 
 * If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
 
-* Macros `$c` and `$m` work only with C++11 and later.
+* Macros `$c` and `$cm` work only with C++11 and later.
 
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
 

@@ -37,8 +37,8 @@
 				pretty_output::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
 
 
-	#define $d(pointer, ...) \
-				pretty_output::print_dump(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
+	#define $m(pointer, ...) \
+				pretty_output::print_memory(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
 
 
 	#define $f \
@@ -51,7 +51,7 @@
 				pretty_output::function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
 
 
-	#define $m(object, function_name) \
+	#define $cm(object, function_name) \
 				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // __cplusplus >= 201103L
@@ -95,7 +95,7 @@
 	#define $w(...)
 
 
-	#define $d(pointer, ...)
+	#define $m(pointer, ...)
 
 
 	#define $f
@@ -107,7 +107,7 @@
 				function_name
 
 
-	#define $m(object, function_name) \
+	#define $cm(object, function_name) \
 				(object.*&std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // __cplusplus >= 201103L
@@ -836,7 +836,7 @@ namespace pretty_output
 	}
 
 
-	// dump
+	// memory
 
 	enum base_t
 	{
@@ -976,14 +976,14 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order())
+	inline void print_memory(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order())
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
 		const std::string (*bytes_to_string)(T) = select_conversion<T>(base);
 
 		out_stream stream(filename_line);
-		stream << "dump of " << name << ":";
+		stream << "memory of " << name << ":";
 		indentation_add();
 		stream << endl;
 
@@ -1026,9 +1026,9 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order())
+	inline void print_memory(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order())
 	{
-		print_dump(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
+		print_memory(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
 	}
 
 
@@ -1370,7 +1370,7 @@ namespace pretty_output
 	}
 
 
-	// dump
+	// memory
 
 	const char *const byte_to_binary(uint8_t byte)
 	{

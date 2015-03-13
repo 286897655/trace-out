@@ -63,8 +63,8 @@ The name is an abbreviation of 'watch'.
 	>
 
 
-$d(pointer, size, base, byte_order) - print memory under the 'pointer'.
-$d(variable, base, byte_order) - print memory of the 'variable'.
+$m(pointer, size, base, byte_order) - print memory under the 'pointer'.
+$m(variable, base, byte_order) - print memory of the 'variable'.
 
 'pointer' - address of the memory to be printed. The type of the pointer
 determines the grouping of bytes and default 'base'. For example memory under
@@ -91,7 +91,7 @@ values. Can have following values:
 	* pretty_output::BYTE_ORDER_BIG_ENDIAN
 Default value is determined automatically.
 
-The name is an abbreviation of 'dump'.
+The name is an abbreviation of 'memory'.
 
 	Example:
 
@@ -107,11 +107,11 @@ The name is an abbreviation of 'dump'.
 	|14|	s.f = 789.123f;
 	|15|	s.c = 'r';
 	|16|
-	|17|	$d(s);
+	|17|	$m(s);
 	|18|
 
 	>
-	>	main.cpp:17   |  dump of s:
+	>	main.cpp:17   |  memory of s:
 	>				  |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
 	>				  |      0x7fff54376b1a: 60 0a
 	>				  |
@@ -174,7 +174,7 @@ The name is an abbreviation of 'call'.
 	>
 
 
-$m(object, function_name) - print member-function arguments and return value.
+$cm(object, function_name) - print member-function arguments and return value.
 Should be used at member-function call. 'object' argument can be of a pointer
 or non-pointer type.
 The name is an abbreviation of 'member-function'.
@@ -194,7 +194,7 @@ The name is an abbreviation of 'member-function'.
 	|12|
 	|13|	some obj;
 	|14|	int i = 456;
-	|15|	$m(obj, some::func)(i, 789, "hellomoto!");
+	|15|	$cm(obj, some::func)(i, 789, "hellomoto!");
 	|16|
 
 	>
@@ -452,7 +452,7 @@ PRETTY_OUTPUT_REDIRECTION_H - header file, which contains overrided printing
 	pretty_output is turned on. If 'NDEBUG' or 'PRETTY_OUTPUT_OFF' is
 	defined then the pretty_output is turned off.
 
-* Macros $c and $m work only with C++11 and later.
+* Macros $c and $cm work only with C++11 and later.
 
 * There is an output synchronization that prevents outputs from different
 	threads mixing up. By default this feature is turned on. To disable this
