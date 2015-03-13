@@ -844,10 +844,10 @@ namespace pretty_output
 //		BASE_OCT = 8,
 		BASE_SDEC = -10,
 		BASE_UDEC = 10,
-		BASE_HEX = 16
-//		BASE_FLT = 17,
-//		BASE_DBL = 18,
-//		BASE_LDBL = 19
+		BASE_HEX = 16,
+		BASE_FLT = 17,
+		BASE_DBL = 18,
+		BASE_LDBL = 19
 	};
 
 
@@ -858,57 +858,84 @@ namespace pretty_output
 	};
 
 
-	template <typename T>
-	struct print_traits
+	enum typefamily_t
 	{
-		typedef uint8_t unit_t;
-		static const base_t BASE = BASE_HEX;
+		TYPE_FAMILY_INTEGER,
+		TYPE_FAMILY_FLOATING_POINT,
+		TYPE_FAMILY_OTHER
 	};
 
-#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type, unit_type, base) \
-				template <> \
-				struct print_traits<type> \
-				{ \
-					typedef unit_type unit_t; \
-					static const base_t BASE = base; \
-				}
+
+	template <typename T>
+	struct type_family
+	{
+		static const typefamily_t value = std::numeric_limits<T>::is_integer ? TYPE_FAMILY_INTEGER : (std::numeric_limits<T>::is_specialized ? TYPE_FAMILY_FLOATING_POINT : TYPE_FAMILY_OTHER);
+	};
 
 
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int8_t, int8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int16_t, int16_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int32_t, int32_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(int64_t, int64_t, BASE_SDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint8_t, uint8_t, BASE_HEX);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint16_t, uint16_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint32_t, uint32_t, BASE_UDEC);
-	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(uint64_t, uint64_t, BASE_UDEC);
+	template <size_t S, typefamily_t F>
+	struct print_traits_impl
+	{
+		typedef uint8_t unit_t;
+
+		static const size_t field_width = 0;
+		static const base_t base = BASE_HEX;
+	};
+
+#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(type_size, type_family, unit_type, width_value, base_value) \
+			template <> \
+			struct print_traits_impl<type_size, type_family> \
+			{ \
+				typedef unit_type unit_t; \
+				\
+				static const size_t field_width = width_value; \
+				static const base_t base = base_value; \
+			}
+
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(1, TYPE_FAMILY_INTEGER, int8_t, 3, BASE_HEX);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(2, TYPE_FAMILY_INTEGER, int16_t, 5, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(4, TYPE_FAMILY_INTEGER, int32_t, 10, BASE_SDEC);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(8, TYPE_FAMILY_INTEGER, int64_t, 20, BASE_SDEC);
+
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(4, TYPE_FAMILY_FLOATING_POINT, float, 14, BASE_FLT);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(8, TYPE_FAMILY_FLOATING_POINT, double, 23, BASE_DBL);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(10, TYPE_FAMILY_FLOATING_POINT, long double, 27, BASE_LDBL);
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(16, TYPE_FAMILY_FLOATING_POINT, long double, 27, BASE_LDBL);
+
+
+	template <typename T>
+	struct print_traits
+		: public print_traits_impl<sizeof(T), type_family<T>::value>
+	{
+	};
+
 
 
 	template <size_t S>
-	struct width_for_integer_size
+	struct fp_precision_impl
 	{
-		static const size_t VALUE = 0;
+		static const size_t value = 0;
 	};
 
-#define PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(size, width) \
+#define PRETTY_OUTPUT__DEFINE_FP_PRECISION(type_size, precision_value) \
 			template <> \
-			struct width_for_integer_size<size> \
+			struct fp_precision_impl<type_size> \
 			{ \
-				static const size_t VALUE = width; \
+				static const size_t value = precision_value; \
 			}
 
-
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(1, 3);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(2, 5);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(4, 10);
-	PRETTY_OUTPUT__DEFINE_WIDTH_FOR_INTEGER_TYPE_SIZE(8, 20);
+	PRETTY_OUTPUT__DEFINE_FP_PRECISION(4, 7);
+	PRETTY_OUTPUT__DEFINE_FP_PRECISION(8, 15);
+	PRETTY_OUTPUT__DEFINE_FP_PRECISION(10, 19);
+	PRETTY_OUTPUT__DEFINE_FP_PRECISION(16, 24);
 
 
 	template <typename T>
-	struct width_for_type
+	struct fp_precision
+		: public fp_precision_impl<sizeof(T)>
 	{
-		static const size_t VALUE = (std::numeric_limits<T>::is_signed ? 1 : 0) + width_for_integer_size<sizeof(typename print_traits<T>::unit_t)>::VALUE;
 	};
+
 
 
 	template <typename T>
@@ -970,6 +997,9 @@ namespace pretty_output
 	inline const std::string bytes_to_unsigned_decimal_string(T value);
 
 	template <typename T>
+	inline const std::string bytes_to_floating_point_string(T value);
+
+	template <typename T>
 	inline const std::string bytes_to_hexadecimal_string(T value);
 
 	template <typename T>
@@ -981,7 +1011,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	inline void print_dump(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::base, byteorder_t byte_order = current_byte_order())
 	{
 		typedef typename print_traits<T>::unit_t unit_t;
 
@@ -1031,7 +1061,7 @@ namespace pretty_output
 
 
 	template <typename T>
-	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::BASE, byteorder_t byte_order = current_byte_order())
+	inline void print_dump(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::base, byteorder_t byte_order = current_byte_order())
 	{
 		print_dump(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
 	}
@@ -1510,7 +1540,7 @@ namespace pretty_output
 
 			case BASE_SDEC:
 			case BASE_UDEC:
-				return width_for_type<T>::VALUE;
+				return print_traits<T>::field_width;
 
 			default: // BASE_HEX
 				return sizeof(typename print_traits<T>::unit_t) * 2;
@@ -1563,6 +1593,17 @@ namespace pretty_output
 
 
 	template <typename T>
+	inline const std::string bytes_to_floating_point_string(T value)
+	{
+		std::stringstream stream;
+		stream.precision(fp_precision<T>::value);
+		stream << std::scientific << value;
+
+		return stream.str();
+	}
+
+
+	template <typename T>
 	const std::string bytes_to_hexadecimal_string(T value)
 	{
 		std::stringstream stream;
@@ -1589,6 +1630,11 @@ namespace pretty_output
 
 			case BASE_UDEC:
 				return bytes_to_unsigned_decimal_string<T>;
+
+			case BASE_FLT:
+			case BASE_DBL:
+			case BASE_LDBL:
+				return bytes_to_floating_point_string<T>;
 
 			default: // BASE_HEX
 				return bytes_to_hexadecimal_string<T>;
