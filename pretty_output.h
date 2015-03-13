@@ -1504,7 +1504,11 @@ namespace pretty_output
 				return sizeof(typename print_traits<T>::unit_t) * 8;
 
 			case BASE_SDEC:
+				return print_traits<T>::field_width + (!std::numeric_limits<T>::is_signed ? 1 : 0);
+
 			case BASE_UDEC:
+				return print_traits<T>::field_width - (std::numeric_limits<T>::is_signed ? 1 : 0);
+
 			case BASE_FLT:
 			case BASE_DBL:
 			case BASE_LDBL:
