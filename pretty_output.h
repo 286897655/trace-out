@@ -207,51 +207,6 @@ namespace pretty_output
 	;
 
 
-	static const char THREAD_HEADER_SEPARATOR =
-#if defined(PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR)
-		PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR
-#else
-		'~'
-#endif
-	;
-
-
-	static const size_t FILENAME_FIELD_WIDTH =
-#if defined(PRETTY_OUTPUT_FILENAME_FIELD_WIDTH)
-		PRETTY_OUTPUT_FILENAME_FIELD_WIDTH
-#else
-		20
-#endif
-	;
-
-
-	static const char FILENAME_FIELD_EXCESS_PADDING[] =
-#if defined(PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING)
-		PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING
-#else
-		"~"
-#endif
-	;
-
-
-	static const size_t LINE_FIELD_WIDTH =
-#if defined(PRETTY_OUTPUT_LINE_FIELD_WIDTH)
-		PRETTY_OUTPUT_LINE_FIELD_WIDTH
-#else
-		4
-#endif
-	;
-
-
-	static const char DELIMITER[] =
-#if defined(PRETTY_OUTPUT_DELIMITER)
-		PRETTY_OUTPUT_DELIMITER
-#else
-		" |  "
-#endif
-	;
-
-
 	static const char INDENTATION[] =
 #if defined(PRETTY_OUTPUT_INDENTATION)
 		PRETTY_OUTPUT_INDENTATION
@@ -262,6 +217,12 @@ namespace pretty_output
 
 
 	// declarations
+
+	static const char THREAD_HEADER_SEPARATOR = '~';
+	static const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
+	static const size_t FILENAME_FIELD_WIDTH = 20;
+	static const size_t LINE_FIELD_WIDTH = 4;
+	static const char DELIMITER[] = " |  ";
 
 #if defined(_WIN32)
 	static const char FILE_PATH_COMPONENT_DELIMITER = '\\';

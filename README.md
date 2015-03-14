@@ -370,16 +370,6 @@ Options
 
 `PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and dump output). Default is 79.
 
-`PRETTY_OUTPUT_THREAD_HEADER_SEPARATOR` - char that is used as horizontal separator for a thread header. Default is a `'~'`.
-
-`PRETTY_OUTPUT_FILENAME_FIELD_WIDTH` - width of the file name field of the output. Default is 20.
-
-`PRETTY_OUTPUT_FILENAME_FIELD_EXCESS_PADDING` - string, that is used to indicate wrapped part of the filename. Default is `"~"`.
-
-`PRETTY_OUTPUT_LINE_FIELD_WIDTH` - width of the file line field of the output. Default is 4.
-
-`PRETTY_OUTPUT_DELIMITER` - string, that is used as a delimiter between 'file_name:line' field and the actual output. Default is `" |  "`.
-
 `PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
 
 `PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
