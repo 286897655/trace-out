@@ -4,8 +4,8 @@
 
 
 This is a library for pretty printing information about a code.
-Those who prefer using console output for debugging purposes might consider
-this library as a more useful alternative to printf/std::cout/whatever.
+Those who prefer using console output for debugging purposes might consider this
+library as a more useful alternative to printf/std::cout/whatever.
 
 
 Features:
@@ -175,8 +175,8 @@ The name is an abbreviation of 'call'.
 
 
 $cm(object, function_name) - print member-function arguments and return value.
-Should be used at member-function call. 'object' argument can be of a pointer
-or non-pointer type.
+Should be used at member-function call. 'object' argument can be of a pointer or
+non-pointer type.
 The name is an abbreviation of 'member-function'.
 
 	Example:
@@ -397,13 +397,13 @@ The name is an abbreviation of 'thread'.
 'PRETTY_OUTPUT_OFF' - turn pretty_output off.
 
 'PRETTY_OUTPUT_WIDTH' - width, to which output is wrapped (actually wrapping
-	only a thread header and dump output). Default is 79.
+	only a thread header and memory output). Default is 79.
 
 'PRETTY_OUTPUT_INDENTATION' - string, that is used as an indentation for the
 	actual output. Default is "    " (4 spaces).
 
-'PRETTY_OUTPUT_NO_OUTPUT_SYNC' - disables output syncronization. Read details
-	in the 'NOTES' section.
+'PRETTY_OUTPUT_NO_OUTPUT_SYNC' - disables output syncronization. Read details in
+	the 'NOTES' section.
 
 'PRETTY_OUTPUT_REDIRECTION_H' - header file, which contains overrided printing
 	routines. Read details in the 'NOTES' section.
@@ -429,8 +429,8 @@ The name is an abbreviation of 'thread'.
 * Output redirection is done in a following way: first, the functions
 	'void print(const char *)' and 'void flush()' should be defined within some
 	namespace; second, macro 'PRETTY_OUTPUT_REDIRECTION' should be defined with
-	a name of the namespace where these functions are defined.
-	For convinience there's already files for redirecting output to a file
+	a name of the namespace where these functions are defined. For convinience
+	there's already files for redirecting output to a file
 	(pretty_output_to_file.cpp) and for printing to MVS debug output
 	(pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define
 	macro 'PRETTY_OUTPUT_TO_FILE' with the name of the destination file (default

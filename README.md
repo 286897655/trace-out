@@ -86,7 +86,7 @@ $m(s);
 
 Output:
 ```
-main.cpp:17   |  dump of s:
+main.cpp:17   |  memory of s:
               |      0x7fff54376b10: c8 01 00 00 df 47 45 44 72 02
               |      0x7fff54376b1a: 60 0a
               |
@@ -352,7 +352,7 @@ Options
 
 `PRETTY_OUTPUT_OFF` - turn pretty_output off.
 
-`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and dump output). Default is 79.
+`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and memory output). Default is 79.
 
 `PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
 
@@ -370,6 +370,4 @@ Notes
 
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
 
-* Output redirection is done in a following way: first, the functions `void print(const char *)` and `void flush()` should be defined within some namespace; second, macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where these functions are defined.
-
-For convinience there's already files for redirecting output to a file (pretty_output_to_file.cpp) and for printing to MVS debug output (pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define macro `PRETTY_OUTPUT_TO_FILE` with the name of the destination file (default is 'pretty_output_log.txt').
+* Output redirection is done in a following way: first, the functions `void print(const char *)` and `void flush()` should be defined within some namespace; second, macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where these functions are defined. For convinience there's already files for redirecting output to a file (pretty_output_to_file.cpp) and for printing to MVS debug output (pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define macro `PRETTY_OUTPUT_TO_FILE` with the name of the destination file (default is 'pretty_output_log.txt').
