@@ -355,44 +355,28 @@ The name is an abbreviation of 'thread'.
 	>
 	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  for (auto i : arr)
+	>	            main.cpp:9    |  [iteration #0]
+	>	            main.cpp:11   |      i = 1
 	>
 	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  for (auto i : arr)
-	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #0]
-	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>	            main.cpp:9    |  [iteration #0]
-	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>	            main.cpp:11   |      i = 1
-	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 1
 	>
 	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #1]
+	>	            main.cpp:11   |      i = 2
 	>
 	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #1]
-	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>	            main.cpp:11   |      i = 2
-	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 2
 	>
 	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:9    |  [iteration #2]
-	>
-	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	>	            main.cpp:9    |  [iteration #2]
-	>
-	>	[Thread: 0x108285000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	>	            main.cpp:11   |      i = 3
 	>
 	>	[Thread: 0x108308000 worker]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	>	            main.cpp:9    |  [iteration #2]
 	>	            main.cpp:11   |      i = 3
 	>
 	>	[Thread: 0x7fff71013300 main]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
