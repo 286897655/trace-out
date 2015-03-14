@@ -1,6 +1,30 @@
 #include "pretty_output.h"
 
 
+#if !defined(PRETTY_OUTPUT_REDIRECTION)
+
+#include <iostream>
+
+
+namespace pretty_output
+{
+
+	void print(const char *string)
+	{
+		std::cout << string;
+	}
+
+
+	void flush()
+	{
+		std::cout.flush();
+	}
+
+}
+
+#endif
+
+
 namespace pretty_output
 {
 

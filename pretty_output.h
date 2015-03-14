@@ -173,24 +173,19 @@
 #endif
 
 
-#if defined(PRETTY_OUTPUT_REDIRECTION_H)
-	#include PRETTY_OUTPUT__QUOTIZE(PRETTY_OUTPUT_REDIRECTION_H)
+#if defined(PRETTY_OUTPUT_REDIRECTION)
+	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE PRETTY_OUTPUT_REDIRECTION
 #else
-	#include <iostream>
-
-
-	inline void pretty_output_print(const char *string)
-	{
-		std::cout << string;
-	}
-
-
-	inline void pretty_output_flush()
-	{
-		std::cout.flush();
-	}
-
+	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE pretty_output
 #endif
+
+namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
+{
+
+	void print(const char *string);
+	void flush();
+
+}
 
 
 namespace pretty_output
@@ -418,7 +413,7 @@ namespace pretty_output
 		{
 			*this << "\n";
 
-			pretty_output_flush();
+			flush();
 
 			unlock_output();
 		}
@@ -426,7 +421,7 @@ namespace pretty_output
 
 		out_stream &operator <<(const char *string)
 		{
-			pretty_output_print(string);
+			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
 			_current_line_length += std::strlen(string);
 
 			return *this;
@@ -476,7 +471,7 @@ namespace pretty_output
 
 		void flush()
 		{
-			pretty_output_flush();
+			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::flush();
 		}
 
 	private:

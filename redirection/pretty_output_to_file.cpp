@@ -1,4 +1,4 @@
-#include "pretty_output_to_file.h"
+#include <fstream>
 
 
 #define PRETTY_OUTPUT_TO_FILE__QUOTIZE_IMPL(something) \
@@ -13,5 +13,22 @@
 #endif
 
 
-std::ofstream pretty_output_stream(PRETTY_OUTPUT_TO_FILE__QUOTIZE(PRETTY_OUTPUT_TO_FILE));
+namespace pretty_output_to_file
+{
+
+	std::ofstream stream(PRETTY_OUTPUT_TO_FILE__QUOTIZE(PRETTY_OUTPUT_TO_FILE));
+
+
+	void print(const char *string)
+	{
+		stream << string;
+	}
+
+
+	void flush()
+	{
+		stream.flush();
+	}
+
+}
 
