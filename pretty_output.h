@@ -1314,7 +1314,7 @@ namespace pretty_output
 	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
 		: _filename_line(filename_line), _function_signature(function_signature)
 	{
-		out_stream(_filename_line) << "[call] " << _function_signature.c_str();
+		out_stream(_filename_line) << _function_signature.c_str() << endl << "{";
 		indentation_add();
 	}
 
@@ -1322,7 +1322,7 @@ namespace pretty_output
 	function_printer_t::~function_printer_t()
 	{
 		indentation_remove();
-		out_stream(_filename_line) << "[ret]  " << _function_signature.c_str();
+		out_stream(_filename_line) << "}    // " << _function_signature.c_str();
 	}
 
 
