@@ -1842,6 +1842,7 @@ namespace pretty_output
 
 	print_while_block_t::~print_while_block_t()
 	{
+		out_stream();
 		indentation_remove();
 	}
 
