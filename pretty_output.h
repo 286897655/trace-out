@@ -24,7 +24,8 @@
 
 #elif defined(__GNUC__) || defined(__GNUG__)
 
-	#pragma gnu diagnostic push
+	#pragma GCC diagnostic push
+	// TODO: turn off warnings
 
 #endif
 
@@ -1873,7 +1874,7 @@ namespace pretty_output
 
 #elif defined(__GNUC__) || defined(__GNUG__)
 
-	#pragma gnu diagnostic pop
+	#pragma GCC diagnostic pop
 
 #endif
 
