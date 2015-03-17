@@ -1787,6 +1787,7 @@ namespace pretty_output
 
 	for_block_t::~for_block_t()
 	{
+		out_stream();
 		indentation_remove();
 	}
 
@@ -1799,10 +1800,13 @@ namespace pretty_output
 
 	void for_block_t::iteration()
 	{
-		indentation_remove();
-		out_stream(_filename_line) << "[iteration #" << make_value(_iteration_number) << "]";
-		indentation_add();
+		out_stream stream;
+		if (_iteration_number > 0)
+		{
+			stream << endl;
+		}
 
+		stream << "// iteration #" << make_value(_iteration_number);
 		++_iteration_number;
 	}
 
