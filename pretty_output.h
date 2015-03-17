@@ -1766,6 +1766,7 @@ namespace pretty_output
 
 	print_if_block_t::~print_if_block_t()
 	{
+		out_stream();
 		indentation_remove();
 	}
 
