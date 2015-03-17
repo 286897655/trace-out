@@ -881,8 +881,6 @@ namespace pretty_output
 
 	inline const char *const byte_to_binary(uint8_t byte);
 
-	inline const char *const byte_to_octal(uint8_t byte);
-
 	inline const char *const byte_to_hexadecimal(uint8_t byte);
 
 	template <typename T>
@@ -1309,18 +1307,11 @@ namespace pretty_output
 	// memory
 
 	extern const char *const BINARY_VALUES[];
-	extern const char *const OCTAL_VALUES[];
 	extern const char *const HEXADECIMAL_VALUES[];
 
 	const char *const byte_to_binary(uint8_t byte)
 	{
 		return BINARY_VALUES[byte];
-	}
-
-
-	const char *const byte_to_octal(uint8_t byte)
-	{
-		return OCTAL_VALUES[byte];
 	}
 
 
