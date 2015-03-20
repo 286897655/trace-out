@@ -339,6 +339,16 @@ namespace pretty_output
 	};
 
 
+	template <>
+	struct values_t<>
+	{
+		template <typename ...T>
+		values_t(const char *, const T &...)
+		{
+		}
+	};
+
+
 	template <typename ...T>
 	inline values_t<T...> make_values(const char *delimiter, const T &...values)
 	{
@@ -513,6 +523,8 @@ namespace pretty_output
 	template <typename ...T>
 	inline out_stream &operator <<(out_stream &stream, values_t<T...> values);
 
+	inline out_stream &operator <<(out_stream &stream, values_t<> values);
+
 	template <typename ...T>
 	inline out_stream &operator <<(out_stream &stream, value_t<std::tuple<T...> > tuple);
 
@@ -685,6 +697,12 @@ namespace pretty_output
 	out_stream &operator <<(out_stream &stream, values_t<T...> values)
 	{
 		return stream << make_value(values.data) << values.delimiter << values.values;
+	}
+
+
+	out_stream &operator <<(out_stream &stream, values_t<>)
+	{
+		return stream;
 	}
 
 
