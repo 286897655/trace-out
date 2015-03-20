@@ -1528,8 +1528,12 @@ namespace pretty_output
 	template <typename ...A2>
 	R function_call_printer_t<R, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		R return_value = _function_pointer(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+		stream << make_value(return_value);
+
 		return return_value;
 	}
 
@@ -1545,8 +1549,11 @@ namespace pretty_output
 	template <typename ...A2>
 	void function_call_printer_t<void, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		_function_pointer(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		stream << "(void)";
 	}
 
 
@@ -1563,8 +1570,12 @@ namespace pretty_output
 	template <typename ...A2>
 	R const_member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+		stream << make_value(return_value);
+
 		return return_value;
 	}
 
@@ -1580,8 +1591,11 @@ namespace pretty_output
 	template <typename ...A2>
 	void const_member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		stream << "(void)";
 	}
 
 
@@ -1598,8 +1612,12 @@ namespace pretty_output
 	template <typename ...A2>
 	R member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << make_value(return_value);
+		stream << make_value(return_value);
+
 		return return_value;
 	}
 
@@ -1615,8 +1633,11 @@ namespace pretty_output
 	template <typename ...A2>
 	void member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
 	{
+		out_stream stream(_filename_line);
+		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+
 		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
-		out_stream(_filename_line) << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")";
+		stream << "(void)";
 	}
 
 #endif // __cpusplus >= 201103L
