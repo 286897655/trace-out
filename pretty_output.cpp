@@ -130,6 +130,10 @@ namespace pretty_output
 		"f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
 	};
 
+	const struct endl_t {} ENDL = endl_t();
+	const struct flush_t {} FLUSH = flush_t();
+
+
 
 	template <typename T>
 	class tls
@@ -177,7 +181,6 @@ namespace pretty_output
 	};
 
 
-
 	class mutex
 	{
 	public:
@@ -209,19 +212,6 @@ namespace pretty_output
 	};
 
 
-
-	struct endl_t
-	{
-	};
-
-
-	struct flush_t
-	{
-	};
-
-
-	const endl_t ENDL = endl_t();
-	const flush_t FLUSH = flush_t();
 
 	tls<std::string> _indentation;
 	uint64_t _current_thread_id;

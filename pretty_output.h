@@ -357,11 +357,11 @@ namespace pretty_output
 
 #endif
 
+	struct endl_t;
+	struct flush_t;
 
-	//struct endl_t;
-
-	extern const struct endl_t ENDL;
-	extern const struct flush_t FLUSH;
+	extern const endl_t ENDL;
+	extern const flush_t FLUSH;
 
 
 	class out_stream
@@ -801,7 +801,6 @@ namespace pretty_output
 	enum base_t
 	{
 		BASE_BIN = 2,
-//		BASE_OCT = 8,
 		BASE_SDEC = -10,
 		BASE_UDEC = 10,
 		BASE_HEX = 16,
