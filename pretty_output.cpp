@@ -209,8 +209,19 @@ namespace pretty_output
 	};
 
 
-	endl_t ENDL;
-	flush_t FLUSH;
+
+	struct endl_t
+	{
+	};
+
+
+	struct flush_t
+	{
+	};
+
+
+	const endl_t ENDL = endl_t();
+	const flush_t FLUSH = flush_t();
 
 	tls<std::string> _indentation;
 	uint64_t _current_thread_id;

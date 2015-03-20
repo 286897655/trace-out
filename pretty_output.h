@@ -358,18 +358,10 @@ namespace pretty_output
 #endif
 
 
-	struct endl_t
-	{
-	};
+	//struct endl_t;
 
-	extern endl_t ENDL;
-
-
-	struct flush_t
-	{
-	};
-
-	extern flush_t FLUSH;
+	extern const struct endl_t ENDL;
+	extern const struct flush_t FLUSH;
 
 
 	class out_stream
