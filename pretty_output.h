@@ -362,7 +362,14 @@ namespace pretty_output
 	{
 	};
 
-	extern endl_t endl;
+	extern endl_t ENDL;
+
+
+	struct flush_t
+	{
+	};
+
+	extern flush_t FLUSH;
 
 
 	class out_stream
@@ -429,6 +436,13 @@ namespace pretty_output
 			_current_line_length = 0;
 			*this << stream.str().c_str() << DELIMITER << indentation().c_str();
 
+			return *this;
+		}
+
+
+		out_stream &operator <<(const flush_t&)
+		{
+			flush();
 			return *this;
 		}
 
@@ -937,7 +951,7 @@ namespace pretty_output
 		out_stream stream(filename_line);
 		stream << "memory of " << name << ":";
 		indentation_add();
-		stream << endl;
+		stream << ENDL;
 
 		std::stringstream string_stream;
 
@@ -954,7 +968,7 @@ namespace pretty_output
 				stream << string_stream.str().c_str();
 				string_stream.str("");
 
-				stream << endl << make_value((void*)&iterator[index]) << ":";
+				stream << ENDL << make_value((void*)&iterator[index]) << ":";
 			}
 
 			string_stream << " ";
@@ -970,7 +984,7 @@ namespace pretty_output
 
 		if (!string_stream.str().empty())
 		{
-			stream << string_stream.str().c_str() << endl;
+			stream << string_stream.str().c_str() << ENDL;
 		}
 
 		indentation_remove();
@@ -1310,7 +1324,7 @@ namespace pretty_output
 	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
 		: _filename_line(filename_line), _function_signature(function_signature)
 	{
-		out_stream(_filename_line) << _function_signature.c_str() << endl << "{";
+		out_stream(_filename_line) << _function_signature.c_str() << ENDL << "{";
 		indentation_add();
 	}
 
@@ -1692,7 +1706,7 @@ namespace pretty_output
 		out_stream stream;
 		if (_iteration_number > 0)
 		{
-			stream << endl;
+			stream << ENDL;
 		}
 
 		stream << "// iteration #" << make_value(_iteration_number);

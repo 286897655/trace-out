@@ -209,7 +209,8 @@ namespace pretty_output
 	};
 
 
-	endl_t endl;
+	endl_t ENDL;
+	flush_t FLUSH;
 
 	tls<std::string> _indentation;
 	uint64_t _current_thread_id;
