@@ -1049,7 +1049,7 @@ namespace pretty_output
 		std::string _object_name;
 		std::string _accessor;
 		std::string _function_name;
-		T &_object;
+		const T &_object;
 		funcptr_t _function_pointer;
 	};
 
