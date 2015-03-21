@@ -839,60 +839,62 @@ namespace pretty_output
 		typedef uint8_t unit_t;
 		static const size_t field_width = 2;
 		static const base_t default_base = BASE_HEX;
-		static const size_t precision = 0;
 		typedef void signed_t;
 		typedef void unsigned_t;
 	};
 
-#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(family, type_size, is_signed, unit_type, field_width_value, default_base_value, precision_value, to_signed_type, to_unsigned_type) \
+#define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(family, type_size, is_signed, unit_type, field_width_value, default_base_value, to_signed_type, to_unsigned_type) \
 			template <> \
 			struct print_traits_details<family, type_size, is_signed> \
 			{ \
 				typedef unit_type unit_t; \
 				static const size_t field_width = field_width_value; \
 				static const base_t default_base = default_base_value; \
-				static const size_t precision = precision_value; \
 				typedef to_signed_type signed_t; \
 				typedef to_unsigned_type unsigned_t; \
 			}
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true,
-										int8_t, 2, BASE_HEX, 0, int8_t, uint8_t);
+										int8_t, 2, BASE_HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true,
-										int16_t, 6, BASE_SDEC, 0, int16_t, uint16_t);
+										int16_t, 6, BASE_SDEC, int16_t, uint16_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, true,
-										int32_t, 11, BASE_SDEC, 0, int32_t, uint32_t);
+										int32_t, 11, BASE_SDEC, int32_t, uint32_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, true,
-										int64_t, 21, BASE_SDEC, 0, int64_t, uint64_t);
+										int64_t, 21, BASE_SDEC, int64_t, uint64_t);
 
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, false,
-										uint8_t, 2, BASE_HEX, 0, int8_t, uint8_t);
+										uint8_t, 2, BASE_HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, false,
-										uint16_t, 5, BASE_UDEC, 0, int16_t, uint16_t);
+										uint16_t, 5, BASE_UDEC, int16_t, uint16_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, false,
-										uint32_t, 10, BASE_UDEC, 0, int32_t, uint32_t);
+										uint32_t, 10, BASE_UDEC, int32_t, uint32_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, false,
-										uint64_t, 20, BASE_UDEC, 0, int64_t, uint64_t);
+										uint64_t, 20, BASE_UDEC, int64_t, uint64_t);
 
 
+	// first_digit + point + precision + 'e' + sign + exponent
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 4, true,
-										float, 14, BASE_FLT, 7, float, float);
+										float, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 3, BASE_FLT, float, float);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 8, true,
-										double, 23, BASE_DBL, 15, double, double);
+										double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 4, BASE_DBL, double, double);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 10, true,
-										long double, 27, BASE_LDBL, 19, long double, long double);
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
+
+	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 12, true,
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 16, true,
-										long double, 32, BASE_LDBL, 24, long double, long double);
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
 
 
 	template <typename T>
@@ -1421,7 +1423,7 @@ namespace pretty_output
 	inline const std::string bytes_to_floating_point_string(T value)
 	{
 		std::stringstream stream;
-		stream.precision(print_traits<T>::precision);
+		stream.precision(std::numeric_limits<T>::digits10);
 		stream << std::scientific << value;
 
 		return stream.str();
