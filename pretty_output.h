@@ -66,11 +66,11 @@
 				if (pretty_output::print_if_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::print_if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__))
 
 
-	// NOTE: initializing block variable in such way to prevent using of the uniform initialization list and so make it compile with C++03
-		#define pretty_output_for(block, ...) \
-					if (pretty_output::for_block_t block = pretty_output::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
-						for (__VA_ARGS__) \
-							if (block.iteration(), false) {} else
+	#define pretty_output_for(block, ...) \
+				if (pretty_output::for_block_t block = pretty_output::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+					for (__VA_ARGS__) \
+						if (block.iteration(), false) {} else
+
 
 	#define $for(...) \
 				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
@@ -78,7 +78,7 @@
 
 	#define $while(...) \
 				if (pretty_output::print_while_header(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__), false) {} else \
-				while (pretty_output::print_while_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(#__VA_ARGS__, __VA_ARGS__))
+					while (pretty_output::print_while_block_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::print_while_block(#__VA_ARGS__, __VA_ARGS__))
 
 
 	#define $_ \
