@@ -686,9 +686,7 @@ namespace pretty_output
 
 	out_stream &operator <<(out_stream &stream, value_t<char> value)
 	{
-		std::stringstream string_stream;
-		string_stream << "\'" << value.data << "\'";
-		return stream << string_stream.str();
+		return stream << "'" << value.data << "'";
 	}
 
 
