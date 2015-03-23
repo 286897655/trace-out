@@ -413,7 +413,7 @@ namespace pretty_output
 		{
 			char string[2] = {character, '\0'};
 			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
-			_current_line_length += std::strlen(string);
+			++_current_line_length;
 
 			return *this;
 		}
