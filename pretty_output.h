@@ -409,6 +409,16 @@ namespace pretty_output
 		}
 
 
+		out_stream &operator <<(char character)
+		{
+			char string[2] = {character, '\0'};
+			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
+			_current_line_length += std::strlen(string);
+
+			return *this;
+		}
+
+
 		out_stream &operator <<(const char *string)
 		{
 			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
