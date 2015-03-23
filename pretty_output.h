@@ -685,9 +685,7 @@ namespace pretty_output
 	template <typename A, typename B>
 	out_stream &operator <<(out_stream &stream, value_t<std::pair<A, B> > value)
 	{
-		std::stringstream string_stream;
-		string_stream << "{" << value.data.first << ": " << value.data.second << "}";
-		return stream << string_stream.str();
+		return stream << "{" << make_value(value.data.first) << ": " << make_value(value.data.second) << "}";
 	}
 
 
