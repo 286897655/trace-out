@@ -720,16 +720,16 @@ namespace pretty_output
 
 
 	template <std::size_t I, typename ...T>
-	typename std::enable_if<I == sizeof...(T), out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &)
+	typename std::enable_if<I == sizeof...(T) - 1, out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
 	{
-		return stream << ")";
+		return stream << make_value(std::get<I>(tuple)) << ")";
 	}
 
 
 	template <std::size_t I, typename ...T>
-	typename std::enable_if<I < sizeof...(T), out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
+	typename std::enable_if<I < sizeof...(T) - 1, out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
 	{
-		stream << ", " << make_value(std::get<I>(tuple));
+		stream << ", " << make_value(std::get<I>(tuple)) << ", ";
 		return print_tuple<I + 1>(stream, tuple);
 	}
 
@@ -737,27 +737,33 @@ namespace pretty_output
 	template <typename ...T>
 	out_stream &operator <<(out_stream &stream, value_t<std::tuple<T...> > value)
 	{
-		stream << "(" << make_value(std::get<0>(value.data));
+		stream << "(" << make_value(std::get<0>(value.data)) << ", ";
 		return print_tuple<1>(stream, value.data);
+	}
+
+
+	// not sure if all C++11 standard library versions have std::next
+	template <typename T>
+	T next_itr(T iterator)
+	{
+		++iterator;
+		return iterator;
 	}
 
 
 	template <template <typename ...> class Container, typename ...A>
 	out_stream &operator <<(out_stream &stream, value_t<Container<A...> > value)
 	{
-		auto iterator = value.data.begin();
-		auto &item = *iterator;
+		const auto &container = value.data;
 
-		stream << "[" << make_value(item);
-
-		++iterator;
-		for ( ; iterator != value.data.end(); ++iterator)
+		stream << "[";
+		auto iterator = container.cbegin();
+		for ( ; next_itr(iterator) != container.cend(); ++iterator)
 		{
-			auto &item = *iterator;
-			stream << ", " << make_value(item);
+			stream << make_value(*iterator) << ", ";
 		}
 
-		stream << "]";
+		stream << make_value(*iterator) << "]";
 
 		return stream;
 	}
