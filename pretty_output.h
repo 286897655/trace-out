@@ -227,7 +227,7 @@ namespace pretty_output
 	inline const std::string thread_id_field(uint64_t thread_id)
 	{
 		std::stringstream stream;
-		stream << (void*)thread_id;
+		stream << reinterpret_cast<void*>(thread_id);
 
 		return stream.str();
 	}
@@ -466,7 +466,7 @@ namespace pretty_output
 
 			size_t size = printf_string_length(format, arguments_copy) + 1;
 
-			char *buffer = (char*)std::malloc(size);
+			char *buffer = static_cast<char*>(std::malloc(size));
 			printf_to_string(buffer, size, format, arguments);
 			*this << "// " << buffer;
 
@@ -650,7 +650,7 @@ namespace pretty_output
 		}
 
 		std::stringstream string_stream;
-		std::size_t numeric_value = (uintptr_t)value.data;
+		std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.data);
 		string_stream << std::hex << std::showbase << numeric_value;
 
 		return stream << string_stream.str().c_str();
@@ -963,7 +963,7 @@ namespace pretty_output
 
 		size_t column_width = field_width<T>(base);
 
-		const unit_t *iterator = (const unit_t*)pointer;
+		const unit_t *iterator = reinterpret_cast<const unit_t*>(pointer);
 		size_t length = size / sizeof(unit_t);
 
 		stream << make_value((void*)iterator) << ":";
@@ -1000,7 +1000,7 @@ namespace pretty_output
 	template <typename T>
 	inline void print_memory(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order())
 	{
-		print_memory(filename_line, name, (uint8_t*)&variable, sizeof(T), base, byte_order);
+		print_memory(filename_line, name, reinterpret_cast<const uint8_t*>(&variable), sizeof(T), base, byte_order);
 	}
 
 
@@ -1391,7 +1391,7 @@ namespace pretty_output
 	const std::string bytes_to_binary_string(T value)
 	{
 		std::stringstream stream;
-		uint8_t *data = (uint8_t*)&value;
+		uint8_t *data = reinterpret_cast<uint8_t*>(&value);
 		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_binary(data[index]);
@@ -1406,8 +1406,8 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::signed_t signed_promotion_t;
 
-		signed_promotion_t signed_value = (signed_promotion_t)value;
-		int64_t signed_integer = (int64_t)signed_value;
+		signed_promotion_t signed_value = static_cast<signed_promotion_t>(value);
+		int64_t signed_integer = static_cast<int64_t>(signed_value);
 
 		std::stringstream stream;
 		stream << signed_integer;
@@ -1421,8 +1421,8 @@ namespace pretty_output
 	{
 		typedef typename print_traits<T>::unsigned_t unsigned_promotion_t;
 
-		unsigned_promotion_t unsigned_value = (unsigned_promotion_t)value;
-		uint64_t unsigned_integer = (uint64_t)unsigned_value;
+		unsigned_promotion_t unsigned_value = static_cast<unsigned_promotion_t>(value);
+		uint64_t unsigned_integer = static_cast<uint64_t>(unsigned_value);
 
 		std::stringstream stream;
 		stream << unsigned_integer;
@@ -1446,7 +1446,7 @@ namespace pretty_output
 	const std::string bytes_to_hexadecimal_string(T value)
 	{
 		std::stringstream stream;
-		uint8_t *data = (uint8_t*)&value;
+		uint8_t *data = reinterpret_cast<uint8_t*>(&value);
 		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
@@ -1501,8 +1501,8 @@ namespace pretty_output
 	{
 		if (current_byte_order() != byte_order)
 		{
-			uint8_t *ordered_bytes_iterator = (uint8_t*)ordered_bytes;
-			const uint8_t *unordered_bytes_iterator = (const uint8_t*)unordered_bytes + size - 1;
+			uint8_t *ordered_bytes_iterator = reinterpret_cast<uint8_t*>(ordered_bytes);
+			const uint8_t *unordered_bytes_iterator = reinterpret_cast<const uint8_t*>(unordered_bytes) + size - 1;
 			for (;;)
 			{
 				if (unordered_bytes_iterator < unordered_bytes)

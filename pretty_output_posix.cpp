@@ -10,7 +10,7 @@ namespace pretty_output
 
 	uint64_t current_thread_id()
 	{
-		return (uint64_t)pthread_self();
+		return reinterpret_cast<uint64_t>(pthread_self());
 	}
 
 

@@ -153,7 +153,7 @@ namespace pretty_output
 
 		void set(const T &value)
 		{
-			T *old_value = (T*)tls_get(_key);
+			T *old_value = static_cast<T*>(tls_get(_key));
 			if (old_value != NULL)
 			{
 				delete old_value;
@@ -166,7 +166,7 @@ namespace pretty_output
 
 		T &get() const
 		{
-			T *value = (T*)tls_get(_key);
+			T *value = static_cast<T*>(tls_get(_key));
 			if (value == NULL)
 			{
 				value = new T;
