@@ -944,6 +944,8 @@ namespace pretty_output
 
 	inline byteorder_t current_byte_order();
 
+	inline void reverse_bytes(void *destination, const void *source, size_t size);
+
 	inline void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
 
 
@@ -1497,23 +1499,24 @@ namespace pretty_output
 	}
 
 
+	void reverse_bytes(void *destination, const void *source, size_t size)
+	{
+		uint8_t *destination_iterator = static_cast<uint8_t*>(destination);
+		const uint8_t *source_iterator = static_cast<const uint8_t*>(source) + size - 1;
+		for (size_t bytes_processed = 0; bytes_processed < size; ++bytes_processed)
+		{
+			*destination_iterator = *source_iterator;
+			++destination_iterator;
+			--source_iterator;
+		}
+	}
+
+
 	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
 	{
 		if (current_byte_order() != byte_order)
 		{
-			uint8_t *ordered_bytes_iterator = reinterpret_cast<uint8_t*>(ordered_bytes);
-			const uint8_t *unordered_bytes_iterator = reinterpret_cast<const uint8_t*>(unordered_bytes) + size - 1;
-			for (;;)
-			{
-				if (unordered_bytes_iterator < unordered_bytes)
-				{
-					break;
-				}
-
-				*ordered_bytes_iterator = *unordered_bytes_iterator;
-				++ordered_bytes_iterator;
-				--unordered_bytes_iterator;
-			}
+			reverse_bytes(ordered_bytes, unordered_bytes, size);
 		}
 		else
 		{
