@@ -489,6 +489,8 @@ namespace pretty_output
 
 	inline out_stream &operator <<(out_stream &stream, value_t<const char*> string);
 
+	inline out_stream &operator <<(out_stream &stream, value_t<char*> string);
+
 	inline out_stream &operator <<(out_stream &stream, value_t<std::string> value);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<short> value);
@@ -561,6 +563,12 @@ namespace pretty_output
 
 
 	out_stream &operator <<(out_stream &stream, value_t<const char*> value)
+	{
+		return stream << "\"" << value.data << "\"";
+	}
+
+
+	out_stream &operator <<(out_stream &stream, value_t<char*> value)
 	{
 		return stream << "\"" << value.data << "\"";
 	}
