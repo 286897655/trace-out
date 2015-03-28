@@ -10,7 +10,7 @@ namespace pretty_output
 
 	uint64_t current_thread_id()
 	{
-		return reinterpret_cast<uint64_t>(GetCurrentThreadId());
+		return static_cast<uint64_t>(GetCurrentThreadId());
 	}
 
 
@@ -90,13 +90,15 @@ namespace pretty_output
 
 	size_t printf_string_length(const char *format, va_list arguments)
 	{
-		return _vscprintf(format, arguments);
+		int retval = _vscprintf(format, arguments);
+		return static_cast<size_t>(retval);
 	}
 
 
 	size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments)
 	{
-		return _vsnprintf_s(buffer, size, _TRUNCATE, format, arguments);
+		int retval = _vsnprintf_s(buffer, size, _TRUNCATE, format, arguments);
+		return static_cast<size_t>(retval);
 	}
 
 }

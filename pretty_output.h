@@ -27,6 +27,11 @@
 	#pragma GCC diagnostic push
 	// TODO: turn off warnings
 
+#elif defined(_MSC_VER)
+
+	#pragma warning(push)
+	#pragma warning(disable:4296) // expression is always false
+
 #endif
 
 
@@ -282,14 +287,29 @@ namespace pretty_output
 	template <typename T>
 	struct value_t
 	{
-		value_t(const T &value)
-			: data(value)
-		{
-		}
+		value_t(const T &value);
 
 
 		const T &data;
+
+	private:
+		value_t &operator = (const value_t&);
 	};
+
+
+	template <typename T>
+	value_t<T>::value_t(const T &value)
+		: data(value)
+	{
+	}
+
+
+	template <typename T>
+	value_t<T> &value_t<T>::operator =(const value_t&)
+	{
+		return *this;
+	}
+
 
 
 	inline value_t<const char*> make_value(const char *const &value)
@@ -917,9 +937,9 @@ namespace pretty_output
 
 
 
-	inline const char *const byte_to_binary(uint8_t byte);
+	inline const char *byte_to_binary(uint8_t byte);
 
-	inline const char *const byte_to_hexadecimal(uint8_t byte);
+	inline const char *byte_to_hexadecimal(uint8_t byte);
 
 	template <typename T>
 	inline size_t field_width(base_t base);
@@ -1352,13 +1372,13 @@ namespace pretty_output
 	extern const char *const BINARY_VALUES[];
 	extern const char *const HEXADECIMAL_VALUES[];
 
-	const char *const byte_to_binary(uint8_t byte)
+	const char *byte_to_binary(uint8_t byte)
 	{
 		return BINARY_VALUES[byte];
 	}
 
 
-	const char *const byte_to_hexadecimal(uint8_t byte)
+	const char *byte_to_hexadecimal(uint8_t byte)
 	{
 		return HEXADECIMAL_VALUES[byte];
 	}
@@ -1383,7 +1403,8 @@ namespace pretty_output
 			case BASE_LDBL:
 				return print_traits<T>::field_width;
 
-			default: // BASE_HEX
+			case BASE_HEX:
+			default:
 				return sizeof(typename print_traits<T>::unit_t) * 2;
 		}
 	}
@@ -1477,7 +1498,8 @@ namespace pretty_output
 			case BASE_LDBL:
 				return bytes_to_floating_point_string<T>;
 
-			default: // BASE_HEX
+			case BASE_HEX:
+			default:
 				return bytes_to_hexadecimal_string<T>;
 		}
 	}
@@ -1485,8 +1507,8 @@ namespace pretty_output
 
 	byteorder_t current_byte_order()
 	{
-		static const uint16_t VALUE = 0x0001;
-		static const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
+		const uint16_t VALUE = 0x0001;
+		const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
 
 		if (FIRST_BYTE == 0x01)
 		{
@@ -1817,6 +1839,10 @@ namespace pretty_output
 #elif defined(__GNUC__) || defined(__GNUG__)
 
 	#pragma GCC diagnostic pop
+
+#elif defined(_MSC_VER)
+
+	#pragma warning(pop)
 
 #endif
 
