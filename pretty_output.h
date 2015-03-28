@@ -1,5 +1,11 @@
 #pragma once
 
+
+#if __cplusplus >= 201103L || _MSC_VER >= 1800
+	#define PRETTY_OUTPUT_CPP11
+#endif
+
+
 #include <limits>
 #include <string>
 #include <sstream>
@@ -10,7 +16,7 @@
 #include <cstring>
 #include <stdint.h>
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 	#include <tuple>
 #endif
 
@@ -51,7 +57,7 @@
 				pretty_output::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
-	#if __cplusplus >= 201103L
+	#if defined(PRETTY_OUTPUT_CPP11)
 
 	#define $c(function_name) \
 				pretty_output::function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
@@ -60,7 +66,7 @@
 	#define $cm(object, function_name) \
 				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, object, &std::remove_pointer<decltype(object)>::type::function_name)
 
-	#endif // __cplusplus >= 201103L
+	#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	#define $return \
@@ -108,7 +114,7 @@
 	#define $f
 
 
-	#if __cplusplus >= 201103L
+	#if defined(PRETTY_OUTPUT_CPP11)
 
 	#define $c(function_name) \
 				function_name
@@ -117,7 +123,7 @@
 	#define $cm(object, function_name) \
 				(object.*&std::remove_pointer<decltype(object)>::type::function_name)
 
-	#endif // __cplusplus >= 201103L
+	#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	#define $return \
@@ -325,7 +331,7 @@ namespace pretty_output
 	}
 
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename...>
 	struct values_t;
@@ -376,7 +382,7 @@ namespace pretty_output
 		return values_t<T...>(delimiter, values...);
 	}
 
-#endif
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 	struct endl_t;
 	struct flush_t;
@@ -523,13 +529,13 @@ namespace pretty_output
 
 	inline out_stream &operator <<(out_stream &stream, value_t<unsigned long> value);
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	inline out_stream &operator <<(out_stream &stream, value_t<long long> value);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<unsigned long long> value);
 
-#endif // __cpluspluc >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 	inline out_stream &operator <<(out_stream &stream, value_t<float> value);
 
@@ -552,7 +558,7 @@ namespace pretty_output
 	template <typename A, typename B>
 	inline out_stream &operator <<(out_stream &stream, value_t<std::pair<A, B> > value);
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename T>
 	inline out_stream &operator <<(out_stream &stream, values_t<T> values);
@@ -568,7 +574,7 @@ namespace pretty_output
 	template <template <typename ...> class Container, typename ...A>
 	inline out_stream &operator <<(out_stream &stream, value_t<Container<A...> > value);
 
-#endif // __cplusplus >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename T>
 	inline const std::string fundamental_to_string(T value)
@@ -628,7 +634,7 @@ namespace pretty_output
 	}
 
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	out_stream &operator <<(out_stream &stream, value_t<long long> value)
 	{
@@ -641,7 +647,7 @@ namespace pretty_output
 		return stream << fundamental_to_string(value.data).c_str();
 	}
 
-#endif // __cplusplus >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	out_stream &operator <<(out_stream &stream, value_t<float> value)
@@ -717,7 +723,7 @@ namespace pretty_output
 	}
 
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename T>
 	out_stream &operator <<(out_stream &stream, values_t<T> values)
@@ -788,7 +794,7 @@ namespace pretty_output
 		return stream;
 	}
 
-#endif // __cplusplus >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	// watch
@@ -1026,7 +1032,7 @@ namespace pretty_output
 	}
 
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	// function call
 
@@ -1189,7 +1195,7 @@ namespace pretty_output
 		return member_function_call_printer_t<T, R, A...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 	}
 
-#endif // __cplusplus >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	// return
@@ -1547,7 +1553,7 @@ namespace pretty_output
 	}
 
 
-#if __cplusplus >= 201103L
+#if defined(PRETTY_OUTPUT_CPP11)
 
 	// function call
 
@@ -1674,7 +1680,7 @@ namespace pretty_output
 		stream << "(void)";
 	}
 
-#endif // __cpusplus >= 201103L
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	// return
