@@ -31,7 +31,7 @@
 #elif defined(__GNUC__) || defined(__GNUG__)
 
 	#pragma GCC diagnostic push
-	// TODO: turn off warnings
+	#pragma GCC diagnostic ignored "-Wvariadic-macros" // doesn't work with MinGW and probably also with GCC
 
 #elif defined(_MSC_VER)
 
