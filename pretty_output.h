@@ -1837,6 +1837,10 @@ namespace pretty_output
 
 }
 
+#undef PRETTY_OUTPUT_CPP11
+#undef PRETTY_OUTPUT_REDIRECTION_NAMESPACE
+#undef PRETTY_OUTPUT__DEFINE_PRINT_TRAITS
+
 
 #if defined(__clang__)
 
