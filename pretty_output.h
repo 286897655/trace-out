@@ -333,8 +333,8 @@ namespace pretty_output
 	template <typename T, typename ...R>
 	struct values_t<T, R...>
 	{
-		values_t(const char *delim, const T &first, const R &...rest)
-			: delimiter(delim), data(first), values(delim, rest...)
+		values_t(const char *delimiter_value, const T &first, const R &...rest)
+			: delimiter(delimiter_value), data(first), values(delimiter_value, rest...)
 		{
 		}
 
@@ -348,7 +348,7 @@ namespace pretty_output
 	template <typename T>
 	struct values_t<T>
 	{
-		values_t(const char *delimiter, const T &value)
+		values_t(const char *, const T &value)
 			: delimiter(""), data(value)
 		{
 		}
