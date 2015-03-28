@@ -170,13 +170,6 @@
 			(pretty_output::filename_line_field(pretty_output::filename_from_path(__FILE__), __LINE__))
 
 
-#define PRETTY_OUTPUT__QUOTIZE_IMPL(something) \
-			#something
-
-#define PRETTY_OUTPUT__QUOTIZE(something) \
-			PRETTY_OUTPUT__QUOTIZE_IMPL(something)
-
-
 #if defined(__GNUG__) || defined(__clang__)
 	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #elif defined(_MSC_VER)
