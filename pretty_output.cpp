@@ -1,7 +1,7 @@
 #include "pretty_output.h"
 
 
-#if !defined(PRETTY_OUTPUT_REDIRECTION)
+#if PRETTY_OUTPUT_REDIRECTION == pretty_output
 
 #include <iostream>
 
@@ -57,7 +57,6 @@ namespace pretty_output
 	const char FILE_PATH_COMPONENT_DELIMITER = '/';
 #endif
 
-	const size_t DELIMITER_WIDTH = sizeof(DELIMITER) - 1;
 	const size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
 
 	const char *const BINARY_VALUES[] = {
@@ -139,42 +138,10 @@ namespace pretty_output
 	class tls
 	{
 	public:
-		tls()
-		{
-			_key = tls_new_key();
-		}
-
-
-		~tls()
-		{
-			tls_delete_key(_key);
-		}
-
-
-		void set(const T &value)
-		{
-			T *old_value = static_cast<T*>(tls_get(_key));
-			if (old_value != NULL)
-			{
-				delete old_value;
-			}
-
-			T *new_value = new T(value);
-			tls_set(_key, new_value);
-		}
-
-
-		T &get() const
-		{
-			T *value = static_cast<T*>(tls_get(_key));
-			if (value == NULL)
-			{
-				value = new T;
-				tls_set(_key, value);
-			}
-
-			return *value;
-		}
+		tls();
+		~tls();
+		void set(const T &value);
+		T &get() const;
 
 	private:
 		tlskey_t *_key;
@@ -184,28 +151,10 @@ namespace pretty_output
 	class mutex
 	{
 	public:
-		mutex()
-		{
-			_handle = mutex_new();
-		}
-
-
-		~mutex()
-		{
-			mutex_delete(_handle);
-		}
-
-
-		void lock()
-		{
-			mutex_lock(_handle);
-		}
-
-
-		void unlock()
-		{
-			mutex_unlock(_handle);
-		}
+		mutex();
+		~mutex();
+		void lock();
+		void unlock();
 
 	private:
 		mutex_t *_handle;
@@ -275,6 +224,392 @@ namespace pretty_output
 	{
 		const std::string &old_indentation = _indentation.get();
 		_indentation.set(old_indentation.substr(0, old_indentation.length() - INDENTATION_WIDTH));
+	}
+
+
+	const std::string thread_id_field(uint64_t thread_id)
+	{
+		std::stringstream stream;
+		stream << reinterpret_cast<void*>(thread_id);
+
+		return stream.str();
+	}
+
+
+	const std::string thread_header(const std::string &thread_id, const std::string &thread_name)
+	{
+		std::stringstream stream;
+		stream.fill(THREAD_HEADER_SEPARATOR);
+		stream.flags(std::ios::left);
+		stream.width(WIDTH);
+		stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
+
+		return stream.str();
+	}
+
+
+	const std::string filename_from_path(const char *path)
+	{
+		std::string file_path(path);
+		return file_path.substr(file_path.rfind(FILE_PATH_COMPONENT_DELIMITER) + 1);
+	}
+
+
+	const std::string filename_line_field(const std::string &file, unsigned int line)
+	{
+		std::stringstream stream;
+		stream.fill(' ');
+
+		stream.width(FILENAME_FIELD_WIDTH);
+		stream.flags(std::ios::right);
+		std::string filename = file;
+		if (filename.length() > FILENAME_FIELD_WIDTH)
+		{
+			filename = filename.substr(0, FILENAME_FIELD_WIDTH - FILENAME_FIELD_EXCESS_PADDING_SIZE);
+			filename += FILENAME_FIELD_EXCESS_PADDING;
+		}
+
+		stream << filename;
+
+		stream.width(0);
+		stream << ":";
+
+		stream.width(LINE_FIELD_WIDTH);
+		stream.flags(std::ios::left);
+		stream << line;
+
+		return stream.str();
+	}
+
+
+	out_stream::out_stream(const std::string &filename_line)
+		: _current_line_length(0)
+	{
+		lock_output();
+
+		if (!is_running_same_thread())
+		{
+			std::string thread_id = thread_id_field(current_thread_id());
+			const std::string &thread_name = current_thread_name();
+			const std::string &header = thread_header(thread_id, thread_name);
+			*this << "\n" << header.c_str() << "\n";
+		}
+
+		*this << filename_line.c_str() << DELIMITER << indentation().c_str();
+	}
+
+
+	out_stream::out_stream()
+		: _current_line_length(0)
+	{
+		lock_output();
+
+		std::stringstream stream;
+		stream.fill(' ');
+		stream.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+		stream << "";
+
+		*this << stream.str().c_str() << DELIMITER << indentation().c_str();
+	}
+
+
+	out_stream::~out_stream()
+	{
+		*this << "\n";
+
+		flush();
+
+		unlock_output();
+	}
+
+
+	out_stream &out_stream::operator <<(char character)
+	{
+		char string[2] = {character, '\0'};
+		PRETTY_OUTPUT_REDIRECTION::print(string);
+		++_current_line_length;
+
+		return *this;
+	}
+
+
+	out_stream &out_stream::operator <<(const char *string)
+	{
+		PRETTY_OUTPUT_REDIRECTION::print(string);
+		_current_line_length += std::strlen(string);
+
+		return *this;
+	}
+
+
+	out_stream &out_stream::operator <<(const endl_t&)
+	{
+		std::stringstream stream;
+		stream.fill(' ');
+		stream.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
+		stream << "";
+
+		*this << "\n";
+		_current_line_length = 0;
+		*this << stream.str().c_str() << DELIMITER << indentation().c_str();
+
+		return *this;
+	}
+
+
+	out_stream &out_stream::operator <<(const flush_t&)
+	{
+		flush();
+		return *this;
+	}
+
+
+	size_t out_stream::width_left() const
+	{
+		return WIDTH - _current_line_length;
+	}
+
+
+	void out_stream::printf(const char *format, ...)
+	{
+		va_list arguments;
+		va_list arguments_copy;
+
+		va_start(arguments, format);
+		va_start(arguments_copy, format);
+
+		size_t size = printf_string_length(format, arguments_copy) + 1;
+
+		char *buffer = static_cast<char*>(std::malloc(size));
+		printf_to_string(buffer, size, format, arguments);
+		*this << "// " << buffer;
+
+		va_end(arguments);
+		va_end(arguments_copy);
+		std::free(buffer);
+	}
+
+
+	void out_stream::flush()
+	{
+		PRETTY_OUTPUT_REDIRECTION::flush();
+	}
+
+
+	//
+	// Memory
+
+	const char *byte_to_binary(uint8_t byte)
+	{
+		return BINARY_VALUES[byte];
+	}
+
+
+	const char *byte_to_hexadecimal(uint8_t byte)
+	{
+		return HEXADECIMAL_VALUES[byte];
+	}
+
+
+	byteorder_t current_byte_order()
+	{
+		const uint16_t VALUE = 0x0001;
+		const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
+
+		if (FIRST_BYTE == 0x01)
+		{
+			return BYTE_ORDER_BIG_ENDIAN;
+		}
+		else
+		{
+			return BYTE_ORDER_LITTLE_ENDIAN;
+		}
+	}
+
+
+	void reverse_bytes(void *destination, const void *source, size_t size)
+	{
+		uint8_t *destination_iterator = static_cast<uint8_t*>(destination);
+		const uint8_t *source_iterator = static_cast<const uint8_t*>(source) + size - 1;
+		for (size_t bytes_processed = 0; bytes_processed < size; ++bytes_processed)
+		{
+			*destination_iterator = *source_iterator;
+			++destination_iterator;
+			--source_iterator;
+		}
+	}
+
+
+	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
+	{
+		if (current_byte_order() != byte_order)
+		{
+			reverse_bytes(ordered_bytes, unordered_bytes, size);
+		}
+		else
+		{
+			std::memcpy(ordered_bytes, unordered_bytes, size);
+		}
+	}
+
+
+	//
+	// Function printer
+
+	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
+		: _filename_line(filename_line), _function_signature(function_signature)
+	{
+		out_stream(_filename_line) << _function_signature.c_str() << ENDL << "{";
+		indentation_add();
+	}
+
+
+	function_printer_t::~function_printer_t()
+	{
+		indentation_remove();
+		out_stream(_filename_line) << "}    // " << _function_signature.c_str();
+	}
+
+
+	function_printer_t function_printer(const std::string &filename_line, const char *function_signature)
+	{
+		return function_printer_t(filename_line, function_signature);
+	}
+
+
+	//
+	// Return printer
+
+	return_printer_t::return_printer_t(const std::string &filename_line)
+		: _filename_line(filename_line)
+	{
+	}
+
+
+	return_printer_t return_printer(const std::string &filename_line)
+	{
+		return return_printer_t(filename_line);
+	}
+
+
+	//
+	// 'block<void>' specialization
+
+	block_t<void, void>::block_t()
+	{
+		indentation_add();
+	}
+
+
+	block_t<void, void>::~block_t()
+	{
+		indentation_remove();
+		out_stream();
+	}
+
+
+	//
+	// For block
+
+	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
+		: _iteration_number(0)
+	{
+		out_stream(filename_line) << "for (" << expression << ")";
+	}
+
+
+	for_block_t::~for_block_t()
+	{
+	}
+
+
+	for_block_t::operator bool() const
+	{
+		return false;
+	}
+
+
+	size_t for_block_t::iteration()
+	{
+		return ++_iteration_number;
+	}
+
+
+	for_block_t for_block(const std::string &filename_line, const char *expression)
+	{
+		return for_block_t(filename_line, expression);
+	}
+
+
+	//
+	// TLS
+
+	template <typename T>
+	tls<T>::tls()
+	{
+		_key = tls_new_key();
+	}
+
+
+	template <typename T>
+	tls<T>::~tls()
+	{
+		tls_delete_key(_key);
+	}
+
+
+	template <typename T>
+	void tls<T>::set(const T &value)
+	{
+		T *old_value = static_cast<T*>(tls_get(_key));
+		if (old_value != NULL)
+		{
+			delete old_value;
+		}
+
+		T *new_value = new T(value);
+		tls_set(_key, new_value);
+	}
+
+
+	template <typename T>
+	T &tls<T>::get() const
+	{
+		T *value = static_cast<T*>(tls_get(_key));
+		if (value == NULL)
+		{
+			value = new T;
+			tls_set(_key, value);
+		}
+
+		return *value;
+	}
+
+
+	//
+	// Mutex
+
+	mutex::mutex()
+	{
+		_handle = mutex_new();
+	}
+
+
+	mutex::~mutex()
+	{
+		mutex_delete(_handle);
+	}
+
+
+	void mutex::lock()
+	{
+		mutex_lock(_handle);
+	}
+
+
+	void mutex::unlock()
+	{
+		mutex_unlock(_handle);
 	}
 
 }
