@@ -299,7 +299,7 @@ namespace pretty_output
 
 
 	template <typename ...Types_t>
-	inline values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values);
+	values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -568,7 +568,7 @@ namespace pretty_output
 		typedef Return_t (*funcptr_t)(Arguments_t...);
 
 
-		inline function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
+		function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
 		template <typename ...CallArguments_t>
 		Return_t operator ()(CallArguments_t &&...arguments);
@@ -872,7 +872,7 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	inline value_t<Type_t> make_value(const Type_t &value)
+	value_t<Type_t> make_value(const Type_t &value)
 	{
 		return value_t<Type_t>(value);
 	}
@@ -901,7 +901,7 @@ namespace pretty_output
 
 
 	template <typename ...Types_t>
-	inline values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values)
+	values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values)
 	{
 		return values_t<Types_t...>(delimiter, values...);
 	}
@@ -1226,7 +1226,7 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	inline const std::string bytes_to_floating_point_string(Type_t value)
+	const std::string bytes_to_floating_point_string(Type_t value)
 	{
 		std::stringstream stream;
 		stream.precision(std::numeric_limits<Type_t>::digits10);
