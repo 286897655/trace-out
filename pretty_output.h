@@ -226,39 +226,39 @@ namespace pretty_output
 	const std::string filename_from_path(const char *path);
 	const std::string filename_line_field(const std::string &file, unsigned int line);
 
-	template <typename T>
-	T &reference(T &object);
+	template <typename Type_t>
+	Type_t &reference(Type_t &object);
 
-	template <typename T>
-	const T &reference(const T &object);
+	template <typename Type_t>
+	const Type_t &reference(const Type_t &object);
 
-	template <typename T>
-	T &reference(T *object);
+	template <typename Type_t>
+	Type_t &reference(Type_t *object);
 
-	template <typename T>
-	const T &reference(const T *object);
+	template <typename Type_t>
+	const Type_t &reference(const Type_t *object);
 
 
 	//
 	// Values
 
-	template <typename T>
+	template <typename Type_t>
 	struct value_t
 	{
-		value_t(const T &value);
+		value_t(const Type_t &value);
 
 
-		const T &data;
+		const Type_t &data;
 
 	private:
-		value_t &operator = (const value_t&);
+		value_t &operator = (const value_t &);
 	};
 
 
-	inline value_t<const char*> make_value(const char *const &value);
+	inline value_t<const char *> make_value(const char *const &value);
 
-	template <typename T>
-	value_t<T> make_value(const T &value);
+	template <typename Type_t>
+	value_t<Type_t> make_value(const Type_t &value);
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -267,39 +267,39 @@ namespace pretty_output
 	struct values_t;
 
 
-	template <typename T, typename ...R>
-	struct values_t<T, R...>
+	template <typename Type_t, typename ...RestTypes_t>
+	struct values_t<Type_t, RestTypes_t...>
 	{
-		values_t(const char *delimiter_value, const T &first, const R &...rest);
+		values_t(const char *delimiter_value, const Type_t &first, const RestTypes_t &...rest);
 
 
 		const char *delimiter;
-		const T &data;
-		values_t<R...> values;
+		const Type_t &data;
+		values_t<RestTypes_t...> values;
 	};
 
 
-	template <typename T>
-	struct values_t<T>
+	template <typename Type_t>
+	struct values_t<Type_t>
 	{
-		values_t(const char *, const T &value);
+		values_t(const char *, const Type_t &value);
 
 
 		const char *delimiter;
-		const T &data;
+		const Type_t &data;
 	};
 
 
 	template <>
 	struct values_t<>
 	{
-		template <typename ...T>
-		values_t(const char *, const T &...);
+		template <typename ...Whatever_t>
+		values_t(const char *, const Whatever_t &...);
 	};
 
 
-	template <typename ...T>
-	inline values_t<T...> make_values(const char *delimiter, const T &...values);
+	template <typename ...Types_t>
+	inline values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -322,8 +322,8 @@ namespace pretty_output
 		~out_stream();
 		out_stream &operator <<(char character);
 		out_stream &operator <<(const char *string);
-		out_stream &operator <<(const endl_t&);
-		out_stream &operator <<(const flush_t&);
+		out_stream &operator <<(const endl_t &);
+		out_stream &operator <<(const flush_t &);
 		size_t width_left() const;
 		void printf(const char *format, ...);
 		void flush();
@@ -336,7 +336,7 @@ namespace pretty_output
 	//
 	// 'operator <<' overloads
 
-	inline out_stream &operator <<(out_stream &stream, value_t<const char*> string);
+	inline out_stream &operator <<(out_stream &stream, value_t<const char *> string);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<std::string> value);
 
@@ -366,36 +366,36 @@ namespace pretty_output
 
 	inline out_stream &operator <<(out_stream &stream, value_t<long double> value);
 
-	inline out_stream &operator <<(out_stream &stream, value_t<const void*> value);
+	inline out_stream &operator <<(out_stream &stream, value_t<const void *> value);
 
-	template <typename T>
-	inline out_stream &operator <<(out_stream &stream, value_t<const T*> value);
+	template <typename Type_t>
+	inline out_stream &operator <<(out_stream &stream, value_t<const Type_t *> value);
 
-	template <typename T>
-	inline out_stream &operator <<(out_stream &stream, value_t<T*> value);
+	template <typename Type_t>
+	inline out_stream &operator <<(out_stream &stream, value_t<Type_t *> value);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<bool> value);
 
 	inline out_stream &operator <<(out_stream &stream, value_t<char> value);
 
-	template <typename A, typename B>
-	inline out_stream &operator <<(out_stream &stream, value_t<std::pair<A, B> > value);
+	template <typename First_t, typename Second_t>
+	inline out_stream &operator <<(out_stream &stream, value_t<std::pair<First_t, Second_t> > value);
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-	template <typename T>
-	inline out_stream &operator <<(out_stream &stream, values_t<T> values);
+	template <typename Type_t>
+	inline out_stream &operator <<(out_stream &stream, values_t<Type_t> values);
 
-	template <typename ...T>
-	inline out_stream &operator <<(out_stream &stream, values_t<T...> values);
+	template <typename ...Types_t>
+	inline out_stream &operator <<(out_stream &stream, values_t<Types_t...> values);
 
 	inline out_stream &operator <<(out_stream &stream, values_t<> values);
 
-	template <typename ...T>
-	inline out_stream &operator <<(out_stream &stream, value_t<std::tuple<T...> > tuple);
+	template <typename ...Types_t>
+	inline out_stream &operator <<(out_stream &stream, value_t<std::tuple<Types_t...> > tuple);
 
-	template <template <typename ...> class Container, typename ...A>
-	inline out_stream &operator <<(out_stream &stream, value_t<Container<A...> > value);
+	template <template <typename ...> class Container, typename ...Parameters_t>
+	inline out_stream &operator <<(out_stream &stream, value_t<Container<Parameters_t...> > value);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -403,11 +403,11 @@ namespace pretty_output
 	//
 	// Watch
 
-	template <typename T>
-	const T &watch(const std::string &filename_line, const char *name, const T &value);
+	template <typename Types_t>
+	const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value);
 
-	template <typename T>
-	T &watch(const std::string &filename_line, const char *name, T &value);
+	template <typename Types_t>
+	Types_t &watch(const std::string &filename_line, const char *name, Types_t &value);
 
 
 	//
@@ -440,14 +440,14 @@ namespace pretty_output
 	};
 
 
-	template <typename T>
+	template <typename Type_t>
 	struct type_family
 	{
-		static const typefamily_t value = std::numeric_limits<T>::is_integer ? TYPE_FAMILY_INTEGER : (std::numeric_limits<T>::is_specialized ? TYPE_FAMILY_FLOATING_POINT : TYPE_FAMILY_OTHER);
+		static const typefamily_t value = std::numeric_limits<Type_t>::is_integer ? TYPE_FAMILY_INTEGER : (std::numeric_limits<Type_t>::is_specialized ? TYPE_FAMILY_FLOATING_POINT : TYPE_FAMILY_OTHER);
 	};
 
 
-	template <typefamily_t F, size_t S, bool Si>
+	template <typefamily_t Family, size_t Size, bool IsSigned>
 	struct print_traits_details
 	{
 		typedef uint8_t unit_t;
@@ -511,9 +511,9 @@ namespace pretty_output
 										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
 
 
-	template <typename T>
+	template <typename Type_t>
 	struct print_traits
-		: public print_traits_details<type_family<T>::value, sizeof(T), std::numeric_limits<T>::is_signed>
+		: public print_traits_details<type_family<Type_t>::value, sizeof(Type_t), std::numeric_limits<Type_t>::is_signed>
 	{
 	};
 
@@ -523,26 +523,26 @@ namespace pretty_output
 
 	const char *byte_to_hexadecimal(uint8_t byte);
 
-	template <typename T>
+	template <typename Type_t>
 	size_t field_width(base_t base);
 
-	template <typename T>
-	const std::string bytes_to_binary_string(T value);
+	template <typename Type_t>
+	const std::string bytes_to_binary_string(Type_t value);
 
-	template <typename T>
-	const std::string bytes_to_signed_decimal_string(T value);
+	template <typename Type_t>
+	const std::string bytes_to_signed_decimal_string(Type_t value);
 
-	template <typename T>
-	const std::string bytes_to_unsigned_decimal_string(T value);
+	template <typename Type_t>
+	const std::string bytes_to_unsigned_decimal_string(Type_t value);
 
-	template <typename T>
-	const std::string bytes_to_floating_point_string(T value);
+	template <typename Type_t>
+	const std::string bytes_to_floating_point_string(Type_t value);
 
-	template <typename T>
-	const std::string bytes_to_hexadecimal_string(T value);
+	template <typename Type_t>
+	const std::string bytes_to_hexadecimal_string(Type_t value);
 
-	template <typename T>
-	const std::string (*select_conversion(base_t base))(T);
+	template <typename Type_t>
+	const std::string (*select_conversion(base_t base))(Type_t);
 
 	byteorder_t current_byte_order();
 
@@ -550,11 +550,11 @@ namespace pretty_output
 
 	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
 
-	template <typename T>
-	void print_memory(const std::string &filename_line, const char *name, const T *pointer, size_t size = sizeof(T), base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order());
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
 
-	template <typename T>
-	void print_memory(const std::string &filename_line, const char *name, const T &variable, base_t base = print_traits<T>::default_base, byteorder_t byte_order = current_byte_order());
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -562,16 +562,16 @@ namespace pretty_output
 	//
 	// Function call
 
-	template <typename R, typename ...A>
+	template <typename Return_t, typename ...Arguments_t>
 	struct function_call_printer_t
 	{
-		typedef R (*funcptr_t)(A...);
+		typedef Return_t (*funcptr_t)(Arguments_t...);
 
 
 		inline function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		R operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		Return_t operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
@@ -580,16 +580,16 @@ namespace pretty_output
 	};
 
 
-	template <typename ...A>
-	struct function_call_printer_t<void, A...>
+	template <typename ...Arguments_t>
+	struct function_call_printer_t<void, Arguments_t...>
 	{
-		typedef void (*funcptr_t)(A...);
+		typedef void (*funcptr_t)(Arguments_t...);
 
 
 		function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		void operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		void operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
@@ -598,106 +598,106 @@ namespace pretty_output
 	};
 
 
-	template <typename R, typename ...A>
-	function_call_printer_t<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A...));
+	template <typename Return_t, typename ...Arguments_t>
+	function_call_printer_t<Return_t, Arguments_t...> function_call(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...));
 
 
 	//
 	// Const member function call
 
-	template <typename T, typename R, typename ...A>
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
 	struct const_member_function_call_printer_t
 	{
-		typedef R (T::*funcptr_t)(A...) const;
+		typedef Return_t (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
-		const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer);
+		const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		R operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		Return_t operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
 		std::string _object_name;
 		std::string _accessor;
 		std::string _function_name;
-		const T &_object;
+		const Type_t &_object;
 		funcptr_t _function_pointer;
 	};
 
 
-	template <typename T, typename ...A>
-	struct const_member_function_call_printer_t<T, void, A...>
+	template <typename Type_t, typename ...Arguments_t>
+	struct const_member_function_call_printer_t<Type_t, void, Arguments_t...>
 	{
-		typedef void (T::*funcptr_t)(A...) const;
+		typedef void (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
-		const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer);
+		const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		void operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		void operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
 		std::string _object_name;
 		std::string _accessor;
 		std::string _function_name;
-		const T &_object;
+		const Type_t &_object;
 		funcptr_t _function_pointer;
 	};
 
 
-	template <typename T, typename R, typename ...A>
-	const_member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const T &object, R (T::*function_pointer)(A...) const);
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
 
 
 	//
 	// Non const member function call
 
-	template <typename T, typename R, typename ...A>
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
 	struct member_function_call_printer_t
 	{
-		typedef R (T::*funcptr_t)(A...);
+		typedef Return_t (Type_t::*funcptr_t)(Arguments_t...);
 
 
-		member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer);
+		member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		R operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		Return_t operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
 		std::string _object_name;
 		std::string _accessor;
 		std::string _function_name;
-		T &_object;
+		Type_t &_object;
 		funcptr_t _function_pointer;
 	};
 
 
-	template <typename T, typename ...A>
-	struct member_function_call_printer_t<T, void, A...>
+	template <typename Type_t, typename ...Arguments_t>
+	struct member_function_call_printer_t<Type_t, void, Arguments_t...>
 	{
-		typedef void (T::*funcptr_t)(A...);
+		typedef void (Type_t::*funcptr_t)(Arguments_t...);
 
 
-		member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer);
+		member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
 
-		template <typename ...A2>
-		void operator ()(A2 &&...arguments);
+		template <typename ...CallArguments_t>
+		void operator ()(CallArguments_t &&...arguments);
 
 	private:
 		std::string _filename_line;
 		std::string _object_name;
 		std::string _accessor;
 		std::string _function_name;
-		T &_object;
+		Type_t &_object;
 		funcptr_t _function_pointer;
 	};
 
 
-	template <typename T, typename R, typename ...A>
-	member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, T &object, R (T::*function_pointer)(A...));
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...));
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -742,17 +742,17 @@ namespace pretty_output
 	// Block
 	// NOTE: god-entity, but still better than prevous solution
 
-	template <typename C, typename R>
+	template <typename Comment_value_t, typename Return_t>
 	struct block_t
 	{
-		block_t(const std::string &filename_line, const char *comment, const C &comment_value);
-		block_t(const char *comment, const C &comment_value);
-		block_t(const char *comment, const C &comment_value, const R &retval);
+		block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
+		block_t(const char *comment, const Comment_value_t &comment_value);
+		block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
 		~block_t();
-		operator const R &();
+		operator const Return_t &();
 
 
-		const R &return_value;
+		const Return_t &return_value;
 	};
 
 
@@ -764,14 +764,14 @@ namespace pretty_output
 	};
 
 
-	template <typename C>
-	block_t<C, C> block(const std::string &filename_line, const char *comment, const C &comment_value);
+	template <typename Comment_value_t>
+	block_t<Comment_value_t, Comment_value_t> block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
 
-	template <typename C>
-	block_t<C, C> block(const char *comment, const C &comment_value);
+	template <typename Comment_value_t>
+	block_t<Comment_value_t, Comment_value_t> block(const char *comment, const Comment_value_t &comment_value);
 
-	template <typename C, typename R>
-	block_t<C, R> block(const char *comment, const C &comment_value, const R &return_value);
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t> block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value);
 
 
 	//
@@ -820,29 +820,29 @@ namespace pretty_output
 	//
 	// Common
 
-	template <typename T>
-	T &reference(T &object)
+	template <typename Type_t>
+	Type_t &reference(Type_t &object)
 	{
 		return object;
 	}
 
 
-	template <typename T>
-	const T &reference(const T &object)
+	template <typename Type_t>
+	const Type_t &reference(const Type_t &object)
 	{
 		return object;
 	}
 
 
-	template <typename T>
-	T &reference(T *object)
+	template <typename Type_t>
+	Type_t &reference(Type_t *object)
 	{
 		return *object;
 	}
 
 
-	template <typename T>
-	const T &reference(const T *object)
+	template <typename Type_t>
+	const Type_t &reference(const Type_t *object)
 	{
 		return *object;
 	}
@@ -851,59 +851,59 @@ namespace pretty_output
 	//
 	// Values
 
-	template <typename T>
-	value_t<T>::value_t(const T &value)
+	template <typename Type_t>
+	value_t<Type_t>::value_t(const Type_t &value)
 		: data(value)
 	{
 	}
 
 
-	template <typename T>
-	value_t<T> &value_t<T>::operator =(const value_t&)
+	template <typename Type_t>
+	value_t<Type_t> &value_t<Type_t>::operator =(const value_t &)
 	{
 		return *this;
 	}
 
 
-	value_t<const char*> make_value(const char *const &value)
+	value_t<const char *> make_value(const char *const &value)
 	{
-		return value_t<const char*>(value);
+		return value_t<const char *>(value);
 	}
 
 
-	template <typename T>
-	inline value_t<T> make_value(const T &value)
+	template <typename Type_t>
+	inline value_t<Type_t> make_value(const Type_t &value)
 	{
-		return value_t<T>(value);
+		return value_t<Type_t>(value);
 	}
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-	template <typename T, typename ...R>
-	values_t<T, R...>::values_t(const char *delimiter_value, const T &first, const R &...rest)
+	template <typename Type_t, typename ...RestTypes_t>
+	values_t<Type_t, RestTypes_t...>::values_t(const char *delimiter_value, const Type_t &first, const RestTypes_t &...rest)
 		: delimiter(delimiter_value), data(first), values(delimiter_value, rest...)
 	{
 	}
 
 
-	template <typename T>
-	values_t<T>::values_t(const char *, const T &value)
+	template <typename Type_t>
+	values_t<Type_t>::values_t(const char *, const Type_t &value)
 		: delimiter(""), data(value)
 	{
 	}
 
 
-	template <typename ...T>
-	values_t<>::values_t(const char *, const T &...)
+	template <typename ...Whatever_t>
+	values_t<>::values_t(const char *, const Whatever_t &...)
 	{
 	}
 
 
-	template <typename ...T>
-	inline values_t<T...> make_values(const char *delimiter, const T &...values)
+	template <typename ...Types_t>
+	inline values_t<Types_t...> make_values(const char *delimiter, const Types_t &...values)
 	{
-		return values_t<T...>(delimiter, values...);
+		return values_t<Types_t...>(delimiter, values...);
 	}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -912,8 +912,8 @@ namespace pretty_output
 	//
 	// 'operator <<' overloads
 
-	template <typename T>
-	const std::string fundamental_to_string(T value)
+	template <typename Type_t>
+	const std::string fundamental_to_string(Type_t value)
 	{
 		std::stringstream stream;
 		stream << value;
@@ -922,7 +922,7 @@ namespace pretty_output
 	}
 
 
-	out_stream &operator <<(out_stream &stream, value_t<const char*> value)
+	out_stream &operator <<(out_stream &stream, value_t<const char *> value)
 	{
 		return stream << "\"" << value.data << "\"";
 	}
@@ -1004,7 +1004,7 @@ namespace pretty_output
 	}
 
 
-	out_stream &operator <<(out_stream &stream, value_t<const void*> value)
+	out_stream &operator <<(out_stream &stream, value_t<const void *> value)
 	{
 		if (value.data == NULL)
 		{
@@ -1019,10 +1019,10 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	out_stream &operator <<(out_stream &stream, value_t<const T*> value)
+	template <typename Type_t>
+	out_stream &operator <<(out_stream &stream, value_t<const Type_t *> value)
 	{
-		stream << make_value((const void*)value.data) << " ";
+		stream << make_value((const void *)value.data) << " ";
 		if (value.data != NULL)
 		{
 			stream.flush();
@@ -1033,10 +1033,10 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	out_stream &operator <<(out_stream &stream, value_t<T*> value)
+	template <typename Type_t>
+	out_stream &operator <<(out_stream &stream, value_t<Type_t *> value)
 	{
-		return stream << make_value((const T*)value.data);
+		return stream << make_value((const Type_t *)value.data);
 	}
 
 
@@ -1052,8 +1052,8 @@ namespace pretty_output
 	}
 
 
-	template <typename A, typename B>
-	out_stream &operator <<(out_stream &stream, value_t<std::pair<A, B> > value)
+	template <typename First_t, typename Second_t>
+	out_stream &operator <<(out_stream &stream, value_t<std::pair<First_t, Second_t> > value)
 	{
 		return stream << "{" << make_value(value.data.first) << ": " << make_value(value.data.second) << "}";
 	}
@@ -1061,15 +1061,15 @@ namespace pretty_output
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-	template <typename T>
-	out_stream &operator <<(out_stream &stream, values_t<T> values)
+	template <typename Type_t>
+	out_stream &operator <<(out_stream &stream, values_t<Type_t> values)
 	{
 		return stream << make_value(values.data);
 	}
 
 
-	template <typename ...T>
-	out_stream &operator <<(out_stream &stream, values_t<T...> values)
+	template <typename ...Types_t>
+	out_stream &operator <<(out_stream &stream, values_t<Types_t...> values)
 	{
 		return stream << make_value(values.data) << values.delimiter << values.values;
 	}
@@ -1081,23 +1081,23 @@ namespace pretty_output
 	}
 
 
-	template <std::size_t I, typename ...T>
-	typename std::enable_if<I == sizeof...(T) - 1, out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
+	template <std::size_t Index, typename ...Types_t>
+	typename std::enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
-		return stream << make_value(std::get<I>(tuple)) << ")";
+		return stream << make_value(std::get<Index>(tuple)) << ")";
 	}
 
 
-	template <std::size_t I, typename ...T>
-	typename std::enable_if<I < sizeof...(T) - 1, out_stream&>::type print_tuple(out_stream &stream, const std::tuple<T...> &tuple)
+	template <std::size_t Index, typename ...Types_t>
+	typename std::enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
-		stream << ", " << make_value(std::get<I>(tuple)) << ", ";
-		return print_tuple<I + 1>(stream, tuple);
+		stream << ", " << make_value(std::get<Index>(tuple)) << ", ";
+		return print_tuple<Index + 1>(stream, tuple);
 	}
 
 
-	template <typename ...T>
-	out_stream &operator <<(out_stream &stream, value_t<std::tuple<T...> > value)
+	template <typename ...Types_t>
+	out_stream &operator <<(out_stream &stream, value_t<std::tuple<Types_t...> > value)
 	{
 		stream << "(" << make_value(std::get<0>(value.data)) << ", ";
 		return print_tuple<1>(stream, value.data);
@@ -1105,16 +1105,16 @@ namespace pretty_output
 
 
 	// not sure if all C++11 standard library versions have std::next
-	template <typename T>
-	T next_itr(T iterator)
+	template <typename Types_t>
+	Types_t next_itr(Types_t iterator)
 	{
 		++iterator;
 		return iterator;
 	}
 
 
-	template <template <typename ...> class Container, typename ...A>
-	out_stream &operator <<(out_stream &stream, value_t<Container<A...> > value)
+	template <template <typename ...> class Container, typename ...Parameters_t>
+	out_stream &operator <<(out_stream &stream, value_t<Container<Parameters_t...> > value)
 	{
 		const auto &container = value.data;
 
@@ -1136,16 +1136,16 @@ namespace pretty_output
 	//
 	// Watch
 
-	template <typename T>
-	const T &watch(const std::string &filename_line, const char *name, const T &value)
+	template <typename Types_t>
+	const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value)
 	{
 		out_stream(filename_line) << name << " = " << make_value(value);
 		return value;
 	}
 
 
-	template <typename T>
-	T &watch(const std::string &filename_line, const char *name, T &value)
+	template <typename Types_t>
+	Types_t &watch(const std::string &filename_line, const char *name, Types_t &value)
 	{
 		out_stream(filename_line) << name << " = " << make_value(value);
 		return value;
@@ -1155,37 +1155,37 @@ namespace pretty_output
 	//
 	// Memory
 
-	template <typename T>
+	template <typename Type_t>
 	size_t field_width(base_t base)
 	{
 		switch (base)
 		{
 			case BASE_BIN:
-				return sizeof(typename print_traits<T>::unit_t) * 8;
+				return sizeof(typename print_traits<Type_t>::unit_t) * 8;
 
 			case BASE_SDEC:
-				return print_traits<T>::field_width + (!std::numeric_limits<T>::is_signed ? 1 : 0);
+				return print_traits<Type_t>::field_width + (!std::numeric_limits<Type_t>::is_signed ? 1 : 0);
 
 			case BASE_UDEC:
-				return print_traits<T>::field_width - (std::numeric_limits<T>::is_signed ? 1 : 0);
+				return print_traits<Type_t>::field_width - (std::numeric_limits<Type_t>::is_signed ? 1 : 0);
 
 			case BASE_FLT:
 			case BASE_DBL:
 			case BASE_LDBL:
-				return print_traits<T>::field_width;
+				return print_traits<Type_t>::field_width;
 
 			case BASE_HEX:
 			default:
-				return sizeof(typename print_traits<T>::unit_t) * 2;
+				return sizeof(typename print_traits<Type_t>::unit_t) * 2;
 		}
 	}
 
 
-	template <typename T>
-	const std::string bytes_to_binary_string(T value)
+	template <typename Type_t>
+	const std::string bytes_to_binary_string(Type_t value)
 	{
 		std::stringstream stream;
-		uint8_t *data = reinterpret_cast<uint8_t*>(&value);
+		uint8_t *data = reinterpret_cast<uint8_t *>(&value);
 		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_binary(data[index]);
@@ -1195,10 +1195,10 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	const std::string bytes_to_signed_decimal_string(T value)
+	template <typename Type_t>
+	const std::string bytes_to_signed_decimal_string(Type_t value)
 	{
-		typedef typename print_traits<T>::signed_t signed_promotion_t;
+		typedef typename print_traits<Type_t>::signed_t signed_promotion_t;
 
 		signed_promotion_t signed_value = static_cast<signed_promotion_t>(value);
 		int64_t signed_integer = static_cast<int64_t>(signed_value);
@@ -1210,10 +1210,10 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	const std::string bytes_to_unsigned_decimal_string(T value)
+	template <typename Type_t>
+	const std::string bytes_to_unsigned_decimal_string(Type_t value)
 	{
-		typedef typename print_traits<T>::unsigned_t unsigned_promotion_t;
+		typedef typename print_traits<Type_t>::unsigned_t unsigned_promotion_t;
 
 		unsigned_promotion_t unsigned_value = static_cast<unsigned_promotion_t>(value);
 		uint64_t unsigned_integer = static_cast<uint64_t>(unsigned_value);
@@ -1225,22 +1225,22 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	inline const std::string bytes_to_floating_point_string(T value)
+	template <typename Type_t>
+	inline const std::string bytes_to_floating_point_string(Type_t value)
 	{
 		std::stringstream stream;
-		stream.precision(std::numeric_limits<T>::digits10);
+		stream.precision(std::numeric_limits<Type_t>::digits10);
 		stream << std::scientific << value;
 
 		return stream.str();
 	}
 
 
-	template <typename T>
-	const std::string bytes_to_hexadecimal_string(T value)
+	template <typename Type_t>
+	const std::string bytes_to_hexadecimal_string(Type_t value)
 	{
 		std::stringstream stream;
-		uint8_t *data = reinterpret_cast<uint8_t*>(&value);
+		uint8_t *data = reinterpret_cast<uint8_t *>(&value);
 		for (size_t index = 0; index < sizeof(value); ++index)
 		{
 			stream << byte_to_hexadecimal(data[index]);
@@ -1250,38 +1250,38 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	const std::string (*select_conversion(base_t base))(T)
+	template <typename Type_t>
+	const std::string (*select_conversion(base_t base))(Type_t)
 	{
 		switch (base)
 		{
 			case BASE_BIN:
-				return bytes_to_binary_string<T>;
+				return bytes_to_binary_string<Type_t>;
 
 			case BASE_SDEC:
-				return bytes_to_signed_decimal_string<T>;
+				return bytes_to_signed_decimal_string<Type_t>;
 
 			case BASE_UDEC:
-				return bytes_to_unsigned_decimal_string<T>;
+				return bytes_to_unsigned_decimal_string<Type_t>;
 
 			case BASE_FLT:
 			case BASE_DBL:
 			case BASE_LDBL:
-				return bytes_to_floating_point_string<T>;
+				return bytes_to_floating_point_string<Type_t>;
 
 			case BASE_HEX:
 			default:
-				return bytes_to_hexadecimal_string<T>;
+				return bytes_to_hexadecimal_string<Type_t>;
 		}
 	}
 
 
-	template <typename T>
-	void print_memory(const std::string &filename_line, const char *name, const T *pointer, size_t size, base_t base, byteorder_t byte_order)
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size, base_t base, byteorder_t byte_order)
 	{
-		typedef typename print_traits<T>::unit_t unit_t;
+		typedef typename print_traits<Type_t>::unit_t unit_t;
 
-		const std::string (*bytes_to_string)(T) = select_conversion<T>(base);
+		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
 
 		out_stream stream(filename_line);
 		stream << "memory of " << name << ":";
@@ -1290,12 +1290,12 @@ namespace pretty_output
 
 		std::stringstream string_stream;
 
-		size_t column_width = field_width<T>(base);
+		size_t column_width = field_width<Type_t>(base);
 
-		const unit_t *iterator = reinterpret_cast<const unit_t*>(pointer);
+		const unit_t *iterator = reinterpret_cast<const unit_t *>(pointer);
 		size_t length = size / sizeof(unit_t);
 
-		stream << make_value((void*)iterator) << ":";
+		stream << make_value((void *)iterator) << ":";
 		for (std::size_t index = 0; index < length; ++index)
 		{
 			if (string_stream.str().length() + column_width + 1 > stream.width_left())
@@ -1303,7 +1303,7 @@ namespace pretty_output
 				stream << string_stream.str().c_str();
 				string_stream.str("");
 
-				stream << ENDL << make_value((void*)&iterator[index]) << ":";
+				stream << ENDL << make_value((void *)&iterator[index]) << ":";
 			}
 
 			string_stream << " ";
@@ -1326,10 +1326,10 @@ namespace pretty_output
 	}
 
 
-	template <typename T>
-	void print_memory(const std::string &filename_line, const char *name, const T &variable, base_t base, byteorder_t byte_order)
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base, byteorder_t byte_order)
 	{
-		print_memory(filename_line, name, reinterpret_cast<const uint8_t*>(&variable), sizeof(T), base, byte_order);
+		print_memory(filename_line, name, reinterpret_cast<const uint8_t *>(&variable), sizeof(Type_t), base, byte_order);
 	}
 
 
@@ -1515,8 +1515,8 @@ namespace pretty_output
 	//
 	// Block
 
-	template <typename C, typename R>
-	block_t<C, R>::block_t(const std::string &filename_line, const char *comment, const C &comment_value)
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t>::block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
 		: return_value(comment_value)
 	{
 		out_stream(filename_line) << comment << make_value(comment_value);
@@ -1524,8 +1524,8 @@ namespace pretty_output
 	}
 
 
-	template <typename C, typename R>
-	block_t<C, R>::block_t(const char *comment, const C &comment_value)
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t>::block_t(const char *comment, const Comment_value_t &comment_value)
 		: return_value(comment_value)
 	{
 		indentation_add();
@@ -1533,8 +1533,8 @@ namespace pretty_output
 	}
 
 
-	template <typename C, typename R>
-	block_t<C, R>::block_t(const char *comment, const C &comment_value, const R &retval)
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t>::block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval)
 		: return_value(retval)
 	{
 		indentation_add();
@@ -1542,39 +1542,39 @@ namespace pretty_output
 	}
 
 
-	template <typename C, typename R>
-	block_t<C, R>::~block_t()
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t>::~block_t()
 	{
 		indentation_remove();
 		out_stream();
 	}
 
 
-	template <typename C, typename R>
-	block_t<C, R>::operator const R&()
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t>::operator const Return_t&()
 	{
 		return return_value;
 	}
 
 
-	template <typename C>
-	block_t<C, C> block(const std::string &filename_line, const char *comment, const C &comment_value)
+	template <typename Comment_value_t>
+	block_t<Comment_value_t, Comment_value_t> block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
 	{
-		return block_t<C, C>(filename_line, comment, comment_value);
+		return block_t<Comment_value_t, Comment_value_t>(filename_line, comment, comment_value);
 	}
 
 
-	template <typename C>
-	block_t<C, C> block(const char *comment, const C &comment_value)
+	template <typename Comment_value_t>
+	block_t<Comment_value_t, Comment_value_t> block(const char *comment, const Comment_value_t &comment_value)
 	{
-		return block_t<C, C>(comment, comment_value);
+		return block_t<Comment_value_t, Comment_value_t>(comment, comment_value);
 	}
 
 
-	template <typename C, typename R>
-	block_t<C, R> block(const char *comment, const C &comment_value, const R &return_value)
+	template <typename Comment_value_t, typename Return_t>
+	block_t<Comment_value_t, Return_t> block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value)
 	{
-		return block_t<C, R>(comment, comment_value, return_value);
+		return block_t<Comment_value_t, Return_t>(comment, comment_value, return_value);
 	}
 
 }

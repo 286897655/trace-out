@@ -134,14 +134,14 @@ namespace pretty_output
 
 
 
-	template <typename T>
+	template <typename Type_t>
 	class tls
 	{
 	public:
 		tls();
 		~tls();
-		void set(const T &value);
-		T &get() const;
+		void set(const Type_t &value);
+		Type_t &get() const;
 
 	private:
 		tlskey_t *_key;
@@ -342,7 +342,7 @@ namespace pretty_output
 	}
 
 
-	out_stream &out_stream::operator <<(const endl_t&)
+	out_stream &out_stream::operator <<(const endl_t &)
 	{
 		std::stringstream stream;
 		stream.fill(' ');
@@ -357,7 +357,7 @@ namespace pretty_output
 	}
 
 
-	out_stream &out_stream::operator <<(const flush_t&)
+	out_stream &out_stream::operator <<(const flush_t &)
 	{
 		flush();
 		return *this;
@@ -544,41 +544,41 @@ namespace pretty_output
 	//
 	// TLS
 
-	template <typename T>
-	tls<T>::tls()
+	template <typename Type_t>
+	tls<Type_t>::tls()
 	{
 		_key = tls_new_key();
 	}
 
 
-	template <typename T>
-	tls<T>::~tls()
+	template <typename Type_t>
+	tls<Type_t>::~tls()
 	{
 		tls_delete_key(_key);
 	}
 
 
-	template <typename T>
-	void tls<T>::set(const T &value)
+	template <typename Type_t>
+	void tls<Type_t>::set(const Type_t &value)
 	{
-		T *old_value = static_cast<T*>(tls_get(_key));
+		Type_t *old_value = static_cast<Type_t*>(tls_get(_key));
 		if (old_value != NULL)
 		{
 			delete old_value;
 		}
 
-		T *new_value = new T(value);
+		Type_t *new_value = new Type_t(value);
 		tls_set(_key, new_value);
 	}
 
 
-	template <typename T>
-	T &tls<T>::get() const
+	template <typename Type_t>
+	Type_t &tls<Type_t>::get() const
 	{
-		T *value = static_cast<T*>(tls_get(_key));
+		Type_t *value = static_cast<Type_t*>(tls_get(_key));
 		if (value == NULL)
 		{
-			value = new T;
+			value = new Type_t;
 			tls_set(_key, value);
 		}
 
