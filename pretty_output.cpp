@@ -467,7 +467,7 @@ namespace pretty_output
 	function_printer_t::~function_printer_t()
 	{
 		indentation_remove();
-		out_stream(_filename_line) << "}    // " << _function_signature.c_str();
+		out_stream(_filename_line) << "}    // " << _function_signature.c_str() << ENDL;
 	}
 
 
