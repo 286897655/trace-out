@@ -1338,164 +1338,164 @@ namespace pretty_output
 	//
 	// Function call
 
-	template <typename R, typename ...A>
-	function_call_printer_t<R, A...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+	template <typename Return_t, typename ...Arguments_t>
+	function_call_printer_t<Return_t, Arguments_t...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
 		: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename R, typename ...A>
-	template <typename ...A2>
-	R function_call_printer_t<R, A...>::operator ()(A2 &&...arguments)
+	template <typename Return_t, typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	Return_t function_call_printer_t<Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		R return_value = _function_pointer(std::forward<A2>(arguments)...);
+		Return_t return_value = _function_pointer(std::forward<CallArguments_t>(arguments)...);
 		stream << make_value(return_value);
 
 		return return_value;
 	}
 
 
-	template <typename ...A>
-	function_call_printer_t<void, A...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+	template <typename ...Arguments_t>
+	function_call_printer_t<void, Arguments_t...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
 		: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename ...A>
-	template <typename ...A2>
-	void function_call_printer_t<void, A...>::operator ()(A2 &&...arguments)
+	template <typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	void function_call_printer_t<void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		_function_pointer(std::forward<A2>(arguments)...);
+		_function_pointer(std::forward<CallArguments_t>(arguments)...);
 		stream << "(void)";
 	}
 
 
-	template <typename R, typename ...A>
-	function_call_printer_t<R, A...> function_call(const std::string &filename_line, const char *function_name, R (*function_pointer)(A...))
+	template <typename Return_t, typename ...Arguments_t>
+	function_call_printer_t<Return_t, Arguments_t...> function_call(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...))
 	{
-		return function_call_printer_t<R, A...>(filename_line, function_name, function_pointer);
+		return function_call_printer_t<Return_t, Arguments_t...>(filename_line, function_name, function_pointer);
 	}
 
 
 	//
 	// Const member function call
 
-	template <typename T, typename R, typename ...A>
-	const_member_function_call_printer_t<T, R, A...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
 		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	template <typename ...A2>
-	R const_member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	Return_t const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
+		Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
 		stream << make_value(return_value);
 
 		return return_value;
 	}
 
 
-	template <typename T, typename ...A>
-	const_member_function_call_printer_t<T, void, A...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const T &object, funcptr_t function_pointer)
+	template <typename Type_t, typename ...Arguments_t>
+	const_member_function_call_printer_t<Type_t, void, Arguments_t...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
 		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename T, typename ...A>
-	template <typename ...A2>
-	void const_member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
+	template <typename Type_t, typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	void const_member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
+		(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
 		stream << "(void)";
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	const_member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const T &object, R (T::*function_pointer)(A...) const)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
 	{
-		return const_member_function_call_printer_t<T, R, A...>(filename_line, object_name, ".", function_name, object, function_pointer);
+		return const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	const_member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const T *object, R (T::*function_pointer)(A...) const)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
 	{
-		return const_member_function_call_printer_t<T, R, A...>(filename_line, object_name, "->", function_name, *object, function_pointer);
+		return const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 	}
 
 
 	//
 	// Non-const member function call
 
-	template <typename T, typename R, typename ...A>
-	member_function_call_printer_t<T, R, A...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
 		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	template <typename ...A2>
-	R member_function_call_printer_t<T, R, A...>::operator ()(A2 &&...arguments)
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	Return_t member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		R return_value = (_object.*_function_pointer)(std::forward<A2>(arguments)...);
+		Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
 		stream << make_value(return_value);
 
 		return return_value;
 	}
 
 
-	template <typename T, typename ...A>
-	member_function_call_printer_t<T, void, A...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, T &object, funcptr_t function_pointer)
+	template <typename Type_t, typename ...Arguments_t>
+	member_function_call_printer_t<Type_t, void, Arguments_t...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
 		: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 	{
 	}
 
 
-	template <typename T, typename ...A>
-	template <typename ...A2>
-	void member_function_call_printer_t<T, void, A...>::operator ()(A2 &&...arguments)
+	template <typename Type_t, typename ...Arguments_t>
+	template <typename ...CallArguments_t>
+	void member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
 		out_stream stream(_filename_line);
 		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
 
-		(_object.*_function_pointer)(std::forward<A2>(arguments)...);
+		(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
 		stream << "(void)";
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, T &object, R (T::*function_pointer)(A...))
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...))
 	{
-		return member_function_call_printer_t<T, R, A...>(filename_line, object_name, ".", function_name, object, function_pointer);
+		return member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
 	}
 
 
-	template <typename T, typename R, typename ...A>
-	member_function_call_printer_t<T, R, A...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, T *object, R (T::*function_pointer)(A...))
+	template <typename Type_t, typename Return_t, typename ...Arguments_t>
+	member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...))
 	{
-		return member_function_call_printer_t<T, R, A...>(filename_line, object_name, "->", function_name, *object, function_pointer);
+		return member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 	}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -1504,8 +1504,8 @@ namespace pretty_output
 	//
 	// Return
 
-	template <typename T>
-	const T &return_printer_t::operator ,(const T &value)
+	template <typename Type_t>
+	const Type_t &return_printer_t::operator ,(const Type_t &value)
 	{
 		out_stream(_filename_line) << "return " << make_value(value);
 		return value;
