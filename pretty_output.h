@@ -550,11 +550,14 @@ namespace pretty_output
 
 	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
 
-	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
+	// NOTE: Visual Studio crashes at passing 'Type_t' to 'print_traits' in function declaration
+	// assume the following commented code as a function declarations
 
-	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
+	// template <typename Type_t>
+	// void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
+
+	// template <typename Type_t>
+	// void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -1277,7 +1280,7 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size, base_t base, byteorder_t byte_order)
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order())
 	{
 		typedef typename print_traits<Type_t>::unit_t unit_t;
 
@@ -1327,7 +1330,7 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base, byteorder_t byte_order)
+	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order())
 	{
 		print_memory(filename_line, name, reinterpret_cast<const uint8_t *>(&variable), sizeof(Type_t), base, byte_order);
 	}
