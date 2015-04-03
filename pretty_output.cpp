@@ -1,7 +1,7 @@
 #include "pretty_output.h"
 
 
-#if PRETTY_OUTPUT_REDIRECTION == pretty_output
+#if !defined(PRETTY_OUTPUT_REDIRECTION)
 
 #include <iostream>
 
@@ -326,7 +326,7 @@ namespace pretty_output
 	out_stream &out_stream::operator <<(char character)
 	{
 		char string[2] = {character, '\0'};
-		PRETTY_OUTPUT_REDIRECTION::print(string);
+		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
 		++_current_line_length;
 
 		return *this;
@@ -335,7 +335,7 @@ namespace pretty_output
 
 	out_stream &out_stream::operator <<(const char *string)
 	{
-		PRETTY_OUTPUT_REDIRECTION::print(string);
+		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
 		_current_line_length += std::strlen(string);
 
 		return *this;
@@ -392,7 +392,7 @@ namespace pretty_output
 
 	void out_stream::flush()
 	{
-		PRETTY_OUTPUT_REDIRECTION::flush();
+		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::flush();
 	}
 
 
