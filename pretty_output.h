@@ -552,8 +552,7 @@ namespace pretty_output
 
 	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
 
-	// NOTE: Visual Studio crashes at passing 'Type_t' to 'print_traits' in function declaration
-	// assume the following commented code as a function declarations
+	// NOTE: Visual Studio crashes at passing 'Type_t' to 'print_traits' in function declaration, so assume the following commented code as a function declarations
 
 	// template <typename Type_t>
 	// void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
