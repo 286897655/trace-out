@@ -129,7 +129,8 @@ namespace pretty_output
 		"f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
 	};
 
-	const struct endl_t {} ENDL = endl_t();
+	const struct newline_t {} NEWLINE = newline_t();
+	const struct endline_t {} ENDLINE = endline_t();
 	const struct flush_t {} FLUSH = flush_t();
 
 
@@ -299,7 +300,7 @@ namespace pretty_output
 	}
 
 
-	out_stream::out_stream()
+	out_stream::out_stream(const newline_t &)
 		: _current_line_length(0)
 	{
 		lock_output();
@@ -313,10 +314,15 @@ namespace pretty_output
 	}
 
 
+	out_stream::out_stream()
+		: _current_line_length(0)
+	{
+		lock_output();
+	}
+
+
 	out_stream::~out_stream()
 	{
-		*this << "\n";
-
 		flush();
 
 		unlock_output();
@@ -342,7 +348,7 @@ namespace pretty_output
 	}
 
 
-	out_stream &out_stream::operator <<(const endl_t &)
+	out_stream &out_stream::operator <<(const newline_t &)
 	{
 		std::stringstream stream;
 		stream.fill(' ');
@@ -352,6 +358,15 @@ namespace pretty_output
 		*this << "\n";
 		_current_line_length = 0;
 		*this << stream.str().c_str() << DELIMITER << indentation().c_str();
+
+		return *this;
+	}
+
+
+	out_stream &out_stream::operator <<(const endline_t &)
+	{
+		*this << "\n";
+		_current_line_length = 0;
 
 		return *this;
 	}
@@ -459,7 +474,7 @@ namespace pretty_output
 	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
 		: _filename_line(filename_line), _function_signature(function_signature)
 	{
-		out_stream(_filename_line) << _function_signature.c_str() << ENDL << "{";
+		out_stream(_filename_line) << _function_signature.c_str() << NEWLINE << "{" << ENDLINE;
 		indentation_add();
 	}
 
@@ -467,7 +482,7 @@ namespace pretty_output
 	function_printer_t::~function_printer_t()
 	{
 		indentation_remove();
-		out_stream(_filename_line) << "}    // " << _function_signature.c_str() << ENDL;
+		out_stream(_filename_line) << "}    // " << _function_signature.c_str() << NEWLINE << ENDLINE;
 	}
 
 
@@ -514,7 +529,7 @@ namespace pretty_output
 	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
 		: _iteration_number(0)
 	{
-		out_stream(filename_line) << "for (" << expression << ")";
+		out_stream(filename_line) << "for (" << expression << ")" << ENDLINE;
 	}
 
 
@@ -538,6 +553,16 @@ namespace pretty_output
 	for_block_t for_block(const std::string &filename_line, const char *expression)
 	{
 		return for_block_t(filename_line, expression);
+	}
+
+
+	//
+	// While header
+
+	void print_while_header(const std::string &filename_line, const char *condition)
+	{
+		out_stream stream(filename_line);
+		stream << "while (" << condition << ")" << ENDLINE;
 	}
 
 

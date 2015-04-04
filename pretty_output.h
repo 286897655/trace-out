@@ -89,7 +89,7 @@
 
 
 	#define $while(...) \
-				if ((pretty_output::out_stream(PRETTY_OUTPUT_FILENAME_LINE) << "while (" << #__VA_ARGS__ << ")"), false) {} else \
+				if (pretty_output::print_while_header(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__), false) {} else \
 					while (pretty_output::block_t<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::block("// while: " #__VA_ARGS__ " => ", static_cast<bool>((__VA_ARGS__))))
 
 
@@ -98,7 +98,11 @@
 
 
 	#define $p(format, ...) \
-				pretty_output::out_stream(PRETTY_OUTPUT_FILENAME_LINE).printf(format, ##__VA_ARGS__);
+				{ \
+					pretty_output::out_stream stream(PRETTY_OUTPUT_FILENAME_LINE); \
+					stream.printf(format, ##__VA_ARGS__); \
+					stream << pretty_output::ENDLINE; \
+				}
 
 
 	#define $t(name) \
@@ -309,10 +313,12 @@ namespace pretty_output
 	//
 	// Out stream
 
-	struct endl_t;
+	struct newline_t;
+	struct endline_t;
 	struct flush_t;
 
-	extern const endl_t ENDL;
+	extern const newline_t NEWLINE;
+	extern const endline_t ENDLINE;
 	extern const flush_t FLUSH;
 
 
@@ -320,11 +326,13 @@ namespace pretty_output
 	{
 	public:
 		out_stream(const std::string &filename_line);
+		out_stream(const newline_t &);
 		out_stream();
 		~out_stream();
 		out_stream &operator <<(char character);
 		out_stream &operator <<(const char *string);
-		out_stream &operator <<(const endl_t &);
+		out_stream &operator <<(const newline_t &);
+		out_stream &operator <<(const endline_t &);
 		out_stream &operator <<(const flush_t &);
 		size_t width_left() const;
 		void printf(const char *format, ...);
@@ -797,6 +805,12 @@ namespace pretty_output
 
 
 	//
+	// While header
+
+	void print_while_header(const std::string &filename_line, const char *condition);
+
+
+	//
 	// Helper stuff
 
 	struct tlskey_t;
@@ -1143,7 +1157,8 @@ namespace pretty_output
 	template <typename Types_t>
 	const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value)
 	{
-		out_stream(filename_line) << name << " = " << make_value(value);
+		out_stream stream(filename_line);
+		stream << name << " = " << make_value(value) << ENDLINE;
 		return value;
 	}
 
@@ -1151,7 +1166,8 @@ namespace pretty_output
 	template <typename Types_t>
 	Types_t &watch(const std::string &filename_line, const char *name, Types_t &value)
 	{
-		out_stream(filename_line) << name << " = " << make_value(value);
+		out_stream stream(filename_line);
+		stream << name << " = " << make_value(value) << ENDLINE;
 		return value;
 	}
 
@@ -1290,7 +1306,7 @@ namespace pretty_output
 		out_stream stream(filename_line);
 		stream << "memory of " << name << ":";
 		indentation_add();
-		stream << ENDL;
+		stream << NEWLINE;
 
 		std::stringstream string_stream;
 
@@ -1307,7 +1323,7 @@ namespace pretty_output
 				stream << string_stream.str().c_str();
 				string_stream.str("");
 
-				stream << ENDL << make_value((void *)&iterator[index]) << ":";
+				stream << NEWLINE << make_value((void *)&iterator[index]) << ":";
 			}
 
 			string_stream << " ";
@@ -1323,10 +1339,12 @@ namespace pretty_output
 
 		if (!string_stream.str().empty())
 		{
-			stream << string_stream.str().c_str() << ENDL;
+			stream << string_stream.str().c_str() << NEWLINE;
 		}
 
 		indentation_remove();
+
+		stream << ENDLINE;
 	}
 
 
@@ -1353,11 +1371,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	Return_t function_call_printer_t<Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		Return_t return_value = _function_pointer(std::forward<CallArguments_t>(arguments)...);
-		stream << make_value(return_value);
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=> " << make_value(return_value) << ENDLINE;
+			indentation_remove();
+		}
 
 		return return_value;
 	}
@@ -1374,11 +1400,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	void function_call_printer_t<void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		_function_pointer(std::forward<CallArguments_t>(arguments)...);
-		stream << "(void)";
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=>" << "(void)" << ENDLINE;
+			indentation_remove();
+		}
 	}
 
 
@@ -1403,11 +1437,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	Return_t const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
-		stream << make_value(return_value);
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=> " << make_value(return_value) << ENDLINE;
+			indentation_remove();
+		}
 
 		return return_value;
 	}
@@ -1424,11 +1466,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	void const_member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
-		stream << "(void)";
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=> " << "(void)";
+			indentation_remove();
+		}
 	}
 
 
@@ -1460,11 +1510,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	Return_t member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
-		stream << make_value(return_value);
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=> " << make_value(return_value) << ENDLINE;
+			indentation_remove();
+		}
 
 		return return_value;
 	}
@@ -1481,11 +1539,19 @@ namespace pretty_output
 	template <typename ...CallArguments_t>
 	void member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 	{
-		out_stream stream(_filename_line);
-		stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ") => " << FLUSH;
+		{
+			out_stream stream(_filename_line);
+			stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+		}
 
 		(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
-		stream << "(void)";
+
+		{
+			indentation_add();
+			out_stream stream(NEWLINE);
+			stream << "=> " << "(void)" << ENDLINE;
+			indentation_remove();
+		}
 	}
 
 
@@ -1511,7 +1577,8 @@ namespace pretty_output
 	template <typename Type_t>
 	const Type_t &return_printer_t::operator ,(const Type_t &value)
 	{
-		out_stream(_filename_line) << "return " << make_value(value);
+		out_stream stream(_filename_line);
+		stream << "return " << make_value(value) << ENDLINE;
 		return value;
 	}
 
@@ -1523,7 +1590,8 @@ namespace pretty_output
 	block_t<Comment_value_t, Return_t>::block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
 		: return_value(comment_value)
 	{
-		out_stream(filename_line) << comment << make_value(comment_value);
+		out_stream stream(filename_line);
+		stream << comment << make_value(comment_value) << ENDLINE;
 		indentation_add();
 	}
 
@@ -1533,7 +1601,8 @@ namespace pretty_output
 		: return_value(comment_value)
 	{
 		indentation_add();
-		out_stream() << comment << make_value(comment_value);
+		out_stream stream(NEWLINE);
+		stream << comment << make_value(comment_value) << ENDLINE;
 	}
 
 
@@ -1542,7 +1611,8 @@ namespace pretty_output
 		: return_value(retval)
 	{
 		indentation_add();
-		out_stream() << comment << make_value(comment_value);
+		out_stream stream(NEWLINE);
+		stream << comment << make_value(comment_value) << ENDLINE;
 	}
 
 
@@ -1550,7 +1620,8 @@ namespace pretty_output
 	block_t<Comment_value_t, Return_t>::~block_t()
 	{
 		indentation_remove();
-		out_stream();
+		out_stream stream(NEWLINE);
+		stream << ENDLINE;
 	}
 
 
