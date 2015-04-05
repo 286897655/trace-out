@@ -54,10 +54,6 @@
 				pretty_output::print_memory(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
 
 
-	#define $f \
-				pretty_output::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
-
-
 	#if defined(PRETTY_OUTPUT_CPP11)
 
 	#define $c(function_name) \
@@ -68,6 +64,10 @@
 				pretty_output::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, pretty_output::reference(object), &std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+	#define $f \
+				pretty_output::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 	#define $return \
@@ -112,9 +112,6 @@
 	#define $m(pointer, ...)
 
 
-	#define $f
-
-
 	#if defined(PRETTY_OUTPUT_CPP11)
 
 	#define $c(function_name) \
@@ -125,6 +122,9 @@
 				(object.*&std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+	#define $f
 
 
 	#define $return \
