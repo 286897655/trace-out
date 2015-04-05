@@ -477,7 +477,7 @@ namespace pretty_output
 	{
 		indentation_remove();
 		out_stream stream(_filename_line);
-		stream << "}    // " << _function_signature.c_str() << NEWLINE << ENDLINE;
+		stream << "}" << INDENTATION << "// " << _function_signature.c_str() << NEWLINE << ENDLINE;
 	}
 
 
