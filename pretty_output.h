@@ -474,7 +474,7 @@ namespace pretty_output
 			}
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true,
-										int8_t, 2, BASE_HEX, int8_t, uint8_t);
+										int8_t, 4, BASE_HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true,
 										int16_t, 6, BASE_SDEC, int16_t, uint16_t);
@@ -487,7 +487,7 @@ namespace pretty_output
 
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, false,
-										uint8_t, 2, BASE_HEX, int8_t, uint8_t);
+										uint8_t, 3, BASE_HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, false,
 										uint16_t, 5, BASE_UDEC, int16_t, uint16_t);
