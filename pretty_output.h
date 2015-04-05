@@ -93,10 +93,6 @@
 					while (pretty_output::block_t<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::block("// while: " #__VA_ARGS__ " => ", static_cast<bool>((__VA_ARGS__))))
 
 
-	#define $_ \
-				pretty_output::block_t<void, void> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::block_t<void, void>();
-
-
 	#define $p(format, ...) \
 				{ \
 					pretty_output::out_stream stream(PRETTY_OUTPUT_FILENAME_LINE); \
@@ -326,7 +322,6 @@ namespace pretty_output
 	{
 	public:
 		out_stream(const std::string &filename_line);
-		out_stream(const newline_t &);
 		out_stream();
 		~out_stream();
 		out_stream &operator <<(char character);
@@ -765,14 +760,6 @@ namespace pretty_output
 
 
 		const Return_t &return_value;
-	};
-
-
-	template <>
-	struct block_t<void, void>
-	{
-		block_t();
-		~block_t();
 	};
 
 
@@ -1380,7 +1367,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=> " << make_value(return_value) << ENDLINE;
 			indentation_remove();
 		}
@@ -1409,7 +1396,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=>" << "(void)" << ENDLINE;
 			indentation_remove();
 		}
@@ -1446,7 +1433,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=> " << make_value(return_value) << ENDLINE;
 			indentation_remove();
 		}
@@ -1475,7 +1462,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=> " << "(void)";
 			indentation_remove();
 		}
@@ -1519,7 +1506,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=> " << make_value(return_value) << ENDLINE;
 			indentation_remove();
 		}
@@ -1548,7 +1535,7 @@ namespace pretty_output
 
 		{
 			indentation_add();
-			out_stream stream(NEWLINE);
+			out_stream stream;
 			stream << "=> " << "(void)" << ENDLINE;
 			indentation_remove();
 		}
@@ -1601,7 +1588,7 @@ namespace pretty_output
 		: return_value(comment_value)
 	{
 		indentation_add();
-		out_stream stream(NEWLINE);
+		out_stream stream;
 		stream << comment << make_value(comment_value) << ENDLINE;
 	}
 
@@ -1611,7 +1598,7 @@ namespace pretty_output
 		: return_value(retval)
 	{
 		indentation_add();
-		out_stream stream(NEWLINE);
+		out_stream stream;
 		stream << comment << make_value(comment_value) << ENDLINE;
 	}
 
@@ -1620,7 +1607,7 @@ namespace pretty_output
 	block_t<Comment_value_t, Return_t>::~block_t()
 	{
 		indentation_remove();
-		out_stream stream(NEWLINE);
+		out_stream stream;
 		stream << ENDLINE;
 	}
 

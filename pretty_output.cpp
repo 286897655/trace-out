@@ -300,7 +300,7 @@ namespace pretty_output
 	}
 
 
-	out_stream::out_stream(const newline_t &)
+	out_stream::out_stream()
 		: _current_line_length(0)
 	{
 		lock_output();
@@ -311,13 +311,6 @@ namespace pretty_output
 		stream << "";
 
 		*this << stream.str().c_str() << DELIMITER << indentation().c_str();
-	}
-
-
-	out_stream::out_stream()
-		: _current_line_length(0)
-	{
-		lock_output();
 	}
 
 
@@ -474,7 +467,8 @@ namespace pretty_output
 	function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
 		: _filename_line(filename_line), _function_signature(function_signature)
 	{
-		out_stream(_filename_line) << _function_signature.c_str() << NEWLINE << "{" << ENDLINE;
+		out_stream stream(_filename_line);
+		stream << _function_signature.c_str() << NEWLINE << "{" << ENDLINE;
 		indentation_add();
 	}
 
@@ -482,7 +476,8 @@ namespace pretty_output
 	function_printer_t::~function_printer_t()
 	{
 		indentation_remove();
-		out_stream(_filename_line) << "}    // " << _function_signature.c_str() << NEWLINE << ENDLINE;
+		out_stream stream(_filename_line);
+		stream << "}    // " << _function_signature.c_str() << NEWLINE << ENDLINE;
 	}
 
 
@@ -508,28 +503,13 @@ namespace pretty_output
 
 
 	//
-	// 'block<void>' specialization
-
-	block_t<void, void>::block_t()
-	{
-		indentation_add();
-	}
-
-
-	block_t<void, void>::~block_t()
-	{
-		indentation_remove();
-		out_stream();
-	}
-
-
-	//
 	// For block
 
 	for_block_t::for_block_t(const std::string &filename_line, const char *expression)
 		: _iteration_number(0)
 	{
-		out_stream(filename_line) << "for (" << expression << ")" << ENDLINE;
+		out_stream stream(filename_line);
+		stream << "for (" << expression << ")" << ENDLINE;
 	}
 
 
