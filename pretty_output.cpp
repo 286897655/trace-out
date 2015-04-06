@@ -407,6 +407,49 @@ namespace pretty_output
 	//
 	// Memory
 
+	template <typename T>
+	size_t first_set_bit(T number)
+	{
+		size_t index = 0;
+		for (;;)
+		{
+			if (number & (static_cast<T>(0x1) == static_cast<T>(0x1)))
+			{
+				break;
+			}
+
+			number >>= 1;
+			++index;
+		}
+
+		return index;
+	}
+
+
+	option_t base_value_from_options(option_t options)
+	{
+		return options & (0x0000ffff << BASE_OPTIONS_START);
+	}
+
+
+	option_t byte_order_value_from_options(option_t options)
+	{
+		return options & (0x0000ffff << BYTE_ORDER_OPTIONS_START);
+	}
+
+
+	const char *option_name(option_t option, const char *const names[], size_t names_length, const char *default_name)
+	{
+		size_t index = first_set_bit(option);
+		if (index >= names_length)
+		{
+			return default_name;
+		}
+
+		return names[index];
+	}
+
+
 	const char *byte_to_binary(uint8_t byte)
 	{
 		return BINARY_VALUES[byte];
@@ -419,7 +462,7 @@ namespace pretty_output
 	}
 
 
-	byteorder_t current_byte_order()
+	option_t current_byte_order()
 	{
 		const uint16_t VALUE = 0x0001;
 		const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
@@ -448,7 +491,7 @@ namespace pretty_output
 	}
 
 
-	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order)
+	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, option_t byte_order)
 	{
 		if (current_byte_order() != byte_order)
 		{

@@ -418,23 +418,22 @@ namespace pretty_output
 	//
 	// Memory
 
-	enum base_t
-	{
-		BASE_BIN = 2,
-		BASE_SDEC = -10,
-		BASE_UDEC = 10,
-		BASE_HEX = 16,
-		BASE_FLT = 17,
-		BASE_DBL = 18,
-		BASE_LDBL = 19
-	};
+	typedef uint32_t option_t;
 
 
-	enum byteorder_t
-	{
-		BYTE_ORDER_LITTLE_ENDIAN,
-		BYTE_ORDER_BIG_ENDIAN
-	};
+	const size_t BASE_OPTIONS_START = 0;
+	const size_t BYTE_ORDER_OPTIONS_START = 16;
+
+	const option_t BASE_BIN = 0x1 << (BASE_OPTIONS_START + 0);
+	const option_t BASE_SDEC = 0x1 << (BASE_OPTIONS_START + 1);
+	const option_t BASE_UDEC = 0x1 << (BASE_OPTIONS_START + 2);
+	const option_t BASE_HEX = 0x1 << (BASE_OPTIONS_START + 3);
+	const option_t BASE_FLT = 0x1 << (BASE_OPTIONS_START + 4);
+	const option_t BASE_DBL = 0x1 << (BASE_OPTIONS_START + 5);
+	const option_t BASE_LDBL = 0x1 << (BASE_OPTIONS_START + 6);
+
+	const option_t BYTE_ORDER_LITTLE_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 0);
+	const option_t BYTE_ORDER_BIG_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 1);
 
 
 	enum typefamily_t
@@ -457,7 +456,7 @@ namespace pretty_output
 	{
 		typedef uint8_t unit_t;
 		static const size_t field_width = 2;
-		static const base_t default_base = BASE_HEX;
+		static const option_t default_base = BASE_HEX;
 		typedef void signed_t;
 		typedef void unsigned_t;
 	};
@@ -468,7 +467,7 @@ namespace pretty_output
 			{ \
 				typedef unit_type unit_t; \
 				static const size_t field_width = field_width_value; \
-				static const base_t default_base = default_base_value; \
+				static const option_t default_base = default_base_value; \
 				typedef to_signed_type signed_t; \
 				typedef to_unsigned_type unsigned_t; \
 			}
@@ -523,13 +522,14 @@ namespace pretty_output
 	};
 
 
-
+	option_t base_value_from_options(option_t options);
+	option_t byte_order_value_from_options(option_t options);
+	const char *option_name(option_t option, const char *const names[], size_t names_length, const char *default_name);
 	const char *byte_to_binary(uint8_t byte);
-
 	const char *byte_to_hexadecimal(uint8_t byte);
 
 	template <typename Type_t>
-	size_t field_width(base_t base);
+	size_t field_width(option_t base);
 
 	template <typename Type_t>
 	const std::string bytes_to_binary_string(Type_t value);
@@ -547,21 +547,14 @@ namespace pretty_output
 	const std::string bytes_to_hexadecimal_string(Type_t value);
 
 	template <typename Type_t>
-	const std::string (*select_conversion(base_t base))(Type_t);
+	const std::string (*select_conversion(option_t base))(Type_t);
 
-	byteorder_t current_byte_order();
-
+	option_t current_byte_order();
 	void reverse_bytes(void *destination, const void *source, size_t size);
+	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, option_t byte_order);
 
-	void order_bytes(void *ordered_bytes, const void *unordered_bytes, size_t size, byteorder_t byte_order);
-
-	// NOTE: Visual Studio crashes at passing 'Type_t' to 'print_traits' in function declaration, so assume the following commented code as a function declarations
-
-	// template <typename Type_t>
-	// void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
-
-	// template <typename Type_t>
-	// void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order());
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), option_t options = 0);
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -1163,7 +1156,7 @@ namespace pretty_output
 	// Memory
 
 	template <typename Type_t>
-	size_t field_width(base_t base)
+	size_t field_width(option_t base)
 	{
 		switch (base)
 		{
@@ -1258,7 +1251,7 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	const std::string (*select_conversion(base_t base))(Type_t)
+	const std::string (*select_conversion(option_t base))(Type_t)
 	{
 		switch (base)
 		{
@@ -1284,16 +1277,38 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size = sizeof(Type_t), base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order())
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size, option_t options)
 	{
 		typedef typename print_traits<Type_t>::unit_t unit_t;
 
-		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
+		const char *const BASE_NAMES[] = {"binary", "signed decimal", "unsigned decimal", "hexadecimal", "float", "double", "long double"};
+		const size_t BASE_NAMES_LENGTH = sizeof(BASE_NAMES) / sizeof(BASE_NAMES[0]);
+
+		const char *const BYTE_ORDER_NAMES[] = {"little-endian", "big-endian"};
+		const size_t BYTE_ORDER_NAMES_LENGTH = sizeof(BYTE_ORDER_NAMES) / sizeof(BYTE_ORDER_NAMES[0]);
+
+
+		option_t base = base_value_from_options(options);
+		if (base == 0)
+		{
+			base = print_traits<Type_t>::default_base;
+		}
+
+		option_t byte_order = byte_order_value_from_options(options);
+		if (byte_order == 0)
+		{
+			byte_order = current_byte_order();
+		}
+
+		const char *base_name = option_name((base >> BASE_OPTIONS_START), BASE_NAMES, BASE_NAMES_LENGTH, "?");
+		const char *byte_order_name = option_name((byte_order >> BYTE_ORDER_OPTIONS_START), BYTE_ORDER_NAMES, BYTE_ORDER_NAMES_LENGTH, "?");
 
 		out_stream stream(filename_line);
-		stream << "memory of " << name << ":";
+		stream << name << " (" << base_name << ", " << byte_order_name << "):";
 		indentation_add();
 		stream << NEWLINE;
+
+		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
 
 		std::stringstream string_stream;
 
