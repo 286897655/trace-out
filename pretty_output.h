@@ -1335,13 +1335,6 @@ namespace pretty_output
 	}
 
 
-	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t &variable, base_t base = print_traits<Type_t>::default_base, byteorder_t byte_order = current_byte_order())
-	{
-		print_memory(filename_line, name, reinterpret_cast<const uint8_t *>(&variable), sizeof(Type_t), base, byte_order);
-	}
-
-
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	//
