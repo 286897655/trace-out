@@ -8,14 +8,94 @@ Features:
 
 * Easy to use, but right now not easy to extend
 * Uses only C++/C++11. Does not use any additional preprocessors or libraries, except standard library
-* Crossplatform. Tested on Clang 600.0.56, MVS 2010
+* Crossplatform. Tested on Clang 600.0.56, MVS 2010, MVS 2013, MinGW 4.9.smth
 * Free for all
+
+
 
 Usage
 =====
 
 `$w(expression)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
+
+`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
+The name is an abbreviation of 'call'.
+
+`$cm(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
+The name is an abbreviation of 'call member-function'.
+
+`$m(pointer, size, base, byte_order)` - print memory under the `pointer`.
+
+`pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
+
+`size` - size of memory is bytes.
+
+`base` (optional) - numeric base for value representation. Can have following values:
+* `pretty_output::BASE_BIN` - binary
+* `pretty_output::BASE_SDEC` - signed decimal
+* `pretty_output::BASE_UDEC` - unsigned decimal
+* `pretty_output::BASE_HEX` - hexadecimal (default)
+
+`byte_order` - order of the bytes to use when converting bytes to the numeric values. Can have following values:
+* `pretty_output::BYTE_ORDER_LITTLE_ENDIAN`
+* `pretty_output::BYTE_ORDER_BIG_ENDIAN`
+
+Default value is determined automatically.
+
+The name is an abbreviation of 'memory'.
+
+`$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
+The name is an abbreviation of 'function'.
+
+`$return expression` - print value of `epxression` passed to return statement.
+
+`$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
+
+`$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
+
+`$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
+
+`$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
+
+`$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
+
+
+
+Options
+=======
+
+`PRETTY_OUTPUT_ON` - turn pretty_output on.
+
+`PRETTY_OUTPUT_OFF` - turn pretty_output off.
+
+`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and memory output). Default is 79.
+
+`PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
+
+`PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
+
+`PRETTY_OUTPUT_REDIRECTION_H` - header file, which contains overrided printing routines. Read details in the 'Notes' section.
+
+
+
+Notes
+=====
+
+* If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
+
+* Macros `$c` and `$cm` work only with C++11 and later.
+
+* There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
+
+* Output redirection is done in a following way: first, the functions `void print(const char *)` and `void flush()` should be defined within some namespace; second, macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where these functions are defined. For convinience there's already files for redirecting output to a file (pretty_output_to_file.cpp) and for printing to MVS debug output (pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define macro `PRETTY_OUTPUT_TO_FILE` with the name of the destination file (default is 'pretty_output_log.txt').
+
+
+
+Examples
+========
+
+`$w`
 
 Code:
 ```C++
@@ -44,29 +124,7 @@ main.cpp:17   |  *pf = 789
 ```
 ---
 
-`$m(pointer, size, base, byte_order)` - print memory under the `pointer`.
-
-`$m(variable, base, byte_order)` - print memory of the `variable`.
-
-`pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
-
-`variable` - variable, memory of which will be printed. Parameter `size` should not be provided. Default grouping is 1 byte, default `base` is hexadecimal.
-
-`size` - size of memory is bytes.
-
-`base` (optional) - numeric base for value representation. Can have following values:
-* `pretty_output::BASE_BIN` - binary
-* `pretty_output::BASE_SDEC` - signed decimal
-* `pretty_output::BASE_UDEC` - unsigned decimal
-* `pretty_output::BASE_HEX` - hexadecimal (default)
-
-`byte_order` - order of the bytes to use when converting bytes to the numeric values. Can have following values:
-* `pretty_output::BYTE_ORDER_LITTLE_ENDIAN`
-* `pretty_output::BYTE_ORDER_BIG_ENDIAN`
-
-Default value is determined automatically.
-
-The name is an abbreviation of 'memory'.
+`$m`
 
 Code:
 ```C++
@@ -81,7 +139,7 @@ s.i = 456;
 s.f = 789.123f;
 s.c = 'r';
 
-$m(s);
+$m(&s, sizeof(s));
 ```
 
 Output:
@@ -93,8 +151,7 @@ main.cpp:17   |  memory of s:
 ```
 ---
 
-`$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
-The name is an abbreviation of 'function'.
+`$f`
 
 Code:
 ```C++
@@ -125,8 +182,7 @@ main.cpp:10   |  [ret]  int main()
 ```
 ---
 
-`$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
-The name is an abbreviation of 'call'.
+`$c`
 
 Code:
 ```C++
@@ -144,8 +200,7 @@ main.cpp:11   |  func(456, 789, hellomoto!)
 ```
 ---
 
-`$cm(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
-The name is an abbreviation of 'member-function'.
+`$cm`
 
 Code:
 ```C++
@@ -168,7 +223,7 @@ main.cpp:15   |  obj.func(456, 789, hellomoto!)
 ```
 ---
 
-`$return expression` - print value of `epxression` passed to return statement.
+`$return`
 
 Code:
 ```C++
@@ -186,7 +241,7 @@ main.cpp:5    |  return 1245
 ```
 ---
 
-`$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
+`$if`
 
 Code:
 ```C++
@@ -202,7 +257,7 @@ main.cpp:7    |  if (i < 2) => true
 ```
 ---
 
-`$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
+`$for`
 
 Code:
 ```C++
@@ -224,7 +279,7 @@ main.cpp:7    |      i = 2
 ```
 ---
 
-`$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
+`$while`
 
 Code:
 ```C++
@@ -248,29 +303,7 @@ main.cpp:7    |  while (i < 3) => false
 ```
 ---
 
-`$_` - shift indentation in the containing scope.
-
-Code:
-```C++
-int i = 456;
-$w(i);
-
-{$_
-	$w(i);
-}
-
-$w(i);
-```
-
-Output:
-```
-main.cpp:7    |  i = 456
-main.cpp:10   |      i = 456
-main.cpp:13   |  i = 456
-```
----
-
-`$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
+`$p`
 
 Code:
 ```C++
@@ -283,7 +316,7 @@ main.cpp:14   |  // 456 789.000000 hellomoto!
 ```
 ---
 
-`$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
+`$t`
 
 Code:
 ```C++
@@ -344,30 +377,3 @@ Output:
             main.cpp:16   |  [ret]  int main()
 ```
 
-
-Options
-=======
-
-`PRETTY_OUTPUT_ON` - turn pretty_output on.
-
-`PRETTY_OUTPUT_OFF` - turn pretty_output off.
-
-`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and memory output). Default is 79.
-
-`PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
-
-`PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
-
-`PRETTY_OUTPUT_REDIRECTION_H` - header file, which contains overrided printing routines. Read details in the 'Notes' section.
-
-
-Notes
-=====
-
-* If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
-
-* Macros `$c` and `$cm` work only with C++11 and later.
-
-* There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
-
-* Output redirection is done in a following way: first, the functions `void print(const char *)` and `void flush()` should be defined within some namespace; second, macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where these functions are defined. For convinience there's already files for redirecting output to a file (pretty_output_to_file.cpp) and for printing to MVS debug output (pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define macro `PRETTY_OUTPUT_TO_FILE` with the name of the destination file (default is 'pretty_output_log.txt').
