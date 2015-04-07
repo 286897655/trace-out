@@ -435,7 +435,7 @@ namespace pretty_output
 
 	option_t base_value_from_options(option_t options, option_t default_value)
 	{
-		option_t base = options & (0x0000ffff << BASE_OPTIONS_START);
+		option_t base = options & (0x0000ffff << OPTIONS_START_BASE);
 		if (base == 0)
 		{
 			return default_value;
@@ -447,7 +447,7 @@ namespace pretty_output
 
 	option_t byte_order_value_from_options(option_t options, option_t default_value)
 	{
-		option_t byte_order = options & (0x0000ffff << BYTE_ORDER_OPTIONS_START);
+		option_t byte_order = options & (0x0000ffff << OPTIONS_START_BYTE_ORDER);
 		if (byte_order == 0)
 		{
 			return default_value;
@@ -488,11 +488,11 @@ namespace pretty_output
 
 		if (FIRST_BYTE == 0x01)
 		{
-			return BYTE_ORDER_BIG_ENDIAN;
+			return BIG;
 		}
 		else
 		{
-			return BYTE_ORDER_LITTLE_ENDIAN;
+			return LITTLE;
 		}
 	}
 

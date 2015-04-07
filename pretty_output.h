@@ -421,19 +421,19 @@ namespace pretty_output
 	typedef uint32_t option_t;
 
 
-	const size_t BASE_OPTIONS_START = 0;
-	const size_t BYTE_ORDER_OPTIONS_START = 16;
+	const size_t OPTIONS_START_BASE = 0;
+	const size_t OPTIONS_START_BYTE_ORDER = 16;
 
-	const option_t BASE_BIN = 0x1 << (BASE_OPTIONS_START + 0);
-	const option_t BASE_SDEC = 0x1 << (BASE_OPTIONS_START + 1);
-	const option_t BASE_UDEC = 0x1 << (BASE_OPTIONS_START + 2);
-	const option_t BASE_HEX = 0x1 << (BASE_OPTIONS_START + 3);
-	const option_t BASE_FLT = 0x1 << (BASE_OPTIONS_START + 4);
-	const option_t BASE_DBL = 0x1 << (BASE_OPTIONS_START + 5);
-	const option_t BASE_LDBL = 0x1 << (BASE_OPTIONS_START + 6);
+	const option_t BIN = 0x1 << (OPTIONS_START_BASE + 0);
+	const option_t SDEC = 0x1 << (OPTIONS_START_BASE + 1);
+	const option_t UDEC = 0x1 << (OPTIONS_START_BASE + 2);
+	const option_t HEX = 0x1 << (OPTIONS_START_BASE + 3);
+	const option_t FLT = 0x1 << (OPTIONS_START_BASE + 4);
+	const option_t DBL = 0x1 << (OPTIONS_START_BASE + 5);
+	const option_t LDBL = 0x1 << (OPTIONS_START_BASE + 6);
 
-	const option_t BYTE_ORDER_LITTLE_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 0);
-	const option_t BYTE_ORDER_BIG_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 1);
+	const option_t LITTLE = 0x1 << (OPTIONS_START_BYTE_ORDER + 0);
+	const option_t BIG = 0x1 << (OPTIONS_START_BYTE_ORDER + 1);
 
 	extern const char *const BASE_NAMES[];
 	extern const size_t BASE_NAMES_LENGTH;
@@ -462,7 +462,7 @@ namespace pretty_output
 	{
 		typedef uint8_t unit_t;
 		static const size_t field_width = 2;
-		static const option_t default_base = BASE_HEX;
+		static const option_t default_base = HEX;
 		typedef void signed_t;
 		typedef void unsigned_t;
 	};
@@ -479,46 +479,46 @@ namespace pretty_output
 			}
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true,
-										int8_t, 4, BASE_HEX, int8_t, uint8_t);
+										int8_t, 4, HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true,
-										int16_t, 6, BASE_SDEC, int16_t, uint16_t);
+										int16_t, 6, SDEC, int16_t, uint16_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, true,
-										int32_t, 11, BASE_SDEC, int32_t, uint32_t);
+										int32_t, 11, SDEC, int32_t, uint32_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, true,
-										int64_t, 21, BASE_SDEC, int64_t, uint64_t);
+										int64_t, 21, SDEC, int64_t, uint64_t);
 
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, false,
-										uint8_t, 3, BASE_HEX, int8_t, uint8_t);
+										uint8_t, 3, HEX, int8_t, uint8_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, false,
-										uint16_t, 5, BASE_UDEC, int16_t, uint16_t);
+										uint16_t, 5, UDEC, int16_t, uint16_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, false,
-										uint32_t, 10, BASE_UDEC, int32_t, uint32_t);
+										uint32_t, 10, UDEC, int32_t, uint32_t);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, false,
-										uint64_t, 20, BASE_UDEC, int64_t, uint64_t);
+										uint64_t, 20, UDEC, int64_t, uint64_t);
 
 
 	// first_digit + point + precision + 'e' + sign + exponent
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 4, true,
-										float, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 3, BASE_FLT, float, float);
+										float, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 3, FLT, float, float);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 8, true,
-										double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 4, BASE_DBL, double, double);
+										double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 4, DBL, double, double);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 10, true,
-										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 12, true,
-										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
 
 	PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 16, true,
-										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, BASE_LDBL, long double, long double);
+										long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
 
 
 	template <typename Type_t>
@@ -1166,21 +1166,21 @@ namespace pretty_output
 	{
 		switch (base)
 		{
-			case BASE_BIN:
+			case BIN:
 				return sizeof(typename print_traits<Type_t>::unit_t) * 8;
 
-			case BASE_SDEC:
+			case SDEC:
 				return print_traits<Type_t>::field_width + (!std::numeric_limits<Type_t>::is_signed ? 1 : 0);
 
-			case BASE_UDEC:
+			case UDEC:
 				return print_traits<Type_t>::field_width - (std::numeric_limits<Type_t>::is_signed ? 1 : 0);
 
-			case BASE_FLT:
-			case BASE_DBL:
-			case BASE_LDBL:
+			case FLT:
+			case DBL:
+			case LDBL:
 				return print_traits<Type_t>::field_width;
 
-			case BASE_HEX:
+			case HEX:
 			default:
 				return sizeof(typename print_traits<Type_t>::unit_t) * 2;
 		}
@@ -1261,21 +1261,21 @@ namespace pretty_output
 	{
 		switch (base)
 		{
-			case BASE_BIN:
+			case BIN:
 				return bytes_to_binary_string<Type_t>;
 
-			case BASE_SDEC:
+			case SDEC:
 				return bytes_to_signed_decimal_string<Type_t>;
 
-			case BASE_UDEC:
+			case UDEC:
 				return bytes_to_unsigned_decimal_string<Type_t>;
 
-			case BASE_FLT:
-			case BASE_DBL:
-			case BASE_LDBL:
+			case FLT:
+			case DBL:
+			case LDBL:
 				return bytes_to_floating_point_string<Type_t>;
 
-			case BASE_HEX:
+			case HEX:
 			default:
 				return bytes_to_hexadecimal_string<Type_t>;
 		}
@@ -1329,8 +1329,8 @@ namespace pretty_output
 		option_t base = base_value_from_options(options, print_traits<Type_t>::default_base);
 		option_t byte_order = byte_order_value_from_options(options, current_byte_order());
 
-		const char *base_name = option_name((base >> BASE_OPTIONS_START), BASE_NAMES, BASE_NAMES_LENGTH, "?");
-		const char *byte_order_name = option_name((byte_order >> BYTE_ORDER_OPTIONS_START), BYTE_ORDER_NAMES, BYTE_ORDER_NAMES_LENGTH, "?");
+		const char *base_name = option_name((base >> OPTIONS_START_BASE), BASE_NAMES, BASE_NAMES_LENGTH, "?");
+		const char *byte_order_name = option_name((byte_order >> OPTIONS_START_BYTE_ORDER), BYTE_ORDER_NAMES, BYTE_ORDER_NAMES_LENGTH, "?");
 
 		out_stream stream(filename_line);
 		stream << name << " (" << base_name << ", " << byte_order_name << "):";
