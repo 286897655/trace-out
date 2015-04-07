@@ -19,44 +19,66 @@ Usage
 `$w(expression)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
 
+
+
 `$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
+
+
 
 `$cm(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
 The name is an abbreviation of 'call member-function'.
 
-`$m(pointer, size, base, byte_order)` - print memory under the `pointer`.
+
+
+`$m(pointer, size, options)` - print memory under the `pointer`.
 
 `pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
 
 `size` - size of memory is bytes.
 
-`base` (optional) - numeric base for value representation. Can have following values:
-* `pretty_output::BASE_BIN` - binary
-* `pretty_output::BASE_SDEC` - signed decimal
-* `pretty_output::BASE_UDEC` - unsigned decimal
-* `pretty_output::BASE_HEX` - hexadecimal (default)
+`options` (optional) - numeric base for value representation and order of the bytes to use when converting bytes to the numeric values. Can have following values:
+* `pretty_output::BIN` - binary
+* `pretty_output::SDEC` - signed decimal
+* `pretty_output::UDEC` - unsigned decimal
+* `pretty_output::HEX` - hexadecimal (default)
+* `pretty_output::FLT` - single precision floating point number
+* `pretty_output::DBL` - double precision floating point number
+* `pretty_output::LDBL` - floating point number with precision equal to 'long double' for current platform
 
-`byte_order` - order of the bytes to use when converting bytes to the numeric values. Can have following values:
-* `pretty_output::BYTE_ORDER_LITTLE_ENDIAN`
-* `pretty_output::BYTE_ORDER_BIG_ENDIAN`
+* `pretty_output::LITTLE` - big-endian byte order
+* `pretty_output::BIG` - little-endian byte order
 
 Default value is determined automatically.
 
 The name is an abbreviation of 'memory'.
 
+
+
 `$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
 The name is an abbreviation of 'function'.
 
+
+
 `$return expression` - print value of `epxression` passed to return statement.
+
+
 
 `$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
 
+
+
 `$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
+
+
 
 `$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
 
+
+
 `$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
+
+
 
 `$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
 
