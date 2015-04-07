@@ -435,6 +435,12 @@ namespace pretty_output
 	const option_t BYTE_ORDER_LITTLE_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 0);
 	const option_t BYTE_ORDER_BIG_ENDIAN = 0x1 << (BYTE_ORDER_OPTIONS_START + 1);
 
+	extern const char *const BASE_NAMES[];
+	extern const size_t BASE_NAMES_LENGTH;
+
+	extern const char *const BYTE_ORDER_NAMES[];
+	extern const size_t BYTE_ORDER_NAMES_LENGTH;
+
 
 	enum typefamily_t
 	{
@@ -522,8 +528,8 @@ namespace pretty_output
 	};
 
 
-	option_t base_value_from_options(option_t options);
-	option_t byte_order_value_from_options(option_t options);
+	option_t base_value_from_options(option_t options, option_t default_value);
+	option_t byte_order_value_from_options(option_t options, option_t default_value);
 	const char *option_name(option_t option, const char *const names[], size_t names_length, const char *default_name);
 	const char *byte_to_binary(uint8_t byte);
 	const char *byte_to_hexadecimal(uint8_t byte);
@@ -1277,52 +1283,20 @@ namespace pretty_output
 
 
 	template <typename Type_t>
-	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size, option_t options)
+	void print_memory_contents(out_stream &stream, const Type_t *pointer, size_t size, size_t column_width, const std::string (*bytes_to_string)(Type_t), option_t byte_order)
 	{
-		typedef typename print_traits<Type_t>::unit_t unit_t;
-
-		const char *const BASE_NAMES[] = {"binary", "signed decimal", "unsigned decimal", "hexadecimal", "float", "double", "long double"};
-		const size_t BASE_NAMES_LENGTH = sizeof(BASE_NAMES) / sizeof(BASE_NAMES[0]);
-
-		const char *const BYTE_ORDER_NAMES[] = {"little-endian", "big-endian"};
-		const size_t BYTE_ORDER_NAMES_LENGTH = sizeof(BYTE_ORDER_NAMES) / sizeof(BYTE_ORDER_NAMES[0]);
-
-
-		option_t base = base_value_from_options(options);
-		if (base == 0)
-		{
-			base = print_traits<Type_t>::default_base;
-		}
-
-		option_t byte_order = byte_order_value_from_options(options);
-		if (byte_order == 0)
-		{
-			byte_order = current_byte_order();
-		}
-
-		const char *base_name = option_name((base >> BASE_OPTIONS_START), BASE_NAMES, BASE_NAMES_LENGTH, "?");
-		const char *byte_order_name = option_name((byte_order >> BYTE_ORDER_OPTIONS_START), BYTE_ORDER_NAMES, BYTE_ORDER_NAMES_LENGTH, "?");
-
-		out_stream stream(filename_line);
-		stream << name << " (" << base_name << ", " << byte_order_name << "):";
-		indentation_add();
-		stream << NEWLINE;
-
-		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
-
 		std::stringstream string_stream;
 
-		size_t column_width = field_width<Type_t>(base);
-
-		const unit_t *iterator = reinterpret_cast<const unit_t *>(pointer);
-		size_t length = size / sizeof(unit_t);
+		const Type_t *iterator = reinterpret_cast<const Type_t *>(pointer);
+		size_t length = size / sizeof(Type_t);
 
 		stream << make_value((void *)iterator) << ":";
 		for (std::size_t index = 0; index < length; ++index)
 		{
-			if (string_stream.str().length() + column_width + 1 > stream.width_left())
+			const std::string string_representation = string_stream.str();
+			if (string_representation.length() + column_width + 1 > stream.width_left())
 			{
-				stream << string_stream.str().c_str();
+				stream << string_representation.c_str();
 				string_stream.str("");
 
 				stream << NEWLINE << make_value((void *)&iterator[index]) << ":";
@@ -1333,16 +1307,39 @@ namespace pretty_output
 			string_stream.width(column_width);
 			string_stream.flags(std::ios::right);
 
-			unit_t ordered_bytes;
-			order_bytes(&ordered_bytes, &iterator[index], sizeof(unit_t), byte_order);
+			Type_t ordered_bytes;
+			order_bytes(&ordered_bytes, &iterator[index], sizeof(Type_t), byte_order);
 
 			string_stream << bytes_to_string(ordered_bytes);
 		}
 
-		if (!string_stream.str().empty())
+		const std::string string_representation = string_stream.str();
+		if (!string_representation.empty())
 		{
-			stream << string_stream.str().c_str() << NEWLINE;
+			stream << string_representation.c_str() << NEWLINE;
 		}
+	}
+
+
+	template <typename Type_t>
+	void print_memory(const std::string &filename_line, const char *name, const Type_t *pointer, size_t size, option_t options)
+	{
+		typedef typename print_traits<Type_t>::unit_t unit_t;
+
+		option_t base = base_value_from_options(options, print_traits<Type_t>::default_base);
+		option_t byte_order = byte_order_value_from_options(options, current_byte_order());
+
+		const char *base_name = option_name((base >> BASE_OPTIONS_START), BASE_NAMES, BASE_NAMES_LENGTH, "?");
+		const char *byte_order_name = option_name((byte_order >> BYTE_ORDER_OPTIONS_START), BYTE_ORDER_NAMES, BYTE_ORDER_NAMES_LENGTH, "?");
+
+		out_stream stream(filename_line);
+		stream << name << " (" << base_name << ", " << byte_order_name << "):";
+		indentation_add();
+		stream << NEWLINE;
+
+		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
+		size_t column_width = field_width<Type_t>(base);
+		print_memory_contents(stream, reinterpret_cast<const unit_t *>(pointer), size, column_width, bytes_to_string, byte_order);
 
 		indentation_remove();
 
