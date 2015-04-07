@@ -37,7 +37,8 @@ The name is an abbreviation of 'call member-function'.
 
 `size` - size of memory is bytes.
 
-`options` (optional) - numeric base for value representation and order of the bytes to use when converting bytes to the numeric values. Can have following values:
+`options` (optional) - numeric base for value representation and order of the bytes to use when converting bytes to the numeric values.
+Base flags:
 * `pretty_output::BIN` - binary
 * `pretty_output::SDEC` - signed decimal
 * `pretty_output::UDEC` - unsigned decimal
@@ -46,6 +47,7 @@ The name is an abbreviation of 'call member-function'.
 * `pretty_output::DBL` - double precision floating point number
 * `pretty_output::LDBL` - floating point number with precision equal to 'long double' for current platform
 
+Byte order flags:
 * `pretty_output::LITTLE` - big-endian byte order
 * `pretty_output::BIG` - little-endian byte order
 
