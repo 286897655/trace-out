@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-namespace pretty_output
+namespace pretty_output_to_stdout
 {
 
 	void print(const char *string)
