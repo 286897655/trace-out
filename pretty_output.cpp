@@ -176,7 +176,7 @@ namespace pretty_output
 			stream.fill(THREAD_HEADER_SEPARATOR);
 			stream.flags(std::ios::left);
 			stream.width(WIDTH);
-			stream << ("[Thread: " + thread_id + (thread_name != "" ? " " : "") + thread_name + "]");
+			stream << ("[Thread: " + thread_id + (!thread_name.empty() ? " " : "") + thread_name + "]");
 
 			return stream.str();
 		}
@@ -423,7 +423,7 @@ namespace pretty_output
 			size_t index = 0;
 			for (;;)
 			{
-				if (number & (static_cast<T>(0x1) == static_cast<T>(0x1)))
+				if ((number & static_cast<T>(0x1)) == static_cast<T>(0x1))
 				{
 					break;
 				}
@@ -632,10 +632,7 @@ namespace pretty_output
 		void tls<Type_t>::set(const Type_t &value)
 		{
 			Type_t *old_value = static_cast<Type_t*>(tls_get(_key));
-			if (old_value != NULL)
-			{
-				delete old_value;
-			}
+			delete old_value;
 
 			Type_t *new_value = new Type_t(value);
 			tls_set(_key, new_value);
