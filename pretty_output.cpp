@@ -617,6 +617,19 @@ namespace pretty_output
 
 
 		//
+		// Time
+
+		void print_execution_time(const std::string &filename_line, uint64_t milliseconds)
+		{
+			std::stringstream string_stream;
+			string_stream << milliseconds;
+
+			out_stream stream(filename_line);
+			stream << "// execution time: " << string_stream.str().c_str() << " ms" << ENDLINE;
+		}
+
+
+		//
 		// TLS
 
 		template <typename Type_t>

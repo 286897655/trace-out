@@ -109,6 +109,19 @@
 	#define $t(name) \
 				pretty_output::impl::set_current_thread_name(#name);
 
+
+	#define $time(...) \
+				{ \
+					uint64_t start_time = pretty_output::impl::time_in_milliseconds(); \
+					__VA_ARGS__ \
+					uint64_t end_time = pretty_output::impl::time_in_milliseconds(); \
+					pretty_output::impl::print_execution_time(PRETTY_OUTPUT_FILENAME_LINE, end_time - start_time); \
+				}
+
+
+	#define ticks(...) \
+
+
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
 
 	#define $w(...)
@@ -155,6 +168,14 @@
 
 
 	#define $t(name)
+
+
+	#define $time(...) \
+			__VA_ARGS__
+
+
+	#define $ticks(...) \
+			__VA_ARGS__
 
 #endif
 
@@ -809,6 +830,13 @@ namespace pretty_output
 		// While header
 
 		void print_while_header(const std::string &filename_line, const char *condition);
+
+
+		//
+		// Time
+
+		uint64_t time_in_milliseconds();
+		void print_execution_time(const std::string &filename_line, uint64_t milliseconds);
 
 
 		//

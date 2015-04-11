@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <pthread.h>
+#include <sys/time.h>
 #include <assert.h>
 
 #include "pretty_output.h"
@@ -105,6 +106,23 @@ namespace pretty_output
 		size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments)
 		{
 			return vsnprintf(buffer, size, format, arguments);
+		}
+
+
+		//
+		// Time
+
+		uint64_t time_in_milliseconds()
+		{
+			struct timeval time_value;
+			int retval = gettimeofday(&time_value, NULL);
+			assert(retval == 0);
+
+			uint64_t microseconds = time_value.tv_usec;
+			uint64_t seconds = time_value.tv_sec;
+			uint64_t milliseconds = seconds * 1000 + microseconds / 1000;
+
+			return milliseconds;
 		}
 
 	}
