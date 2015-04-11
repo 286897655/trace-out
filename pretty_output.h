@@ -84,14 +84,14 @@
 				if (pretty_output::impl::block_t<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::impl::block(PRETTY_OUTPUT_FILENAME_LINE, "if (" #__VA_ARGS__ ") => ", static_cast<bool>((__VA_ARGS__))))
 
 
-	#define pretty_output_for(block_name, ...) \
+	#define pretty_output_private__for(block_name, ...) \
 				if (pretty_output::impl::for_block_t block_name = pretty_output::impl::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 					for (__VA_ARGS__) \
 						if (pretty_output::impl::block_t<size_t, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::impl::block("// for: iteration #", block_name.iteration(), false)) {} else
 
 
 	#define $for(...) \
-				pretty_output_for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), __VA_ARGS__)
+				pretty_output_private__for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), ##__VA_ARGS__)
 
 
 	#define $while(...) \
@@ -111,16 +111,20 @@
 				pretty_output::impl::set_current_thread_name(#name);
 
 
-	#define $time(...) \
+	#define pretty_output_private__time(start_time_var, end_time_var, ...) \
 				{ \
-					uint64_t start_time = pretty_output::impl::time_in_milliseconds(); \
+					uint64_t start_time_var = pretty_output::impl::time_in_milliseconds(); \
 					__VA_ARGS__ \
-					uint64_t end_time = pretty_output::impl::time_in_milliseconds(); \
-					pretty_output::impl::print_execution_time_in_milliseconds(PRETTY_OUTPUT_FILENAME_LINE, end_time - start_time); \
+					uint64_t end_time_var = pretty_output::impl::time_in_milliseconds(); \
+					pretty_output::impl::print_execution_time_in_milliseconds(PRETTY_OUTPUT_FILENAME_LINE, end_time_var - start_time_var); \
 				}
 
 
-	#define $ticks(...) \
+	#define $time(...) \
+				pretty_output_private__time(PRETTY_OUTPUT_PRIVATE__UNIFY(start_time), PRETTY_OUTPUT_PRIVATE__UNIFY(end_time), ##__VA_ARGS__)
+
+
+	#define pretty_output_private__ticks(start_time_var, end_time_var, ...) \
 				{ \
 					std::clock_t start_time = std::clock(); \
 					__VA_ARGS__ \
@@ -128,6 +132,10 @@
 					std::clock_t execution_time = end_time - start_time; \
 					pretty_output::impl::print_execution_time_in_ticks(PRETTY_OUTPUT_FILENAME_LINE, execution_time, (static_cast<double>(execution_time)) / CLOCKS_PER_SEC * 1000); \
 				}
+
+
+	#define $ticks(...) \
+				pretty_output_private__ticks(PRETTY_OUTPUT_PRIVATE__UNIFY(start_time), PRETTY_OUTPUT_PRIVATE__UNIFY(end_time), ##__VA_ARGS__)
 
 
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
