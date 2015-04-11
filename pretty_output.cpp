@@ -619,13 +619,29 @@ namespace pretty_output
 		//
 		// Time
 
-		void print_execution_time(const std::string &filename_line, uint64_t milliseconds)
+		void print_execution_time_in_milliseconds(const std::string &filename_line, uint64_t milliseconds)
 		{
 			std::stringstream string_stream;
 			string_stream << milliseconds;
 
 			out_stream stream(filename_line);
 			stream << "// execution time: " << string_stream.str().c_str() << " ms" << ENDLINE;
+		}
+
+
+		void print_execution_time_in_ticks(const std::string &filename_line, uint64_t ticks, double milliseconds)
+		{
+			std::stringstream string_stream;
+
+			string_stream << ticks;
+			std::string ticks_string = string_stream.str();
+
+			string_stream.str("");
+			string_stream << milliseconds;
+			std::string milliseconds_string = string_stream.str();
+
+			out_stream stream(filename_line);
+			stream << "// execution time: " << ticks_string.c_str() << " ticks (" << milliseconds_string.c_str() << " ms)" << ENDLINE;
 		}
 
 

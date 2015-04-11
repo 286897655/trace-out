@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
+#include <ctime>
 #include <stdint.h>
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -115,11 +116,18 @@
 					uint64_t start_time = pretty_output::impl::time_in_milliseconds(); \
 					__VA_ARGS__ \
 					uint64_t end_time = pretty_output::impl::time_in_milliseconds(); \
-					pretty_output::impl::print_execution_time(PRETTY_OUTPUT_FILENAME_LINE, end_time - start_time); \
+					pretty_output::impl::print_execution_time_in_milliseconds(PRETTY_OUTPUT_FILENAME_LINE, end_time - start_time); \
 				}
 
 
-	#define ticks(...) \
+	#define $ticks(...) \
+				{ \
+					std::clock_t start_time = std::clock(); \
+					__VA_ARGS__ \
+					std::clock_t end_time = std::clock(); \
+					std::clock_t execution_time = end_time - start_time; \
+					pretty_output::impl::print_execution_time_in_ticks(PRETTY_OUTPUT_FILENAME_LINE, execution_time, (static_cast<double>(execution_time)) / CLOCKS_PER_SEC * 1000); \
+				}
 
 
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
@@ -836,7 +844,8 @@ namespace pretty_output
 		// Time
 
 		uint64_t time_in_milliseconds();
-		void print_execution_time(const std::string &filename_line, uint64_t milliseconds);
+		void print_execution_time_in_milliseconds(const std::string &filename_line, uint64_t milliseconds);
+		void print_execution_time_in_ticks(const std::string &filename_line, uint64_t ticks, double milliseconds);
 
 
 		//
