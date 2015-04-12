@@ -19,18 +19,12 @@ Usage
 `$w(expression)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
 <br></br>
-<br></br>
-
 `$c(function)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
 <br></br>
-<br></br>
-
 `$cm(object, function_name)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
 The name is an abbreviation of 'call member-function'.
 <br></br>
-<br></br>
-
 `$m(pointer, size, options)` - print memory under the `pointer`.
 
 `pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
@@ -54,35 +48,20 @@ Byte order flags (default value is determined automatically):
 
 The name is an abbreviation of 'memory'.
 <br></br>
-<br></br>
-
 `$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
 The name is an abbreviation of 'function'.
 <br></br>
-<br></br>
-
 `$return expression` - print value of `epxression` passed to return statement.
 <br></br>
-<br></br>
-
 `$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
 <br></br>
-<br></br>
-
 `$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
 <br></br>
-<br></br>
-
 `$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
 <br></br>
-<br></br>
-
 `$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
 <br></br>
-<br></br>
-
 `$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
-<br></br>
 <br></br>
 
 Options
