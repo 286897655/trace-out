@@ -16,6 +16,7 @@
 #include <sstream>
 #include <iomanip>
 #include <utility>
+#include <iterator>
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
@@ -1183,8 +1184,8 @@ namespace pretty_output
 			const auto &container = value.data;
 
 			stream << "[";
-			auto iterator = container.cbegin();
-			for ( ; next_itr(iterator) != container.cend(); ++iterator)
+			auto iterator = std::begin(container);
+			for ( ; next_itr(iterator) != std::end(container); ++iterator)
 			{
 				stream << make_value(*iterator) << ", ";
 			}
