@@ -188,11 +188,11 @@
 
 
 	#define $time(...) \
-			__VA_ARGS__
+				__VA_ARGS__
 
 
 	#define $ticks(...) \
-			__VA_ARGS__
+				__VA_ARGS__
 
 #endif
 
@@ -276,25 +276,37 @@ namespace pretty_output
 
 
 		//
-		// Common
+		// Platform specific
 
 		uint64_t current_thread_id();
-		const std::string current_thread_name();
-		void set_current_thread_name(const std::string &name);
-		bool is_running_same_thread();
-
-		void lock_output();
-		void unlock_output();
-
-		const std::string &indentation();
-		void indentation_add();
-		void indentation_remove();
-
 		size_t printf_string_length(const char *format, va_list arguments);
 		size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments);
 
-		const std::string thread_id_field(uint64_t thread_id);
-		const std::string thread_header(const std::string &thread_id, const std::string &thread_name);
+
+		struct tlskey_t;
+
+		tlskey_t *tls_new_key();
+		void tls_delete_key(tlskey_t *key);
+		void *tls_get(tlskey_t *key);
+		void tls_set(tlskey_t *key, void *data);
+
+
+		struct mutex_t;
+
+		mutex_t *mutex_new();
+		void mutex_delete(mutex_t *mutex);
+		void mutex_lock(mutex_t *mutex);
+		void mutex_unlock(mutex_t *mutex);
+
+		uint64_t time_in_milliseconds();
+
+
+		//
+		// Common
+
+		void indentation_add();
+		void indentation_remove();
+
 		const std::string filename_from_path(const char *path);
 		const std::string filename_line_field(const std::string &file, unsigned int line);
 
@@ -720,7 +732,7 @@ namespace pretty_output
 
 
 		//
-		// Non const member function call
+		// Non-const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		struct member_function_call_printer_t
@@ -861,28 +873,8 @@ namespace pretty_output
 		//
 		// Time
 
-		uint64_t time_in_milliseconds();
 		void print_execution_time_in_milliseconds(const std::string &filename_line, uint64_t milliseconds);
 		void print_execution_time_in_ticks(const std::string &filename_line, uint64_t ticks, double milliseconds);
-
-
-		//
-		// Helper stuff
-
-		struct tlskey_t;
-
-		tlskey_t *tls_new_key();
-		void tls_delete_key(tlskey_t *key);
-		void *tls_get(tlskey_t *key);
-		void tls_set(tlskey_t *key, void *data);
-
-
-		struct mutex_t;
-
-		mutex_t *mutex_new();
-		void mutex_delete(mutex_t *mutex);
-		void mutex_lock(mutex_t *mutex);
-		void mutex_unlock(mutex_t *mutex);
 
 
 
@@ -1727,6 +1719,12 @@ namespace pretty_output
 		{
 			return block_t<Comment_value_t, Return_t>(comment, comment_value, return_value);
 		}
+
+
+		//
+		// Thread
+
+		void set_current_thread_name(const std::string &name);
 
 	}
 

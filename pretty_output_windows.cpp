@@ -16,6 +16,9 @@ namespace pretty_output
 	namespace impl
 	{
 
+		//
+		// Platform specific
+
 		uint64_t current_thread_id()
 		{
 			return static_cast<uint64_t>(GetCurrentThreadId());
@@ -110,8 +113,6 @@ namespace pretty_output
 		}
 
 
-		//
-		// Time
 
 		uint64_t time_in_milliseconds()
 		{

@@ -36,6 +36,9 @@ namespace pretty_output
 	namespace impl
 	{
 
+		//
+		// Constants
+
 		const size_t WIDTH =
 #if defined(PRETTY_OUTPUT_WIDTH)
 			PRETTY_OUTPUT_WIDTH
@@ -73,6 +76,14 @@ namespace pretty_output
 
 
 
+		//
+		// Declarations
+		//
+
+
+		//
+		// Common
+
 		template <typename Type_t>
 		class tls
 		{
@@ -100,12 +111,33 @@ namespace pretty_output
 		};
 
 
+		const std::string current_thread_name();
+		bool is_running_same_thread();
+
+		void lock_output();
+		void unlock_output();
+
+		const std::string &indentation();
+
+		const std::string thread_id_field(uint64_t thread_id);
+		const std::string thread_header(const std::string &thread_id, const std::string &thread_name);
+
+
 
 		tls<std::string> _indentation;
 		uint64_t _current_thread_id;
 		tls<std::string> _thread_name;
 		mutex _output_mutex;
 
+
+
+		//
+		// Definitions
+		//
+
+
+		//
+		// Common
 
 		const std::string current_thread_name()
 		{
@@ -220,6 +252,9 @@ namespace pretty_output
 			return stream.str();
 		}
 
+
+		//
+		// Out stream
 
 		out_stream::out_stream(const std::string &filename_line)
 			: _current_line_length(0)
