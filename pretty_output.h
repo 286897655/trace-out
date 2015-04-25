@@ -478,11 +478,20 @@ namespace pretty_output
 		//
 		// Watch
 
+#if !defined(PRETTY_OUTPUT_CPP11)
+
 		template <typename Types_t>
 		const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value);
 
 		template <typename Types_t>
 		Types_t &watch(const std::string &filename_line, const char *name, Types_t &value);
+
+#else
+
+		template <typename Type_t>
+		Type_t &&watch(const std::string &filename_line, const char *name, Type_t &&value);
+
+#endif // !defined(PRETTY_OUTPUT_CPP11)
 
 
 		//
@@ -1201,6 +1210,8 @@ namespace pretty_output
 		//
 		// Watch
 
+#if !defined(PRETTY_OUTPUT_CPP11)
+
 		template <typename Types_t>
 		const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value)
 		{
@@ -1217,6 +1228,18 @@ namespace pretty_output
 			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
 			return value;
 		}
+
+#else
+
+		template <typename Type_t>
+		Type_t &&watch(const std::string &filename_line, const char *name, Type_t &&value)
+		{
+			out_stream stream(filename_line);
+			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
+			return std::forward<Type_t>(value);
+		}
+
+#endif // !defined(PRETTY_OUTPUT_CPP11)
 
 
 		//
