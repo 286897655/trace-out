@@ -96,7 +96,7 @@ Options
 Notes
 =====
 
-* `$w`, `$c`, `$mc` and `$return` macros support all fundamental types, types for whitch `std::begin()` and `std::end()` are defined, `std::pair`, `std::tuple`
+* `$w`, `$c`, `$mc` and `$return` macros support all fundamental types, types for which `std::begin()` and `std::end()` are defined, `std::pair`, `std::tuple`
 
 * If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
 
