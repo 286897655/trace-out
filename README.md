@@ -96,11 +96,9 @@ Options
 Notes
 =====
 
-* `$w`, `$c`, `$mc` and `$return` macros support all fundamental types, types for which `std::begin()` and `std::end()` are defined, `std::pair`, `std::tuple`
+* `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are enabled only with C++11 and later.
 
 * If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
-
-* Macros `$c` and `$cm` work only with C++11 and later.
 
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
 
