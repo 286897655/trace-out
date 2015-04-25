@@ -255,6 +255,9 @@ namespace pretty_output
 	}
 
 
+	//
+	// Public flags
+
 	const impl::option_t BIN = 0x1 << (impl::OPTIONS_START_BASE + 0);
 	const impl::option_t SDEC = 0x1 << (impl::OPTIONS_START_BASE + 1);
 	const impl::option_t UDEC = 0x1 << (impl::OPTIONS_START_BASE + 2);
