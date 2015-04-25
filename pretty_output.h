@@ -1205,7 +1205,7 @@ namespace pretty_output
 		const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value)
 		{
 			out_stream stream(filename_line);
-			stream << name << " = " << make_value(value) << ENDLINE;
+			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
 			return value;
 		}
 
@@ -1214,7 +1214,7 @@ namespace pretty_output
 		Types_t &watch(const std::string &filename_line, const char *name, Types_t &value)
 		{
 			out_stream stream(filename_line);
-			stream << name << " = " << make_value(value) << ENDLINE;
+			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
 			return value;
 		}
 
