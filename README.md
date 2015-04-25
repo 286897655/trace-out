@@ -16,19 +16,19 @@ Features:
 Usage
 =====
 
-`$w(expression)` - print value of `expression` and returns that value, so can be used inside other expression.
+`$w(<expression>)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
 <br></br>
 
-`$c(function)(<arguments>)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
+`$c(<function>)(<arguments>)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
 <br></br>
 
-`$cm(object, function_name)(<arguments>)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
+`$cm(<object>, <function_name>)(<arguments>)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
 The name is an abbreviation of 'call member-function'.
 <br></br>
 
-`$m(pointer, size, options)` - print memory under the `pointer`.
+`$m(<pointer>, <size>, <options>)` - print memory under the `pointer`.
 
 `pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
 
@@ -59,19 +59,19 @@ The name is an abbreviation of 'function'.
 `$return expression` - print value of `epxression` passed to return statement.
 <br></br>
 
-`$if (condition)` - print value of the if `condition`. Automatically shifts indentation of the output.
+`$if (<condition>)` - print value of the if `condition`. Automatically shifts indentation of the output.
 <br></br>
 
-`$for (statements)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
+`$for (<statements>)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
 <br></br>
 
-`$while (condition)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
+`$while (<condition>)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
 <br></br>
 
-`$p(format, ...)` - like printf. The name is an abbreviation of 'printf'.
+`$p(<format>, ...)` - like printf. The name is an abbreviation of 'printf'.
 <br></br>
 
-`$t(thread_name)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
+`$t(<thread_name>)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
 <br></br>
 
 
