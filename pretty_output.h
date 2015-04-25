@@ -480,11 +480,11 @@ namespace pretty_output
 
 #if !defined(PRETTY_OUTPUT_CPP11)
 
-		template <typename Types_t>
-		const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value);
+		template <typename Type_t>
+		const Type_t &watch(const std::string &filename_line, const char *name, const Type_t &value);
 
-		template <typename Types_t>
-		Types_t &watch(const std::string &filename_line, const char *name, Types_t &value);
+		template <typename Type_t>
+		Type_t &watch(const std::string &filename_line, const char *name, Type_t &value);
 
 #else
 
@@ -1179,8 +1179,8 @@ namespace pretty_output
 
 
 		// not sure if all C++11 standard library versions have std::next
-		template <typename Types_t>
-		Types_t next_itr(Types_t iterator)
+		template <typename Type_t>
+		Type_t next_itr(Type_t iterator)
 		{
 			++iterator;
 			return iterator;
@@ -1212,8 +1212,8 @@ namespace pretty_output
 
 #if !defined(PRETTY_OUTPUT_CPP11)
 
-		template <typename Types_t>
-		const Types_t &watch(const std::string &filename_line, const char *name, const Types_t &value)
+		template <typename Type_t>
+		const Type_t &watch(const std::string &filename_line, const char *name, const Type_t &value)
 		{
 			out_stream stream(filename_line);
 			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
@@ -1221,8 +1221,8 @@ namespace pretty_output
 		}
 
 
-		template <typename Types_t>
-		Types_t &watch(const std::string &filename_line, const char *name, Types_t &value)
+		template <typename Type_t>
+		Type_t &watch(const std::string &filename_line, const char *name, Type_t &value)
 		{
 			out_stream stream(filename_line);
 			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
