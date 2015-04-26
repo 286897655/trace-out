@@ -1,13 +1,13 @@
 About pretty_output
 ===================
 
-This is a library for pretty printing information about a code. Those who prefer using console output for debugging purposes might consider this library as a more useful alternative to printf/std::cout/whatever.
+This is a library for pretty printing information about a code. Those who prefer using text output for debugging purposes might consider this library as a more useful alternative to printf/std::cout/whatever.
 
 
 Features:
 
 * Easy to use, but right now not easy to extend
-* Uses only C++/C++11. Does not use any additional preprocessors or libraries, except standard library
+* Uses C++/C++11 and standard library, does not use any additional preprocessors or libraries
 * Supports output redirection
 * Crossplatform. Tested on Clang 600.0.56, MVS 2010/2013, MinGW 4.9.smth
 * No license, free for all
