@@ -17,6 +17,20 @@ Features:
 Usage
 =====
 
+To use pretty_output in a project, files pretty_output.h, pretty_output.cpp, pretty_output_posix.cpp/pretty_output_windows.cpp (depending on a platform) should be added to the project.
+
+To use output redirection from the 'redirection' folder the required .cpp file should be added to the project and macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined. There are files for redirecting output to file (pretty_output_to_file.cpp) and windows debugger output (pretty_output_to_mvs.cpp). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is 'pretty_output_log.txt').
+
+To implement custom redirection the functions `void print(const char *)` and `void flush()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
+
+pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
+<br></br>
+
+
+
+Macros
+======
+
 `$w(<expression>)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
 <br></br>
@@ -99,11 +113,7 @@ Notes
 
 * `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are enabled only with C++11 and later.
 
-* If macro `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined then the pretty_output is turned on. If `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined then the pretty_output is turned off.
-
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization define macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC`.
-
-* Output redirection is done in a following way: first, the functions `void print(const char *)` and `void flush()` should be defined within some namespace; second, macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where these functions are defined. For convinience there's already files for redirecting output to a file (pretty_output_to_file.cpp) and for printing to MVS debug output (pretty_output_to_mvs.cpp). When using pretty_output_to_file, you can define macro `PRETTY_OUTPUT_TO_FILE` with the name of the destination file (default is 'pretty_output_log.txt').
 
 
 
