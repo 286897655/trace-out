@@ -121,7 +121,9 @@ Compiler Warnings
 =================
 
 Using Clang with `-pedantic` option on: '$' in identifier
+
 Using MinGW ...
+
 Using Visual Studio ...
 
 
