@@ -1481,7 +1481,7 @@ namespace pretty_output
 			{
 				indentation_add();
 				out_stream stream;
-				stream << "=>" << "(void)" << ENDLINE;
+				stream << "=> " << "(void)" << ENDLINE;
 				indentation_remove();
 			}
 		}
