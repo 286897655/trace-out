@@ -19,7 +19,7 @@ Usage
 
 To use pretty_output in a project, files pretty_output.h, pretty_output.cpp, pretty_output_posix.cpp/pretty_output_windows.cpp (depending on a platform) should be added to the project.
 
-To use output redirection from the 'redirection' folder the required .cpp file should be added to the project and macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined. There are files for redirecting output to file (pretty_output_to_file.cpp) and windows debugger output (pretty_output_to_mvs.cpp). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is 'pretty_output_log.txt').
+To use output redirection from the 'redirection' folder the required .cpp file should be added to the project and macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined. There are files for redirecting output to file (pretty_output_to_file.cpp) and windows debugger output (pretty_output_to_wdo.cpp). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is 'pretty_output_log.txt').
 
 To implement custom redirection the functions `void print(const char *)` and `void flush()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
 

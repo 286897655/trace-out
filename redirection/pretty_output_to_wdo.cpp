@@ -6,7 +6,7 @@
 #include <windows.h>
 
 
-namespace pretty_output_to_mvs
+namespace pretty_output_to_wdo
 {
 
 	void print(const char *string)
