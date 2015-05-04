@@ -115,7 +115,7 @@ namespace pretty_output
 			const Type_t &get() const;
 
 		private:
-			resource<tlskey_t *> _key;
+			resource<tlskey_t> _key;
 		};
 
 
@@ -127,7 +127,7 @@ namespace pretty_output
 			void unlock();
 
 		private:
-			resource<mutex_t *> _handle;
+			resource<mutex_t> _handle;
 		};
 
 

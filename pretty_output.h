@@ -286,20 +286,20 @@ namespace pretty_output
 		size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments);
 
 
-		struct tlskey_t;
+		typedef struct _tlskey_t *tlskey_t;
 
-		tlskey_t *tls_new_key();
-		void tls_delete_key(tlskey_t *key);
-		void *tls_get(tlskey_t *key);
-		void tls_set(tlskey_t *key, void *data);
+		tlskey_t tls_new_key();
+		void tls_delete_key(tlskey_t key);
+		void *tls_get(tlskey_t key);
+		void tls_set(tlskey_t key, void *data);
 
 
-		struct mutex_t;
+		typedef struct _mutex_t *mutex_t;
 
-		mutex_t *mutex_new();
-		void mutex_delete(mutex_t *mutex);
-		void mutex_lock(mutex_t *mutex);
-		void mutex_unlock(mutex_t *mutex);
+		mutex_t mutex_new();
+		void mutex_delete(mutex_t mutex);
+		void mutex_lock(mutex_t mutex);
+		void mutex_unlock(mutex_t mutex);
 
 		uint64_t time_in_milliseconds();
 
