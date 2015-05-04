@@ -111,6 +111,7 @@ namespace pretty_output
 		{
 		public:
 			tls();
+			~tls();
 			void set(const Type_t &value);
 			const Type_t &get() const;
 
@@ -735,12 +736,21 @@ namespace pretty_output
 
 
 		template <typename Type_t>
+		tls<Type_t>::~tls()
+		{
+			Type_t *value = static_cast<Type_t *>(tls_get(_key.get()));
+			delete value;
+		}
+
+
+		template <typename Type_t>
 		void tls<Type_t>::set(const Type_t &value)
 		{
+			Type_t *new_value = new Type_t(value);
+
 			Type_t *old_value = static_cast<Type_t *>(tls_get(_key.get()));
 			delete old_value;
 
-			Type_t *new_value = new Type_t(value);
 			tls_set(_key.get(), new_value);
 		}
 
