@@ -85,16 +85,37 @@ namespace pretty_output
 		// Private
 
 		template <typename Type_t>
+		class resource
+		{
+		public:
+			typedef void (*deleter_t)(Type_t);
+
+
+			resource(Type_t handle, deleter_t deleter);
+			~resource();
+			const Type_t &get() const;
+
+		private:
+			resource();
+			resource(const resource &);
+			resource &operator =(const resource &);
+
+
+			Type_t _handle;
+			deleter_t _deleter;
+		};
+
+
+		template <typename Type_t>
 		class tls
 		{
 		public:
 			tls();
-			~tls();
 			void set(const Type_t &value);
-			Type_t &get() const;
+			const Type_t &get() const;
 
 		private:
-			tlskey_t *_key;
+			resource<tlskey_t *> _key;
 		};
 
 
@@ -102,12 +123,11 @@ namespace pretty_output
 		{
 		public:
 			mutex();
-			~mutex();
 			void lock();
 			void unlock();
 
 		private:
-			mutex_t *_handle;
+			resource<mutex_t *> _handle;
 		};
 
 
@@ -293,13 +313,12 @@ namespace pretty_output
 
 			size_t size = printf_string_length(format, arguments_copy) + 1;
 
-			char *buffer = static_cast<char*>(std::malloc(size));
-			printf_to_string(buffer, size, format, arguments);
-			*this << "// " << buffer;
+			resource<void *> buffer(std::malloc(size), std::free);
+			printf_to_string(static_cast<char *>(buffer.get()), size, format, arguments);
+			*this << "// " << static_cast<char *>(buffer.get());
 
 			va_end(arguments);
 			va_end(arguments_copy);
-			std::free(buffer);
 		}
 
 
@@ -685,66 +704,77 @@ namespace pretty_output
 		}
 
 
+
 		template <typename Type_t>
-		tls<Type_t>::tls()
+		resource<Type_t>::resource(Type_t handle, deleter_t deleter)
+			: _handle(handle), _deleter(deleter)
 		{
-			_key = tls_new_key();
 		}
 
 
 		template <typename Type_t>
-		tls<Type_t>::~tls()
+		resource<Type_t>::~resource()
 		{
-			tls_delete_key(_key);
+			_deleter(_handle);
+		}
+
+
+		template <typename Type_t>
+		const Type_t &resource<Type_t>::get() const
+		{
+			return _handle;
+		}
+
+
+
+		template <typename Type_t>
+		tls<Type_t>::tls()
+			: _key(tls_new_key(), tls_delete_key)
+		{
 		}
 
 
 		template <typename Type_t>
 		void tls<Type_t>::set(const Type_t &value)
 		{
-			Type_t *old_value = static_cast<Type_t*>(tls_get(_key));
+			Type_t *old_value = static_cast<Type_t*>(tls_get(_key.get()));
 			delete old_value;
 
 			Type_t *new_value = new Type_t(value);
-			tls_set(_key, new_value);
+			tls_set(_key.get(), new_value);
 		}
 
 
 		template <typename Type_t>
-		Type_t &tls<Type_t>::get() const
+		const Type_t &tls<Type_t>::get() const
 		{
-			Type_t *value = static_cast<Type_t*>(tls_get(_key));
+			Type_t *value = static_cast<Type_t*>(tls_get(_key.get()));
 			if (value == NULL)
 			{
 				value = new Type_t;
-				tls_set(_key, value);
+				tls_set(_key.get(), value);
 			}
 
 			return *value;
 		}
 
 
+
 		mutex::mutex()
+			: _handle(mutex_new(), mutex_delete)
 		{
-			_handle = mutex_new();
-		}
-
-
-		mutex::~mutex()
-		{
-			mutex_delete(_handle);
 		}
 
 
 		void mutex::lock()
 		{
-			mutex_lock(_handle);
+			mutex_lock(_handle.get());
 		}
 
 
 		void mutex::unlock()
 		{
-			mutex_unlock(_handle);
+			mutex_unlock(_handle.get());
 		}
 
 	}
