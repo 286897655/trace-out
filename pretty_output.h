@@ -1133,14 +1133,14 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, values_t<Type_t> values)
 		{
-			return stream << make_value(values.data);
+			return stream << FLUSH << make_value(values.data);
 		}
 
 
 		template <typename ...Types_t>
 		out_stream &operator <<(out_stream &stream, values_t<Types_t...> values)
 		{
-			return stream << make_value(values.data) << values.delimiter << values.values;
+			return stream << FLUSH << make_value(values.data) << values.delimiter << values.values;
 		}
 
 
@@ -1153,14 +1153,14 @@ namespace pretty_output
 		template <std::size_t Index, typename ...Types_t>
 		typename std::enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 		{
-			return stream << make_value(std::get<Index>(tuple)) << ")";
+			return stream << FLUSH << make_value(std::get<Index>(tuple)) << ")";
 		}
 
 
 		template <std::size_t Index, typename ...Types_t>
 		typename std::enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 		{
-			stream << ", " << make_value(std::get<Index>(tuple)) << ", ";
+			stream << FLUSH << make_value(std::get<Index>(tuple)) << ", ";
 			return print_tuple<Index + 1>(stream, tuple);
 		}
 
@@ -1168,7 +1168,7 @@ namespace pretty_output
 		template <typename ...Types_t>
 		out_stream &operator <<(out_stream &stream, value_t<std::tuple<Types_t...> > value)
 		{
-			stream << "(" << make_value(std::get<0>(value.data)) << ", ";
+			stream << "(" << FLUSH << make_value(std::get<0>(value.data)) << ", ";
 			return print_tuple<1>(stream, value.data);
 		}
 
@@ -1191,10 +1191,10 @@ namespace pretty_output
 			auto iterator = std::begin(container);
 			for ( ; next_itr(iterator) != std::end(container); ++iterator)
 			{
-				stream << make_value(*iterator) << ", ";
+				stream << FLUSH << make_value(*iterator) << ", ";
 			}
 
-			stream << make_value(*iterator) << "]";
+			stream << FLUSH << make_value(*iterator) << "]";
 
 			return stream;
 		}
