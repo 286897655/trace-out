@@ -75,7 +75,8 @@ namespace pretty_output
 		mutex_t mutex_new()
 		{
 			mutex_t mutex = new _mutex_t;
-			pthread_mutex_init(&mutex->value, NULL);
+			int retval = pthread_mutex_init(&mutex->value, NULL);
+			assert(retval == 0);
 
 			return mutex;
 		}
@@ -83,20 +84,24 @@ namespace pretty_output
 
 		void mutex_delete(mutex_t mutex)
 		{
-			pthread_mutex_destroy(&mutex->value);
+			int retval = pthread_mutex_destroy(&mutex->value);
+			assert(retval == 0);
+
 			delete mutex;
 		}
 
 
 		void mutex_lock(mutex_t mutex)
 		{
-			pthread_mutex_lock(&mutex->value);
+			int retval = pthread_mutex_lock(&mutex->value);
+			assert(retval == 0);
 		}
 
 
 		void mutex_unlock(mutex_t mutex)
 		{
-			pthread_mutex_unlock(&mutex->value);
+			int retval = pthread_mutex_unlock(&mutex->value);
+			assert(retval == 0);
 		}
 
 
