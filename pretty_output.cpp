@@ -493,8 +493,8 @@ namespace pretty_output
 
 		void reverse_bytes(void *destination, const void *source, size_t size)
 		{
-			uint8_t *destination_iterator = static_cast<uint8_t*>(destination);
-			const uint8_t *source_iterator = static_cast<const uint8_t*>(source) + size - 1;
+			uint8_t *destination_iterator = static_cast<uint8_t *>(destination);
+			const uint8_t *source_iterator = static_cast<const uint8_t *>(source) + size - 1;
 			for (size_t bytes_processed = 0; bytes_processed < size; ++bytes_processed)
 			{
 				*destination_iterator = *source_iterator;
@@ -686,7 +686,7 @@ namespace pretty_output
 		const std::string thread_id_field(uint64_t thread_id)
 		{
 			std::stringstream stream;
-			stream << reinterpret_cast<void*>(thread_id);
+			stream << reinterpret_cast<void *>(thread_id);
 
 			return stream.str();
 		}
@@ -737,7 +737,7 @@ namespace pretty_output
 		template <typename Type_t>
 		void tls<Type_t>::set(const Type_t &value)
 		{
-			Type_t *old_value = static_cast<Type_t*>(tls_get(_key.get()));
+			Type_t *old_value = static_cast<Type_t *>(tls_get(_key.get()));
 			delete old_value;
 
 			Type_t *new_value = new Type_t(value);
@@ -748,7 +748,7 @@ namespace pretty_output
 		template <typename Type_t>
 		const Type_t &tls<Type_t>::get() const
 		{
-			Type_t *value = static_cast<Type_t*>(tls_get(_key.get()));
+			Type_t *value = static_cast<Type_t *>(tls_get(_key.get()));
 			if (value == NULL)
 			{
 				value = new Type_t;
