@@ -1091,7 +1091,7 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, value_t<const Type_t *> value)
 		{
-			stream << make_value((const void *)value.data) << " ";
+			stream << make_value(static_cast<const void *>(value.data)) << " ";
 			if (value.data != NULL)
 			{
 				stream.flush();
@@ -1105,7 +1105,7 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, value_t<Type_t *> value)
 		{
-			return stream << make_value((const Type_t *)value.data);
+			return stream << make_value(static_cast<const Type_t *>(value.data));
 		}
 
 
@@ -1366,10 +1366,10 @@ namespace pretty_output
 		{
 			std::stringstream string_stream;
 
-			const Type_t *iterator = reinterpret_cast<const Type_t *>(pointer);
+			const Type_t *iterator = pointer;
 			size_t length = size / sizeof(Type_t);
 
-			stream << make_value((void *)iterator) << ":";
+			stream << make_value(static_cast<const void *>(iterator)) << ":";
 			for (std::size_t index = 0; index < length; ++index)
 			{
 				const std::string string_representation = string_stream.str();
@@ -1378,7 +1378,7 @@ namespace pretty_output
 					stream << string_representation.c_str();
 					string_stream.str("");
 
-					stream << NEWLINE << make_value((void *)&iterator[index]) << ":";
+					stream << NEWLINE << make_value(static_cast<const void *>(&iterator[index])) << ":";
 				}
 
 				string_stream << " ";
@@ -1418,7 +1418,7 @@ namespace pretty_output
 
 			const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
 			size_t column_width = field_width<Type_t>(base);
-			print_memory_contents(stream, reinterpret_cast<const unit_t *>(pointer), size, column_width, bytes_to_string, byte_order);
+			print_memory_contents(stream, static_cast<const unit_t *>(pointer), size, column_width, bytes_to_string, byte_order);
 
 			indentation_remove();
 

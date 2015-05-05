@@ -479,7 +479,7 @@ namespace pretty_output
 		option_t current_byte_order()
 		{
 			const uint16_t VALUE = 0x0001;
-			const uint8_t FIRST_BYTE = *(uint8_t*)&VALUE;
+			const uint8_t FIRST_BYTE = *reinterpret_cast<const uint8_t *>(&VALUE);
 
 			if (FIRST_BYTE == 0x01)
 			{
