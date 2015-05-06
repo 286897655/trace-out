@@ -685,8 +685,9 @@ namespace pretty_output
 		// Function call
 
 		template <typename Return_t, typename ...Arguments_t>
-		struct function_call_printer_t
+		class function_call_printer_t
 		{
+		public:
 			typedef Return_t (*funcptr_t)(Arguments_t...);
 
 
@@ -703,8 +704,9 @@ namespace pretty_output
 
 
 		template <typename ...Arguments_t>
-		struct function_call_printer_t<void, Arguments_t...>
+		class function_call_printer_t<void, Arguments_t...>
 		{
+		public:
 			typedef void (*funcptr_t)(Arguments_t...);
 
 
@@ -728,8 +730,9 @@ namespace pretty_output
 		// Const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		struct const_member_function_call_printer_t
+		class const_member_function_call_printer_t
 		{
+		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
@@ -749,8 +752,9 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		struct const_member_function_call_printer_t<Type_t, void, Arguments_t...>
+		class const_member_function_call_printer_t<Type_t, void, Arguments_t...>
 		{
+		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
@@ -777,8 +781,9 @@ namespace pretty_output
 		// Non-const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		struct member_function_call_printer_t
+		class member_function_call_printer_t
 		{
+		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...);
 
 
@@ -798,8 +803,9 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		struct member_function_call_printer_t<Type_t, void, Arguments_t...>
+		class member_function_call_printer_t<Type_t, void, Arguments_t...>
 		{
+		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...);
 
 
@@ -827,8 +833,9 @@ namespace pretty_output
 		//
 		// Function printer
 
-		struct function_printer_t
+		class function_printer_t
 		{
+		public:
 			function_printer_t(const std::string &filename_line, const char *function_signature);
 
 			~function_printer_t();
@@ -845,8 +852,9 @@ namespace pretty_output
 		//
 		// Return printer
 
-		struct return_printer_t
+		class return_printer_t
 		{
+		public:
 			return_printer_t(const std::string &filename_line);
 
 			template <typename T>
@@ -865,8 +873,9 @@ namespace pretty_output
 		// NOTE: god-entity, but still better than prevous solution
 
 		template <typename Comment_value_t, typename Return_t>
-		struct block_t
+		class block_t
 		{
+		public:
 			block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
 			block_t(const char *comment, const Comment_value_t &comment_value);
 			block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
@@ -891,8 +900,9 @@ namespace pretty_output
 		//
 		// For block
 
-		struct for_block_t
+		class for_block_t
 		{
+		public:
 			for_block_t(const std::string &filename_line, const char *expression);
 			~for_block_t();
 			operator bool() const;
