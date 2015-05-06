@@ -325,33 +325,39 @@ namespace pretty_output
 		template <typename Type_t>
 		const Type_t &reference(const Type_t *object);
 
+		template <typename Type_t>
+		void crash_on_bad_memory(const Type_t &variable);
+
 
 		//
 		// Values
 
 		template <typename Type_t>
-		struct value_t
+		class value_t
 		{
-			value_t(const Type_t &value);
-			value_t(const value_t &another_value);
+		public:
+			value_t(const Type_t &data);
+			value_t(const value_t &another_value); // not defined
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-			value_t(value_t &&another_value);
+			value_t(value_t &&another_value); // not defined
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-
-			const Type_t &data;
+			const Type_t &get() const;
 
 		private:
-			value_t &operator =(const value_t &);
+			value_t &operator =(const value_t &); // not defined
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-			value_t &operator =(value_t &&);
+			value_t &operator =(value_t &&); // not defined
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+			const Type_t &_data;
 		};
 
 
@@ -363,36 +369,56 @@ namespace pretty_output
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-		template <typename...>
-		struct values_t;
+		template <typename ...>
+		class values_t;
 
 
 		template <typename Type_t, typename ...RestTypes_t>
-		struct values_t<Type_t, RestTypes_t...>
+		class values_t<Type_t, RestTypes_t...>
 		{
-			values_t(const char *delimiter_value, const Type_t &first, const RestTypes_t &...rest);
+		public:
+			values_t(const char *delimiter, const Type_t &first, const RestTypes_t &...rest);
+			values_t(const values_t &another_values); // not defined
+			values_t(values_t &&another_values); // not defined
+			const char *delimiter() const;
+			const value_t<Type_t> &first() const;
+			const values_t<RestTypes_t...> &rest() const;
+
+		private:
+			values_t &operator =(const values_t &another_values); // not defined
+			values_t &operator =(values_t &&another_values); // not defined
 
 
-			const char *delimiter;
-			const Type_t &data;
-			values_t<RestTypes_t...> values;
+			const char *_delimiter;
+			const value_t<Type_t> _first;
+			values_t<RestTypes_t...> _rest;
 		};
 
 
 		template <typename Type_t>
-		struct values_t<Type_t>
+		class values_t<Type_t>
 		{
-			values_t(const char *, const Type_t &value);
+		public:
+			values_t(const char *delimiter, const Type_t &first);
+			values_t(const values_t &another_values); // not defined
+			values_t(values_t &&another_values); // not defined
+			const char *delimiter() const;
+			const value_t<Type_t> &first() const;
+
+		private:
+			values_t &operator =(const values_t &another_values); // not defined
+			values_t &operator =(values_t &&another_values); // not defined
 
 
-			const char *delimiter;
-			const Type_t &data;
+			const char *_delimiter;
+			const value_t<Type_t> _first;
 		};
 
 
 		template <>
-		struct values_t<>
+		class values_t<>
 		{
+		public:
 			template <typename ...Whatever_t>
 			values_t(const char *, const Whatever_t &...);
 		};
@@ -930,13 +956,30 @@ namespace pretty_output
 		}
 
 
+		template <typename Type_t>
+		void crash_on_bad_memory(const Type_t &variable)
+		{
+			uint8_t buffer[sizeof(variable)];
+			std::memcpy(buffer, &variable, sizeof(buffer));
+		}
+
+
 		//
 		// Values
 
 		template <typename Type_t>
-		value_t<Type_t>::value_t(const Type_t &value)
-			: data(value)
+		value_t<Type_t>::value_t(const Type_t &data)
+			: _data(data)
 		{
+		}
+
+
+		template <typename Type_t>
+		const Type_t &value_t<Type_t>::get() const
+		{
+			crash_on_bad_memory(_data);
+
+			return _data;
 		}
 
 
@@ -956,17 +999,54 @@ namespace pretty_output
 #if defined(PRETTY_OUTPUT_CPP11)
 
 		template <typename Type_t, typename ...RestTypes_t>
-		values_t<Type_t, RestTypes_t...>::values_t(const char *delimiter_value, const Type_t &first, const RestTypes_t &...rest)
-			: delimiter(delimiter_value), data(first), values(delimiter_value, rest...)
+		values_t<Type_t, RestTypes_t...>::values_t(const char *delimiter, const Type_t &first, const RestTypes_t &...rest)
+			: _delimiter(delimiter), _first(first), _rest(delimiter, rest...)
+		{
+		}
+
+
+		template <typename Type_t, typename ...RestTypes_t>
+		const char *values_t<Type_t, RestTypes_t...>::delimiter() const
+		{
+			return _delimiter;
+		}
+
+
+		template <typename Type_t, typename ...RestTypes_t>
+		const value_t<Type_t> &values_t<Type_t, RestTypes_t...>::first() const
+		{
+			return _first;
+		}
+
+
+		template <typename Type_t, typename ...RestTypes_t>
+		const values_t<RestTypes_t...> &values_t<Type_t, RestTypes_t...>::rest() const
+		{
+			return _rest;
+		}
+
+
+
+		template <typename Type_t>
+		values_t<Type_t>::values_t(const char *, const Type_t &first)
+			: _delimiter(""), _first(first)
 		{
 		}
 
 
 		template <typename Type_t>
-		values_t<Type_t>::values_t(const char *, const Type_t &value)
-			: delimiter(""), data(value)
+		const char *values_t<Type_t>::delimiter() const
 		{
+			return _delimiter;
 		}
+
+
+		template <typename Type_t>
+		const value_t<Type_t> &values_t<Type_t>::first() const
+		{
+			return _first;
+		}
+
 
 
 		template <typename ...Whatever_t>
@@ -999,49 +1079,57 @@ namespace pretty_output
 
 		out_stream &operator <<(out_stream &stream, const value_t<const char *> &value)
 		{
-			return stream << "\"" << value.data << "\"";
+			stream << FLUSH;
+			return stream << "\"" << value.get() << "\"";
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<std::string> &value)
 		{
-			return stream << "\"" << value.data.c_str() << "\"";
+			stream << FLUSH;
+			return stream << "\"" << value.get().c_str() << "\"";
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<short> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned short> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<int> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned int> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<long> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned long> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
@@ -1049,13 +1137,15 @@ namespace pretty_output
 
 		out_stream &operator <<(out_stream &stream, const value_t<long long> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned long long> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -1063,31 +1153,35 @@ namespace pretty_output
 
 		out_stream &operator <<(out_stream &stream, const value_t<float> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<double> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<long double> &value)
 		{
-			return stream << fundamental_to_string(value.data).c_str();
+			stream << FLUSH;
+			return stream << fundamental_to_string(value.get()).c_str();
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<const void *> &value)
 		{
-			if (value.data == NULL)
+			stream << FLUSH;
+			if (value.get() == NULL)
 			{
 				return stream << "(null)";
 			}
 
 			std::stringstream string_stream;
-			std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.data);
+			std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
 			string_stream << std::hex << std::showbase << numeric_value;
 
 			return stream << string_stream.str().c_str();
@@ -1097,11 +1191,12 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const value_t<const Type_t *> &value)
 		{
-			stream << make_value(static_cast<const void *>(value.data)) << " ";
-			if (value.data != NULL)
+			stream << FLUSH;
+			stream << make_value(static_cast<const void *>(value.get())) << " ";
+			if (value.get() != NULL)
 			{
-				stream.flush();
-				stream << "-> " << make_value(*(value.data));
+				stream << FLUSH;
+				stream << "-> " << make_value(*(value.get()));
 			}
 
 			return stream;
@@ -1111,26 +1206,34 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const value_t<Type_t *> &value)
 		{
-			return stream << make_value(static_cast<const Type_t *>(value.data));
+			stream << FLUSH;
+			return stream << make_value(static_cast<const Type_t *>(value.get()));
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<bool> &value)
 		{
-			return stream << (value.data ? "true" : "false");
+			stream << FLUSH;
+			return stream << (value.get() ? "true" : "false");
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<char> &value)
 		{
-			return stream << "'" << value.data << "'";
+			stream << FLUSH;
+			return stream << "'" << value.get() << "'";
 		}
 
 
 		template <typename First_t, typename Second_t>
 		out_stream &operator <<(out_stream &stream, const value_t<std::pair<First_t, Second_t> > &value)
 		{
-			return stream << "{" << make_value(value.data.first) << ": " << make_value(value.data.second) << "}";
+			stream << FLUSH;
+			const std::pair<First_t, Second_t> &pair = value.get();
+			stream << "{";
+			stream << make_value(pair.first) << ": ";
+			stream << make_value(pair.second) << "}";
+			return stream;
 		}
 
 
@@ -1139,14 +1242,16 @@ namespace pretty_output
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const values_t<Type_t> &values)
 		{
-			return stream << FLUSH << make_value(values.data);
+			stream << FLUSH;
+			return stream << make_value(values.first().get());
 		}
 
 
 		template <typename ...Types_t>
 		out_stream &operator <<(out_stream &stream, const values_t<Types_t...> &values)
 		{
-			return stream << FLUSH << make_value(values.data) << values.delimiter << values.values;
+			stream << FLUSH;
+			return stream << make_value(values.first().get()) << values.delimiter() << values.rest();
 		}
 
 
@@ -1159,14 +1264,14 @@ namespace pretty_output
 		template <std::size_t Index, typename ...Types_t>
 		typename std::enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 		{
-			return stream << FLUSH << make_value(std::get<Index>(tuple)) << ")";
+			return stream << make_value(std::get<Index>(tuple)) << ")";
 		}
 
 
 		template <std::size_t Index, typename ...Types_t>
 		typename std::enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 		{
-			stream << FLUSH << make_value(std::get<Index>(tuple)) << ", ";
+			stream << make_value(std::get<Index>(tuple)) << ", ";
 			return print_tuple<Index + 1>(stream, tuple);
 		}
 
@@ -1174,8 +1279,10 @@ namespace pretty_output
 		template <typename ...Types_t>
 		out_stream &operator <<(out_stream &stream, const value_t<std::tuple<Types_t...> > &value)
 		{
-			stream << "(" << FLUSH << make_value(std::get<0>(value.data)) << ", ";
-			return print_tuple<1>(stream, value.data);
+			stream << FLUSH;
+			const std::tuple<Types_t...> &tuple = value.get();
+			stream << "(";
+			return print_tuple<0>(stream, tuple);
 		}
 
 
@@ -1191,16 +1298,17 @@ namespace pretty_output
 		template <template <typename ...> class Container, typename ...Parameters_t>
 		out_stream &operator <<(out_stream &stream, const value_t<Container<Parameters_t...> > &value)
 		{
-			const auto &container = value.data;
+			stream << FLUSH;
+			const auto &container = value.get();
 
 			stream << "[";
 			auto iterator = std::begin(container);
 			for ( ; next_itr(iterator) != std::end(container); ++iterator)
 			{
-				stream << FLUSH << make_value(*iterator) << ", ";
+				stream << make_value(*iterator) << ", ";
 			}
 
-			stream << FLUSH << make_value(*iterator) << "]";
+			stream << make_value(*iterator) << "]";
 
 			return stream;
 		}
@@ -1217,7 +1325,7 @@ namespace pretty_output
 		const Type_t &watch(const std::string &filename_line, const char *name, const Type_t &value)
 		{
 			out_stream stream(filename_line);
-			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
+			stream << name << " = " << make_value(value) << ENDLINE;
 			return value;
 		}
 
@@ -1226,7 +1334,7 @@ namespace pretty_output
 		Type_t &watch(const std::string &filename_line, const char *name, Type_t &value)
 		{
 			out_stream stream(filename_line);
-			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
+			stream << name << " = " << make_value(value) << ENDLINE;
 			return value;
 		}
 
@@ -1236,7 +1344,7 @@ namespace pretty_output
 		Type_t &&watch(const std::string &filename_line, const char *name, Type_t &&value)
 		{
 			out_stream stream(filename_line);
-			stream << name << " = " << FLUSH << make_value(value) << ENDLINE;
+			stream << name << " = " << make_value(value) << ENDLINE;
 			return std::forward<Type_t>(value);
 		}
 
