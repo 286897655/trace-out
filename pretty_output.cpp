@@ -206,6 +206,21 @@ namespace pretty_output
 		}
 
 
+		void apply_io_manipulators(std::ostream &stream, va_list manipulators)
+		{
+			for (;;)
+			{
+				manipulator_t manipulator = va_arg(manipulators, manipulator_t);
+				if (manipulator == NULL)
+				{
+					break;
+				}
+
+				stream << manipulator;
+			}
+		}
+
+
 		//
 		// Out stream
 
@@ -614,27 +629,15 @@ namespace pretty_output
 
 		void print_execution_time_in_milliseconds(const std::string &filename_line, uint64_t milliseconds)
 		{
-			std::stringstream string_stream;
-			string_stream << milliseconds;
-
 			out_stream stream(filename_line);
-			stream << "// execution time: " << string_stream.str() << " ms" << ENDLINE;
+			stream << "// execution time: " << to_string(milliseconds) << " ms" << ENDLINE;
 		}
 
 
 		void print_execution_time_in_ticks(const std::string &filename_line, uint64_t ticks, double milliseconds)
 		{
-			std::stringstream string_stream;
-
-			string_stream << ticks;
-			std::string ticks_string = string_stream.str();
-
-			string_stream.str("");
-			string_stream << milliseconds;
-			std::string milliseconds_string = string_stream.str();
-
 			out_stream stream(filename_line);
-			stream << "// execution time: " << ticks_string << " ticks (" << milliseconds_string << " ms)" << ENDLINE;
+			stream << "// execution time: " << to_string(ticks) << " ticks (" << to_string(milliseconds) << " ms)" << ENDLINE;
 		}
 
 

@@ -329,6 +329,14 @@ namespace pretty_output
 		void crash_on_bad_memory(const Type_t &variable);
 
 
+		typedef std::ios_base &(*manipulator_t)(std::ios_base &);
+
+		void apply_io_manipulators(std::ostream &stream, va_list manipulators);
+
+		template <typename Type_t>
+		const std::string to_string(const Type_t &value, manipulator_t first_manipulator = NULL, ...);
+
+
 		//
 		// Pretties
 
@@ -975,6 +983,28 @@ namespace pretty_output
 		}
 
 
+		template <typename Type_t>
+		const std::string to_string(const Type_t &value, manipulator_t first_manipulator, ...)
+		{
+			std::stringstream string_stream;
+
+			if (first_manipulator != NULL)
+			{
+				va_list rest_manipulators;
+				va_start(rest_manipulators, first_manipulator);
+
+				string_stream << first_manipulator;
+				apply_io_manipulators(string_stream, rest_manipulators);
+
+				va_end(rest_manipulators);
+			}
+
+			string_stream << value;
+
+			return string_stream.str();
+		}
+
+
 		//
 		// Pretties
 
@@ -1078,16 +1108,6 @@ namespace pretty_output
 		//
 		// 'operator <<' overloads
 
-		template <typename Type_t>
-		const std::string fundamental_to_string(Type_t value)
-		{
-			std::stringstream stream;
-			stream << value;
-
-			return stream.str();
-		}
-
-
 		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value)
 		{
 			stream << FLUSH;
@@ -1105,42 +1125,42 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const pretty<short> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<unsigned short> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<int> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<unsigned int> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
@@ -1149,14 +1169,14 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const pretty<long long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -1165,21 +1185,21 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const pretty<float> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<double> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<long double> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get());
+			return stream << to_string(value.get());
 		}
 
 
@@ -1191,11 +1211,8 @@ namespace pretty_output
 				return stream << "(null)";
 			}
 
-			std::stringstream string_stream;
 			std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
-			string_stream << std::hex << std::showbase << numeric_value;
-
-			return stream << string_stream.str();
+			return stream << to_string(numeric_value, std::hex, std::showbase, NULL);
 		}
 
 
@@ -1413,10 +1430,7 @@ namespace pretty_output
 			signed_promotion_t signed_value = static_cast<signed_promotion_t>(value);
 			int64_t signed_integer = static_cast<int64_t>(signed_value);
 
-			std::stringstream stream;
-			stream << signed_integer;
-
-			return stream.str();
+			return to_string(signed_integer);
 		}
 
 
@@ -1428,10 +1442,7 @@ namespace pretty_output
 			unsigned_promotion_t unsigned_value = static_cast<unsigned_promotion_t>(value);
 			uint64_t unsigned_integer = static_cast<uint64_t>(unsigned_value);
 
-			std::stringstream stream;
-			stream << unsigned_integer;
-
-			return stream.str();
+			return to_string(unsigned_integer);
 		}
 
 
