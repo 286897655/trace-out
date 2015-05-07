@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <utility>
 #include <iterator>
+#include <memory>
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
@@ -505,6 +506,19 @@ namespace pretty_output
 		inline out_stream &operator <<(out_stream &stream, const pretty<long double> &value);
 
 		inline out_stream &operator <<(out_stream &stream, const pretty<const void *> &value);
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value);
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value);
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 		template <typename Type_t>
 		inline out_stream &operator <<(out_stream &stream, const pretty<const Type_t *> &value);
@@ -1237,6 +1251,44 @@ namespace pretty_output
 			stream << FLUSH;
 			return stream << make_pretty(static_cast<const Type_t *>(value.get()));
 		}
+
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value)
+		{
+			stream << FLUSH;
+			const std::auto_ptr<Type_t> &pointer = value.get();
+			return stream << make_pretty(pointer.get());
+		}
+
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value)
+		{
+			stream << FLUSH;
+			const std::shared_ptr<Type_t> &pointer = value.get();
+			stream << make_pretty(static_cast<const void *>(pointer.get())) << ", use_count = " << to_string(pointer.use_count());
+			if (pointer.get() != NULL)
+			{
+				stream << " -> " << FLUSH;
+				stream << make_pretty(*(value.get()));
+			}
+
+			return stream;
+		}
+
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value)
+		{
+			stream << FLUSH;
+			const std::unique_ptr<Type_t> &pointer = value.get();
+			return stream << make_pretty(pointer.get());
+		}
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 		out_stream &operator <<(out_stream &stream, const pretty<bool> &value)
