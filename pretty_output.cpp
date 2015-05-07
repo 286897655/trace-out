@@ -219,10 +219,10 @@ namespace pretty_output
 				std::string thread_id = thread_id_field(current_thread_id());
 				const std::string &thread_name = current_thread_name();
 				const std::string &header = thread_header(thread_id, thread_name);
-				*this << "\n" << header.c_str() << "\n";
+				*this << "\n" << header << "\n";
 			}
 
-			*this << filename_line.c_str() << DELIMITER << indentation().c_str();
+			*this << filename_line << DELIMITER << indentation();
 		}
 
 
@@ -236,7 +236,7 @@ namespace pretty_output
 			stream.width(FILENAME_FIELD_WIDTH + 1 + LINE_FIELD_WIDTH);
 			stream << "";
 
-			*this << stream.str().c_str() << DELIMITER << indentation().c_str();
+			*this << stream.str() << DELIMITER << indentation();
 		}
 
 
@@ -267,6 +267,12 @@ namespace pretty_output
 		}
 
 
+		out_stream &out_stream::operator <<(const std::string &string)
+		{
+			return *this << string.c_str();
+		}
+
+
 		out_stream &out_stream::operator <<(const newline_t &)
 		{
 			std::stringstream stream;
@@ -276,7 +282,7 @@ namespace pretty_output
 
 			*this << "\n";
 			_current_line_length = 0;
-			*this << stream.str().c_str() << DELIMITER << indentation().c_str();
+			*this << stream.str() << DELIMITER << indentation();
 
 			return *this;
 		}
@@ -525,7 +531,7 @@ namespace pretty_output
 			: _filename_line(filename_line), _function_signature(function_signature)
 		{
 			out_stream stream(_filename_line);
-			stream << _function_signature.c_str() << NEWLINE << "{" << ENDLINE;
+			stream << _function_signature << NEWLINE << "{" << ENDLINE;
 			indentation_add();
 		}
 
@@ -534,7 +540,7 @@ namespace pretty_output
 		{
 			indentation_remove();
 			out_stream stream(_filename_line);
-			stream << "}" << INDENTATION << "// " << _function_signature.c_str() << NEWLINE << ENDLINE;
+			stream << "}" << INDENTATION << "// " << _function_signature << NEWLINE << ENDLINE;
 		}
 
 
@@ -612,7 +618,7 @@ namespace pretty_output
 			string_stream << milliseconds;
 
 			out_stream stream(filename_line);
-			stream << "// execution time: " << string_stream.str().c_str() << " ms" << ENDLINE;
+			stream << "// execution time: " << string_stream.str() << " ms" << ENDLINE;
 		}
 
 
@@ -628,7 +634,7 @@ namespace pretty_output
 			std::string milliseconds_string = string_stream.str();
 
 			out_stream stream(filename_line);
-			stream << "// execution time: " << ticks_string.c_str() << " ticks (" << milliseconds_string.c_str() << " ms)" << ENDLINE;
+			stream << "// execution time: " << ticks_string << " ticks (" << milliseconds_string << " ms)" << ENDLINE;
 		}
 
 

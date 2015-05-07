@@ -450,6 +450,7 @@ namespace pretty_output
 			~out_stream();
 			out_stream &operator <<(char character);
 			out_stream &operator <<(const char *string);
+			out_stream &operator <<(const std::string &string);
 			out_stream &operator <<(const newline_t &);
 			out_stream &operator <<(const endline_t &);
 			out_stream &operator <<(const flush_t &);
@@ -1097,49 +1098,49 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const value_t<std::string> &value)
 		{
 			stream << FLUSH;
-			return stream << "\"" << value.get().c_str() << "\"";
+			return stream << "\"" << value.get() << "\"";
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<short> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned short> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<int> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned int> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
@@ -1148,14 +1149,14 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const value_t<long long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<unsigned long long> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -1164,21 +1165,21 @@ namespace pretty_output
 		out_stream &operator <<(out_stream &stream, const value_t<float> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<double> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
 		out_stream &operator <<(out_stream &stream, const value_t<long double> &value)
 		{
 			stream << FLUSH;
-			return stream << fundamental_to_string(value.get()).c_str();
+			return stream << fundamental_to_string(value.get());
 		}
 
 
@@ -1194,7 +1195,7 @@ namespace pretty_output
 			std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
 			string_stream << std::hex << std::showbase << numeric_value;
 
-			return stream << string_stream.str().c_str();
+			return stream << string_stream.str();
 		}
 
 
@@ -1499,7 +1500,7 @@ namespace pretty_output
 				const std::string string_representation = string_stream.str();
 				if (string_representation.length() + column_width + 1 > stream.width_left())
 				{
-					stream << string_representation.c_str();
+					stream << string_representation;
 					string_stream.str("");
 
 					stream << NEWLINE << make_value(static_cast<const void *>(&iterator[index])) << ":";
@@ -1519,7 +1520,7 @@ namespace pretty_output
 			const std::string string_representation = string_stream.str();
 			if (!string_representation.empty())
 			{
-				stream << string_representation.c_str() << NEWLINE;
+				stream << string_representation << NEWLINE;
 			}
 		}
 
@@ -1568,7 +1569,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			Return_t return_value = _function_pointer(std::forward<CallArguments_t>(arguments)...);
@@ -1597,7 +1598,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			_function_pointer(std::forward<CallArguments_t>(arguments)...);
@@ -1634,7 +1635,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _object_name << _accessor << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
@@ -1663,7 +1664,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _object_name << _accessor << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
@@ -1707,7 +1708,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _object_name << _accessor << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			Return_t return_value = (_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
@@ -1736,7 +1737,7 @@ namespace pretty_output
 		{
 			{
 				out_stream stream(_filename_line);
-				stream << _object_name.c_str() << _accessor.c_str() << _function_name.c_str() << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
+				stream << _object_name << _accessor << _function_name << "(" << make_values(", ", arguments...) << ")" << ENDLINE;
 			}
 
 			(_object.*_function_pointer)(std::forward<CallArguments_t>(arguments)...);
