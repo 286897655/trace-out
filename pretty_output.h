@@ -1211,7 +1211,7 @@ namespace pretty_output
 				return stream << "(null)";
 			}
 
-			std::size_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
+			uintptr_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
 			return stream << to_string(numeric_value, std::hex, std::showbase, NULL);
 		}
 
