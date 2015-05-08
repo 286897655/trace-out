@@ -100,6 +100,13 @@ namespace pretty_output
 			resource(const resource &);
 			resource &operator =(const resource &);
 
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			resource(resource &&another);
+			resource &operator =(resource &&another);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
 
 			Type_t _handle;
 			deleter_t _deleter;
@@ -112,10 +119,22 @@ namespace pretty_output
 		public:
 			tls();
 			~tls();
+
 			void set(const Type_t &value);
 			const Type_t &get() const;
 
 		private:
+			tls(const tls &another);
+			tls &operator =(const tls &another);
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			tls(tls &&another);
+			tls &operator =(tls &&another);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
 			resource<tlskey_t> _key;
 		};
 
@@ -124,10 +143,22 @@ namespace pretty_output
 		{
 		public:
 			mutex();
+
 			void lock();
 			void unlock();
 
 		private:
+			mutex(const mutex &another);
+			mutex &operator =(const mutex &another);
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			mutex(mutex &&another);
+			mutex &operator =(mutex &&another);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
 			resource<mutex_t> _handle;
 		};
 

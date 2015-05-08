@@ -430,6 +430,12 @@ namespace pretty_output
 		public:
 			template <typename ...Whatever_t>
 			pretties(const char *, const Whatever_t &...);
+			pretties(const pretties &another); // not defined
+			pretties(pretties &&another); // not defined
+
+		private:
+			pretties &operator =(const pretties &another); // not defined
+			pretties &operator =(pretties &&another); // not defined
 		};
 
 
@@ -760,11 +766,17 @@ namespace pretty_output
 
 
 			const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
+			const_member_function_call_printer_t(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer_t(const_member_function_call_printer_t &&another); // not defined
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
+			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // not defined
+
+
 			std::string _filename_line;
 			std::string _object_name;
 			std::string _accessor;
@@ -782,11 +794,17 @@ namespace pretty_output
 
 
 			const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
+			const_member_function_call_printer_t(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer_t(const_member_function_call_printer_t &&another); // declare, but not defined
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
+			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // not defined
+
+
 			std::string _filename_line;
 			std::string _object_name;
 			std::string _accessor;
@@ -811,11 +829,17 @@ namespace pretty_output
 
 
 			member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
+			member_function_call_printer_t(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer_t(member_function_call_printer_t &&another); // not defined
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
+			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // not defined
+
+
 			std::string _filename_line;
 			std::string _object_name;
 			std::string _accessor;
@@ -833,11 +857,17 @@ namespace pretty_output
 
 
 			member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
+			member_function_call_printer_t(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer_t(member_function_call_printer_t &&another); // not defined
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
+			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // not defined
+
+
 			std::string _filename_line;
 			std::string _object_name;
 			std::string _accessor;
@@ -902,8 +932,25 @@ namespace pretty_output
 			block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
 			block_t(const char *comment, const Comment_value_t &comment_value);
 			block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
+			block_t(const block_t &another); // not defined
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			block_t(block_t &&another); // not defined
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
 			~block_t();
 			operator const Return_t &();
+
+		private:
+			block_t &operator =(const block_t &another); // not defined
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			block_t &operator =(block_t &&another); // not defined
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 			const Return_t &return_value;
