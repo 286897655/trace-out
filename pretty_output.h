@@ -351,11 +351,11 @@ namespace pretty_output
 			const Type_t &get() const;
 
 		private:
-			pretty &operator =(const pretty &another_pretty); // not defined
+			pretty &operator =(const pretty &another); // = delete
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-			pretty &operator =(pretty &&another_pretty); // not defined
+			pretty &operator =(pretty &&another); // = delete
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -388,8 +388,8 @@ namespace pretty_output
 			const pretties<RestTypes_t...> &rest() const;
 
 		private:
-			pretties &operator =(const pretties &another_pretties); // not defined
-			pretties &operator =(pretties &&another_pretties); // not defined
+			pretties &operator =(const pretties &another); // = delete
+			pretties &operator =(pretties &&another); // = delete
 
 
 			const char *_delimiter;
@@ -409,8 +409,8 @@ namespace pretty_output
 			const pretty<Type_t> &first() const;
 
 		private:
-			pretties &operator =(const pretties &another_pretties); // not defined
-			pretties &operator =(pretties &&another_pretties); // not defined
+			pretties &operator =(const pretties &another); // = delete
+			pretties &operator =(pretties &&another); // = delete
 
 
 			const char *_delimiter;
@@ -427,8 +427,8 @@ namespace pretty_output
 			pretties(const pretties &another); // not defined
 
 		private:
-			pretties &operator =(const pretties &another); // not defined
-			pretties &operator =(pretties &&another); // not defined
+			pretties &operator =(const pretties &another); // = delete
+			pretties &operator =(pretties &&another); // = delete
 		};
 
 
@@ -765,8 +765,8 @@ namespace pretty_output
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
-			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // not defined
-			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // not defined
+			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // = delete
+			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // = delete
 
 
 			std::string _filename_line;
@@ -792,8 +792,8 @@ namespace pretty_output
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
-			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // not defined
-			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // not defined
+			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // = delete
+			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // = delete
 
 
 			std::string _filename_line;
@@ -826,8 +826,8 @@ namespace pretty_output
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
-			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // not defined
-			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // not defined
+			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // = delete
+			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // = delete
 
 
 			std::string _filename_line;
@@ -853,8 +853,8 @@ namespace pretty_output
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
-			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // not defined
-			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // not defined
+			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // = delete
+			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // = delete
 
 
 			std::string _filename_line;
@@ -879,7 +879,6 @@ namespace pretty_output
 		{
 		public:
 			function_printer_t(const std::string &filename_line, const char *function_signature);
-
 			~function_printer_t();
 
 		private:
@@ -923,14 +922,15 @@ namespace pretty_output
 			block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
 			block_t(const block_t &another); // not defined
 			~block_t();
+
 			operator const Return_t &();
 
 		private:
-			block_t &operator =(const block_t &another); // not defined
+			block_t &operator =(const block_t &another); // = delete
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-			block_t &operator =(block_t &&another); // not defined
+			block_t &operator =(block_t &&another); // = delete
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 

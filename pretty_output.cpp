@@ -93,6 +93,7 @@ namespace pretty_output
 
 			resource(Type_t handle, deleter_t deleter);
 			~resource();
+
 			const Type_t &get() const;
 
 		private:
