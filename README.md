@@ -113,6 +113,8 @@ Notes
 
 * `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are enabled only with C++11 and later.
 
+* Output is flushed before reading variables and dereferencing pointers that are passed from the outer context, thus it is more clear where things went wrong when memory has corrupted.
+
 * There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization the macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC` should be defined.
 
 
