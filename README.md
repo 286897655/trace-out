@@ -9,7 +9,7 @@ Features:
 * Easy to use, but right now not easy to extend
 * Uses C++/C++11 and standard library, does not use any additional preprocessors or libraries
 * Supports output redirection
-* Crossplatform. Tested on Clang 600.0.56, MVS 2010/2013, MinGW 4.9.smth
+* Crossplatform. Tested on: Clang 602.0.49; MinGW 4.9.2; MVS 2010 (Professional), 2012 (Express), 2013 (Professional)
 * No license, free for all
 
 
