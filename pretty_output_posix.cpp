@@ -27,7 +27,7 @@ namespace pretty_output
 
 
 
-		struct _tlskey_t
+		struct _tlskey
 		{
 			pthread_key_t value;
 		};
@@ -35,7 +35,7 @@ namespace pretty_output
 
 		tlskey_t tls_new_key()
 		{
-			tlskey_t key = new _tlskey_t;
+			tlskey_t key = new _tlskey;
 			int retval = pthread_key_create(&key->value, NULL);
 			assert(retval == 0);
 
@@ -66,7 +66,7 @@ namespace pretty_output
 
 
 
-		struct _mutex_t
+		struct _mutex
 		{
 			pthread_mutex_t value;
 		};
@@ -74,7 +74,7 @@ namespace pretty_output
 
 		mutex_t mutex_new()
 		{
-			mutex_t mutex = new _mutex_t;
+			mutex_t mutex = new _mutex;
 			int retval = pthread_mutex_init(&mutex->value, NULL);
 			assert(retval == 0);
 

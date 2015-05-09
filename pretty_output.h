@@ -65,31 +65,31 @@
 	#if defined(PRETTY_OUTPUT_CPP11)
 
 	#define $c(function_name) \
-				pretty_output::impl::function_call(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
+				pretty_output::impl::make_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
 
 
 	#define $cm(object, function_name) \
-				pretty_output::impl::member_function_call(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, pretty_output::impl::reference(object), &std::remove_pointer<decltype(object)>::type::function_name)
+				pretty_output::impl::make_member_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, pretty_output::impl::reference(object), &std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	#define $f \
-				pretty_output::impl::function_printer_t PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::impl::function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
+				pretty_output::impl::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::impl::make_function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 	#define $return \
-				return pretty_output::impl::return_printer(PRETTY_OUTPUT_FILENAME_LINE) ,
+				return pretty_output::impl::make_return_printer(PRETTY_OUTPUT_FILENAME_LINE) ,
 
 
 	#define $if(...) \
-				if (pretty_output::impl::block_t<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::impl::block(PRETTY_OUTPUT_FILENAME_LINE, "if (" #__VA_ARGS__ ") => ", static_cast<bool>((__VA_ARGS__))))
+				if (pretty_output::impl::block<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::impl::make_block(PRETTY_OUTPUT_FILENAME_LINE, "if (" #__VA_ARGS__ ") => ", static_cast<bool>((__VA_ARGS__))))
 
 
 	#define pretty_output_private__for(block_name, ...) \
-				if (pretty_output::impl::for_block_t block_name = pretty_output::impl::for_block_t(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
+				if (pretty_output::impl::for_block block_name = pretty_output::impl::make_for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 					for (__VA_ARGS__) \
-						if (pretty_output::impl::block_t<size_t, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::impl::block("// for: iteration #", block_name.iteration(), false)) {} else
+						if (pretty_output::impl::block<size_t, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::impl::make_block("// for: iteration #", block_name.iteration(), false)) {} else
 
 
 	#define $for(...) \
@@ -98,7 +98,7 @@
 
 	#define $while(...) \
 				if (pretty_output::impl::print_while_header(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__), false) {} else \
-					while (pretty_output::impl::block_t<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::impl::block("// while: " #__VA_ARGS__ " => ", static_cast<bool>((__VA_ARGS__))))
+					while (pretty_output::impl::block<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::impl::make_block("// while: " #__VA_ARGS__ " => ", static_cast<bool>((__VA_ARGS__))))
 
 
 	#define $p(format, ...) \
@@ -287,7 +287,7 @@ namespace pretty_output
 		size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments);
 
 
-		typedef struct _tlskey_t *tlskey_t;
+		typedef struct _tlskey *tlskey_t;
 
 		tlskey_t tls_new_key();
 		void tls_delete_key(tlskey_t key);
@@ -295,7 +295,7 @@ namespace pretty_output
 		void tls_set(tlskey_t key, void *data);
 
 
-		typedef struct _mutex_t *mutex_t;
+		typedef struct _mutex *mutex_t;
 
 		mutex_t mutex_new();
 		void mutex_delete(mutex_t mutex);
@@ -441,13 +441,13 @@ namespace pretty_output
 		//
 		// Out stream
 
-		struct newline_t;
-		struct endline_t;
-		struct flush_t;
+		class newline_manipulator;
+		class endline_manipulator;
+		class flush_manipulator;
 
-		extern const newline_t NEWLINE;
-		extern const endline_t ENDLINE;
-		extern const flush_t FLUSH;
+		extern const newline_manipulator NEWLINE;
+		extern const endline_manipulator ENDLINE;
+		extern const flush_manipulator FLUSH;
 
 
 		class out_stream
@@ -459,9 +459,9 @@ namespace pretty_output
 			out_stream &operator <<(char character);
 			out_stream &operator <<(const char *string);
 			out_stream &operator <<(const std::string &string);
-			out_stream &operator <<(const newline_t &);
-			out_stream &operator <<(const endline_t &);
-			out_stream &operator <<(const flush_t &);
+			out_stream &operator <<(const newline_manipulator &);
+			out_stream &operator <<(const endline_manipulator &);
+			out_stream &operator <<(const flush_manipulator &);
 			size_t width_left() const;
 			void printf(const char *format, ...);
 			void flush();
@@ -707,13 +707,13 @@ namespace pretty_output
 		// Function call
 
 		template <typename Return_t, typename ...Arguments_t>
-		class function_call_printer_t
+		class function_call_printer
 		{
 		public:
 			typedef Return_t (*funcptr_t)(Arguments_t...);
 
 
-			function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
+			function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
@@ -726,13 +726,13 @@ namespace pretty_output
 
 
 		template <typename ...Arguments_t>
-		class function_call_printer_t<void, Arguments_t...>
+		class function_call_printer<void, Arguments_t...>
 		{
 		public:
 			typedef void (*funcptr_t)(Arguments_t...);
 
 
-			function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
+			function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
@@ -745,28 +745,28 @@ namespace pretty_output
 
 
 		template <typename Return_t, typename ...Arguments_t>
-		function_call_printer_t<Return_t, Arguments_t...> function_call(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...));
+		function_call_printer<Return_t, Arguments_t...> make_function_call_printer(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...));
 
 
 		//
 		// Const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		class const_member_function_call_printer_t
+		class const_member_function_call_printer
 		{
 		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
-			const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
-			const_member_function_call_printer_t(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
+			const_member_function_call_printer(const const_member_function_call_printer &another); // not defined
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
-			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // = delete
-			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // = delete
+			const_member_function_call_printer &operator =(const const_member_function_call_printer &another); // = delete
+			const_member_function_call_printer &operator =(const_member_function_call_printer &&another); // = delete
 
 
 			std::string _filename_line;
@@ -779,21 +779,21 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		class const_member_function_call_printer_t<Type_t, void, Arguments_t...>
+		class const_member_function_call_printer<Type_t, void, Arguments_t...>
 		{
 		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...) const;
 
 
-			const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
-			const_member_function_call_printer_t(const const_member_function_call_printer_t &another); // not defined
+			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
+			const_member_function_call_printer(const const_member_function_call_printer &another); // not defined
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
-			const_member_function_call_printer_t &operator =(const const_member_function_call_printer_t &another); // = delete
-			const_member_function_call_printer_t &operator =(const_member_function_call_printer_t &&another); // = delete
+			const_member_function_call_printer &operator =(const const_member_function_call_printer &another); // = delete
+			const_member_function_call_printer &operator =(const_member_function_call_printer &&another); // = delete
 
 
 			std::string _filename_line;
@@ -806,28 +806,28 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
+		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
 
 
 		//
 		// Non-const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		class member_function_call_printer_t
+		class member_function_call_printer
 		{
 		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...);
 
 
-			member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
-			member_function_call_printer_t(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
+			member_function_call_printer(const member_function_call_printer &another); // not defined
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
 
 		private:
-			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // = delete
-			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // = delete
+			member_function_call_printer &operator =(const member_function_call_printer &another); // = delete
+			member_function_call_printer &operator =(member_function_call_printer &&another); // = delete
 
 
 			std::string _filename_line;
@@ -840,21 +840,21 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		class member_function_call_printer_t<Type_t, void, Arguments_t...>
+		class member_function_call_printer<Type_t, void, Arguments_t...>
 		{
 		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...);
 
 
-			member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
-			member_function_call_printer_t(const member_function_call_printer_t &another); // not defined
+			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
+			member_function_call_printer(const member_function_call_printer &another); // not defined
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
 
 		private:
-			member_function_call_printer_t &operator =(const member_function_call_printer_t &another); // = delete
-			member_function_call_printer_t &operator =(member_function_call_printer_t &&another); // = delete
+			member_function_call_printer &operator =(const member_function_call_printer &another); // = delete
+			member_function_call_printer &operator =(member_function_call_printer &&another); // = delete
 
 
 			std::string _filename_line;
@@ -867,7 +867,7 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...));
+		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...));
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -875,11 +875,11 @@ namespace pretty_output
 		//
 		// Function printer
 
-		class function_printer_t
+		class function_printer
 		{
 		public:
-			function_printer_t(const std::string &filename_line, const char *function_signature);
-			~function_printer_t();
+			function_printer(const std::string &filename_line, const char *function_signature);
+			~function_printer();
 
 		private:
 			std::string _filename_line;
@@ -887,16 +887,16 @@ namespace pretty_output
 		};
 
 
-		function_printer_t function_printer(const std::string &filename_line, const char *function_signature);
+		function_printer make_function_printer(const std::string &filename_line, const char *function_signature);
 
 
 		//
 		// Return printer
 
-		class return_printer_t
+		class return_printer
 		{
 		public:
-			return_printer_t(const std::string &filename_line);
+			return_printer(const std::string &filename_line);
 
 			template <typename T>
 			const T &operator ,(const T &value);
@@ -906,7 +906,7 @@ namespace pretty_output
 		};
 
 
-		return_printer_t return_printer(const std::string &filename_line);
+		return_printer make_return_printer(const std::string &filename_line);
 
 
 		//
@@ -914,23 +914,23 @@ namespace pretty_output
 		// NOTE: god-entity, but still better than prevous solution
 
 		template <typename Comment_value_t, typename Return_t>
-		class block_t
+		class block
 		{
 		public:
-			block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
-			block_t(const char *comment, const Comment_value_t &comment_value);
-			block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
-			block_t(const block_t &another); // not defined
-			~block_t();
+			block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
+			block(const char *comment, const Comment_value_t &comment_value);
+			block(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
+			block(const block &another); // not defined
+			~block();
 
 			operator const Return_t &();
 
 		private:
-			block_t &operator =(const block_t &another); // = delete
+			block &operator =(const block &another); // = delete
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-			block_t &operator =(block_t &&another); // = delete
+			block &operator =(block &&another); // = delete
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -940,23 +940,23 @@ namespace pretty_output
 
 
 		template <typename Comment_value_t>
-		block_t<Comment_value_t, Comment_value_t> block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
+		block<Comment_value_t, Comment_value_t> make_block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
 
 		template <typename Comment_value_t>
-		block_t<Comment_value_t, Comment_value_t> block(const char *comment, const Comment_value_t &comment_value);
+		block<Comment_value_t, Comment_value_t> make_block(const char *comment, const Comment_value_t &comment_value);
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t> block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value);
+		block<Comment_value_t, Return_t> make_block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value);
 
 
 		//
 		// For block
 
-		class for_block_t
+		class for_block
 		{
 		public:
-			for_block_t(const std::string &filename_line, const char *expression);
-			~for_block_t();
+			for_block(const std::string &filename_line, const char *expression);
+			~for_block();
 			operator bool() const;
 			size_t iteration();
 
@@ -965,7 +965,7 @@ namespace pretty_output
 		};
 
 
-		for_block_t for_block(const std::string &filename_line, const char *expression);
+		for_block make_for_block(const std::string &filename_line, const char *expression);
 
 
 		//
@@ -1649,7 +1649,7 @@ namespace pretty_output
 		// Function call
 
 		template <typename Return_t, typename ...Arguments_t>
-		function_call_printer_t<Return_t, Arguments_t...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+		function_call_printer<Return_t, Arguments_t...>::function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
 			: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
 		{
 		}
@@ -1657,7 +1657,7 @@ namespace pretty_output
 
 		template <typename Return_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		Return_t function_call_printer_t<Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		Return_t function_call_printer<Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1678,7 +1678,7 @@ namespace pretty_output
 
 
 		template <typename ...Arguments_t>
-		function_call_printer_t<void, Arguments_t...>::function_call_printer_t(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
+		function_call_printer<void, Arguments_t...>::function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer)
 			: _filename_line(filename_line), _function_name(function_name), _function_pointer(function_pointer)
 		{
 		}
@@ -1686,7 +1686,7 @@ namespace pretty_output
 
 		template <typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		void function_call_printer_t<void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		void function_call_printer<void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1705,9 +1705,9 @@ namespace pretty_output
 
 
 		template <typename Return_t, typename ...Arguments_t>
-		function_call_printer_t<Return_t, Arguments_t...> function_call(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...))
+		function_call_printer<Return_t, Arguments_t...> make_function_call_printer(const std::string &filename_line, const char *function_name, Return_t (*function_pointer)(Arguments_t...))
 		{
-			return function_call_printer_t<Return_t, Arguments_t...>(filename_line, function_name, function_pointer);
+			return function_call_printer<Return_t, Arguments_t...>(filename_line, function_name, function_pointer);
 		}
 
 
@@ -1715,7 +1715,7 @@ namespace pretty_output
 		// Const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
+		const_member_function_call_printer<Type_t, Return_t, Arguments_t...>::const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 		{
 		}
@@ -1723,7 +1723,7 @@ namespace pretty_output
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		Return_t const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		Return_t const_member_function_call_printer<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1744,7 +1744,7 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		const_member_function_call_printer_t<Type_t, void, Arguments_t...>::const_member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
+		const_member_function_call_printer<Type_t, void, Arguments_t...>::const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 		{
 		}
@@ -1752,7 +1752,7 @@ namespace pretty_output
 
 		template <typename Type_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		void const_member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		void const_member_function_call_printer<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1771,16 +1771,16 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
+		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
 		{
-			return const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
+			return const_member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
 		}
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
+		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
 		{
-			return const_member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
+			return const_member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 		}
 
 
@@ -1788,7 +1788,7 @@ namespace pretty_output
 		// Non-const member function call
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
+		member_function_call_printer<Type_t, Return_t, Arguments_t...>::member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 		{
 		}
@@ -1796,7 +1796,7 @@ namespace pretty_output
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		Return_t member_function_call_printer_t<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		Return_t member_function_call_printer<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1817,7 +1817,7 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename ...Arguments_t>
-		member_function_call_printer_t<Type_t, void, Arguments_t...>::member_function_call_printer_t(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
+		member_function_call_printer<Type_t, void, Arguments_t...>::member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
 		{
 		}
@@ -1825,7 +1825,7 @@ namespace pretty_output
 
 		template <typename Type_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
-		void member_function_call_printer_t<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
+		void member_function_call_printer<Type_t, void, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
 			{
 				out_stream stream(_filename_line);
@@ -1844,16 +1844,16 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...))
+		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...))
 		{
-			return member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
+			return member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
 		}
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer_t<Type_t, Return_t, Arguments_t...> member_function_call(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...))
+		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...))
 		{
-			return member_function_call_printer_t<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
+			return member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
@@ -1863,7 +1863,7 @@ namespace pretty_output
 		// Return
 
 		template <typename Type_t>
-		const Type_t &return_printer_t::operator ,(const Type_t &value)
+		const Type_t &return_printer::operator ,(const Type_t &value)
 		{
 			out_stream stream(_filename_line);
 			stream << "return " << make_pretty(value) << ENDLINE;
@@ -1875,7 +1875,7 @@ namespace pretty_output
 		// Block
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t>::block_t(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
+		block<Comment_value_t, Return_t>::block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
 			: return_value(comment_value)
 		{
 			out_stream stream(filename_line);
@@ -1885,7 +1885,7 @@ namespace pretty_output
 
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t>::block_t(const char *comment, const Comment_value_t &comment_value)
+		block<Comment_value_t, Return_t>::block(const char *comment, const Comment_value_t &comment_value)
 			: return_value(comment_value)
 		{
 			indentation_add();
@@ -1895,7 +1895,7 @@ namespace pretty_output
 
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t>::block_t(const char *comment, const Comment_value_t &comment_value, const Return_t &retval)
+		block<Comment_value_t, Return_t>::block(const char *comment, const Comment_value_t &comment_value, const Return_t &retval)
 			: return_value(retval)
 		{
 			indentation_add();
@@ -1905,7 +1905,7 @@ namespace pretty_output
 
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t>::~block_t()
+		block<Comment_value_t, Return_t>::~block()
 		{
 			indentation_remove();
 			out_stream stream;
@@ -1914,30 +1914,30 @@ namespace pretty_output
 
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t>::operator const Return_t&()
+		block<Comment_value_t, Return_t>::operator const Return_t &()
 		{
 			return return_value;
 		}
 
 
 		template <typename Comment_value_t>
-		block_t<Comment_value_t, Comment_value_t> block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
+		block<Comment_value_t, Comment_value_t> make_block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
 		{
-			return block_t<Comment_value_t, Comment_value_t>(filename_line, comment, comment_value);
+			return block<Comment_value_t, Comment_value_t>(filename_line, comment, comment_value);
 		}
 
 
 		template <typename Comment_value_t>
-		block_t<Comment_value_t, Comment_value_t> block(const char *comment, const Comment_value_t &comment_value)
+		block<Comment_value_t, Comment_value_t> make_block(const char *comment, const Comment_value_t &comment_value)
 		{
-			return block_t<Comment_value_t, Comment_value_t>(comment, comment_value);
+			return block<Comment_value_t, Comment_value_t>(comment, comment_value);
 		}
 
 
 		template <typename Comment_value_t, typename Return_t>
-		block_t<Comment_value_t, Return_t> block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value)
+		block<Comment_value_t, Return_t> make_block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value)
 		{
-			return block_t<Comment_value_t, Return_t>(comment, comment_value, return_value);
+			return block<Comment_value_t, Return_t>(comment, comment_value, return_value);
 		}
 
 

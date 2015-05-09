@@ -26,7 +26,7 @@ namespace pretty_output
 
 
 
-		struct _tlskey_t
+		struct _tlskey
 		{
 			DWORD value;
 		};
@@ -34,7 +34,7 @@ namespace pretty_output
 
 		tlskey_t tls_new_key()
 		{
-			tlskey_t key = new _tlskey_t;
+			tlskey_t key = new _tlskey;
 			DWORD retval = TlsAlloc();
 			assert(retval != TLS_OUT_OF_INDEXES);
 
@@ -66,7 +66,7 @@ namespace pretty_output
 
 
 
-		struct _mutex_t
+		struct _mutex
 		{
 			CRITICAL_SECTION value;
 		};
@@ -74,7 +74,7 @@ namespace pretty_output
 
 		mutex_t mutex_new()
 		{
-			mutex_t mutex = new _mutex_t;
+			mutex_t mutex = new _mutex;
 			InitializeCriticalSection(&mutex->value);
 
 			return mutex;

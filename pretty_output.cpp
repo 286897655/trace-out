@@ -70,9 +70,9 @@ namespace pretty_output
 
 		const size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
 
-		const struct newline_t {} NEWLINE = newline_t();
-		const struct endline_t {} ENDLINE = endline_t();
-		const struct flush_t {} FLUSH = flush_t();
+		const class newline_manipulator {} NEWLINE = newline_manipulator();
+		const class endline_manipulator {} ENDLINE = endline_manipulator();
+		const class flush_manipulator {} FLUSH = flush_manipulator();
 
 
 
@@ -320,7 +320,7 @@ namespace pretty_output
 		}
 
 
-		out_stream &out_stream::operator <<(const newline_t &)
+		out_stream &out_stream::operator <<(const newline_manipulator &)
 		{
 			std::stringstream stream;
 			stream.fill(' ');
@@ -335,7 +335,7 @@ namespace pretty_output
 		}
 
 
-		out_stream &out_stream::operator <<(const endline_t &)
+		out_stream &out_stream::operator <<(const endline_manipulator &)
 		{
 			*this << "\n";
 			_current_line_length = 0;
@@ -344,7 +344,7 @@ namespace pretty_output
 		}
 
 
-		out_stream &out_stream::operator <<(const flush_t &)
+		out_stream &out_stream::operator <<(const flush_manipulator &)
 		{
 			flush();
 			return *this;
@@ -574,7 +574,7 @@ namespace pretty_output
 		//
 		// Function printer
 
-		function_printer_t::function_printer_t(const std::string &filename_line, const char *function_signature)
+		function_printer::function_printer(const std::string &filename_line, const char *function_signature)
 			: _filename_line(filename_line), _function_signature(function_signature)
 		{
 			out_stream stream(_filename_line);
@@ -583,7 +583,7 @@ namespace pretty_output
 		}
 
 
-		function_printer_t::~function_printer_t()
+		function_printer::~function_printer()
 		{
 			indentation_remove();
 			out_stream stream(_filename_line);
@@ -591,31 +591,31 @@ namespace pretty_output
 		}
 
 
-		function_printer_t function_printer(const std::string &filename_line, const char *function_signature)
+		function_printer make_function_printer(const std::string &filename_line, const char *function_signature)
 		{
-			return function_printer_t(filename_line, function_signature);
+			return function_printer(filename_line, function_signature);
 		}
 
 
 		//
 		// Return printer
 
-		return_printer_t::return_printer_t(const std::string &filename_line)
+		return_printer::return_printer(const std::string &filename_line)
 			: _filename_line(filename_line)
 		{
 		}
 
 
-		return_printer_t return_printer(const std::string &filename_line)
+		return_printer make_return_printer(const std::string &filename_line)
 		{
-			return return_printer_t(filename_line);
+			return return_printer(filename_line);
 		}
 
 
 		//
 		// For block
 
-		for_block_t::for_block_t(const std::string &filename_line, const char *expression)
+		for_block::for_block(const std::string &filename_line, const char *expression)
 			: _iteration_number(0)
 		{
 			out_stream stream(filename_line);
@@ -623,26 +623,26 @@ namespace pretty_output
 		}
 
 
-		for_block_t::~for_block_t()
+		for_block::~for_block()
 		{
 		}
 
 
-		for_block_t::operator bool() const
+		for_block::operator bool() const
 		{
 			return false;
 		}
 
 
-		size_t for_block_t::iteration()
+		size_t for_block::iteration()
 		{
 			return ++_iteration_number;
 		}
 
 
-		for_block_t for_block(const std::string &filename_line, const char *expression)
+		for_block make_for_block(const std::string &filename_line, const char *expression)
 		{
-			return for_block_t(filename_line, expression);
+			return for_block(filename_line, expression);
 		}
 
 
