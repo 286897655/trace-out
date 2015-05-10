@@ -674,6 +674,44 @@ namespace pretty_output
 
 
 		//
+		// Block
+
+		block::block(bool value)
+			: _value(value)
+		{
+			indentation_add();
+		}
+
+
+		block::~block()
+		{
+			{
+				out_stream stream;
+				stream << ENDLINE;
+			}
+
+			indentation_remove();
+		}
+
+
+		block::operator bool() const
+		{
+			return _value;
+		}
+
+
+		block iteration_block(const std::string filename_line, size_t iteration)
+		{
+			block block(false);
+
+			out_stream stream(filename_line);
+			stream << "// for: iteration #" << make_pretty(iteration) << ENDLINE;
+
+			return block;
+		}
+
+
+		//
 		// Thread
 
 		void set_current_thread_name(const std::string &name)

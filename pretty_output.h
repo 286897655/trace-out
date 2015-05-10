@@ -83,22 +83,22 @@
 
 
 	#define $if(...) \
-				if (pretty_output::impl::block<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$if_block) = pretty_output::impl::make_block(PRETTY_OUTPUT_FILENAME_LINE, "if (" #__VA_ARGS__ ") => ", static_cast<bool>((__VA_ARGS__))))
+				if (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_if_block) = pretty_output::impl::if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, (__VA_ARGS__)))
 
 
 	#define pretty_output_private__for(block_name, ...) \
 				if (pretty_output::impl::for_block block_name = pretty_output::impl::make_for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 					for (__VA_ARGS__) \
-						if (pretty_output::impl::block<size_t, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$block) = pretty_output::impl::make_block("// for: iteration #", block_name.iteration(), false)) {} else
+						if (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_iteration_block) = pretty_output::impl::iteration_block(PRETTY_OUTPUT_FILENAME_LINE, block_name.iteration())) {} else
 
 
 	#define $for(...) \
-				pretty_output_private__for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$for_block), ##__VA_ARGS__)
+				pretty_output_private__for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_for_block), ##__VA_ARGS__)
 
 
 	#define $while(...) \
 				if (pretty_output::impl::print_while_header(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__), false) {} else \
-					while (pretty_output::impl::block<bool, bool> PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$while_block) = pretty_output::impl::make_block("// while: " #__VA_ARGS__ " => ", static_cast<bool>((__VA_ARGS__))))
+					while (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_while_block) = pretty_output::impl::while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, (__VA_ARGS__)))
 
 
 	#define $p(format, ...) \
@@ -438,6 +438,33 @@ namespace pretty_output
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
 
+		template <typename Type_t>
+		class pretty_bool
+		{
+		public:
+			pretty_bool(const Type_t &data);
+			pretty_bool(const pretty_bool &another); // not defined
+
+			const Type_t &get() const;
+
+		private:
+			pretty_bool &operator =(const pretty_bool &another); // = delete
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+			pretty_bool &operator =(pretty_bool &&another); // = delete
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+			const Type_t &_data;
+		};
+
+
+		template <typename Type_t>
+		pretty_bool<Type_t> make_pretty_bool(const Type_t &value);
+
+
 		//
 		// Out stream
 
@@ -526,6 +553,11 @@ namespace pretty_output
 		inline out_stream &operator <<(out_stream &stream, const pretty<Type_t *> &value);
 
 		inline out_stream &operator <<(out_stream &stream, const pretty<bool> &value);
+
+		inline out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value);
+
+		template <typename Type_t>
+		inline out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value);
 
 		inline out_stream &operator <<(out_stream &stream, const pretty<char> &value);
 
@@ -911,19 +943,15 @@ namespace pretty_output
 
 		//
 		// Block
-		// NOTE: god-entity, but still better than prevous solution
 
-		template <typename Comment_value_t, typename Return_t>
 		class block
 		{
 		public:
-			block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
-			block(const char *comment, const Comment_value_t &comment_value);
-			block(const char *comment, const Comment_value_t &comment_value, const Return_t &retval);
-			block(const block &another); // not defined
+			block(bool value);
+			block(const block &value);
 			~block();
 
-			operator const Return_t &();
+			operator bool() const;
 
 		private:
 			block &operator =(const block &another); // = delete
@@ -935,18 +963,17 @@ namespace pretty_output
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
 
-			const Return_t &return_value;
+			bool _value;
 		};
 
 
-		template <typename Comment_value_t>
-		block<Comment_value_t, Comment_value_t> make_block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value);
+		template <typename Type_t>
+		block if_block(const std::string filename_line, const char *condition, const Type_t &value);
 
-		template <typename Comment_value_t>
-		block<Comment_value_t, Comment_value_t> make_block(const char *comment, const Comment_value_t &comment_value);
+		template <typename Type_t>
+		block while_block(const std::string filename_line, const char *condition, const Type_t &value);
 
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t> make_block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value);
+		block iteration_block(const std::string filename_line, size_t iteration);
 
 
 		//
@@ -1148,6 +1175,27 @@ namespace pretty_output
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
 
+		template <typename Type_t>
+		pretty_bool<Type_t>::pretty_bool(const Type_t &data)
+			: _data(data)
+		{
+		}
+
+
+		template <typename Type_t>
+		const Type_t &pretty_bool<Type_t>::get() const
+		{
+			return _data;
+		}
+
+
+		template <typename Type_t>
+		pretty_bool<Type_t> make_pretty_bool(const Type_t &value)
+		{
+			return pretty_bool<Type_t>(value);
+		}
+
+
 		//
 		// 'operator <<' overloads
 
@@ -1324,6 +1372,23 @@ namespace pretty_output
 		{
 			stream << FLUSH;
 			return stream << (value.get() ? "true" : "false");
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value)
+		{
+			stream << FLUSH;
+			return stream << (value.get() ? "true" : "false");
+		}
+
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value)
+		{
+			stream << FLUSH;
+			stream << (value.get() ? "true" : "false") << " (" << FLUSH;
+			stream << make_pretty(value.get()) << ")";
+			return stream;
 		}
 
 
@@ -1874,70 +1939,27 @@ namespace pretty_output
 		//
 		// Block
 
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t>::block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
-			: return_value(comment_value)
+		template <typename Type_t>
+		block if_block(const std::string filename_line, const char *condition, const Type_t &value)
 		{
 			out_stream stream(filename_line);
-			stream << comment << make_pretty(comment_value) << ENDLINE;
-			indentation_add();
+			stream << "if (" << condition << ") => " << FLUSH;
+			stream << make_pretty_bool(value) << ENDLINE;
+
+			return block(static_cast<bool>(value));
 		}
 
 
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t>::block(const char *comment, const Comment_value_t &comment_value)
-			: return_value(comment_value)
+		template <typename Type_t>
+		block while_block(const std::string filename_line, const char *condition, const Type_t &value)
 		{
-			indentation_add();
-			out_stream stream;
-			stream << comment << make_pretty(comment_value) << ENDLINE;
-		}
+			block block(static_cast<bool>(value));
 
+			out_stream stream(filename_line);
+			stream << "// while: " << condition << " => " << FLUSH;
+			stream << make_pretty_bool(value) << ENDLINE;
 
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t>::block(const char *comment, const Comment_value_t &comment_value, const Return_t &retval)
-			: return_value(retval)
-		{
-			indentation_add();
-			out_stream stream;
-			stream << comment << make_pretty(comment_value) << ENDLINE;
-		}
-
-
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t>::~block()
-		{
-			indentation_remove();
-			out_stream stream;
-			stream << ENDLINE;
-		}
-
-
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t>::operator const Return_t &()
-		{
-			return return_value;
-		}
-
-
-		template <typename Comment_value_t>
-		block<Comment_value_t, Comment_value_t> make_block(const std::string &filename_line, const char *comment, const Comment_value_t &comment_value)
-		{
-			return block<Comment_value_t, Comment_value_t>(filename_line, comment, comment_value);
-		}
-
-
-		template <typename Comment_value_t>
-		block<Comment_value_t, Comment_value_t> make_block(const char *comment, const Comment_value_t &comment_value)
-		{
-			return block<Comment_value_t, Comment_value_t>(comment, comment_value);
-		}
-
-
-		template <typename Comment_value_t, typename Return_t>
-		block<Comment_value_t, Return_t> make_block(const char *comment, const Comment_value_t &comment_value, const Return_t &return_value)
-		{
-			return block<Comment_value_t, Return_t>(comment, comment_value, return_value);
+			return block;
 		}
 
 
