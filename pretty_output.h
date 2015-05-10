@@ -75,7 +75,7 @@
 
 
 	#define $f \
-				pretty_output::impl::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_$f) = pretty_output::impl::make_function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
+				pretty_output::impl::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_f) = pretty_output::impl::make_function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
 
 	#define $return \
