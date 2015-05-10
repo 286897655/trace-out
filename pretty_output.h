@@ -841,10 +841,6 @@ namespace pretty_output
 		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
 
 
-		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
-
-
 		//
 		// Non-const member function call
 
@@ -904,10 +900,6 @@ namespace pretty_output
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...));
-
-
-		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...));
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -1850,13 +1842,6 @@ namespace pretty_output
 		}
 
 
-		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const)
-		{
-			return const_member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
-		}
-
-
 		//
 		// Non-const member function call
 
@@ -1920,13 +1905,6 @@ namespace pretty_output
 		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...))
 		{
 			return member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, ".", function_name, object, function_pointer);
-		}
-
-
-		template <typename Type_t, typename Return_t, typename ...Arguments_t>
-		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...))
-		{
-			return member_function_call_printer<Type_t, Return_t, Arguments_t...>(filename_line, object_name, "->", function_name, *object, function_pointer);
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
