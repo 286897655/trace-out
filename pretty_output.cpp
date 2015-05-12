@@ -700,7 +700,7 @@ namespace pretty_output
 		}
 
 
-		block iteration_block(const std::string filename_line, size_t iteration)
+		block iteration_block(const std::string &filename_line, size_t iteration)
 		{
 			block block(false);
 

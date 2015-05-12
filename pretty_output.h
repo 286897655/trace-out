@@ -976,12 +976,12 @@ namespace pretty_output
 
 
 		template <typename Type_t>
-		block if_block(const std::string filename_line, const char *condition, const Type_t &value);
+		block if_block(const std::string &filename_line, const char *condition, const Type_t &value);
 
 		template <typename Type_t>
-		block while_block(const std::string filename_line, const char *condition, const Type_t &value);
+		block while_block(const std::string &filename_line, const char *condition, const Type_t &value);
 
-		block iteration_block(const std::string filename_line, size_t iteration);
+		block iteration_block(const std::string &filename_line, size_t iteration);
 
 
 		//
@@ -1934,7 +1934,7 @@ namespace pretty_output
 		// Block
 
 		template <typename Type_t>
-		block if_block(const std::string filename_line, const char *condition, const Type_t &value)
+		block if_block(const std::string &filename_line, const char *condition, const Type_t &value)
 		{
 			out_stream stream(filename_line);
 			stream << "if (" << condition << ") => " << FLUSH;
@@ -1945,7 +1945,7 @@ namespace pretty_output
 
 
 		template <typename Type_t>
-		block while_block(const std::string filename_line, const char *condition, const Type_t &value)
+		block while_block(const std::string &filename_line, const char *condition, const Type_t &value)
 		{
 			block block(static_cast<bool>(value));
 
