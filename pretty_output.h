@@ -346,7 +346,7 @@ namespace pretty_output
 		{
 		public:
 			pretty(const Type_t &data);
-			pretty(const pretty &another); // not defined
+			pretty(const pretty &another);
 
 			const Type_t &get() const;
 
@@ -381,7 +381,7 @@ namespace pretty_output
 		{
 		public:
 			pretties(const char *delimiter, const Type_t &first, const RestTypes_t &...rest);
-			pretties(const pretties &another); // not defined
+			pretties(const pretties &another);
 
 			const char *delimiter() const;
 			const pretty<Type_t> &first() const;
@@ -403,7 +403,7 @@ namespace pretty_output
 		{
 		public:
 			pretties(const char *delimiter, const Type_t &first);
-			pretties(const pretties &another); // not defined
+			pretties(const pretties &another);
 
 			const char *delimiter() const;
 			const pretty<Type_t> &first() const;
@@ -422,9 +422,8 @@ namespace pretty_output
 		class pretties<>
 		{
 		public:
-			template <typename ...Whatever_t>
-			pretties(const char *, const Whatever_t &...);
-			pretties(const pretties &another); // not defined
+			pretties(const char *delimiter);
+			pretties(const pretties &another);
 
 		private:
 			pretties &operator =(const pretties &another); // = delete
@@ -443,7 +442,7 @@ namespace pretty_output
 		{
 		public:
 			pretty_bool(const Type_t &data);
-			pretty_bool(const pretty_bool &another); // not defined
+			pretty_bool(const pretty_bool &another);
 
 			const Type_t &get() const;
 
@@ -791,7 +790,7 @@ namespace pretty_output
 
 
 			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
-			const_member_function_call_printer(const const_member_function_call_printer &another); // not defined
+			const_member_function_call_printer(const const_member_function_call_printer &another);
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
@@ -818,7 +817,7 @@ namespace pretty_output
 
 
 			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
-			const_member_function_call_printer(const const_member_function_call_printer &another); // not defined
+			const_member_function_call_printer(const const_member_function_call_printer &another);
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
@@ -856,7 +855,7 @@ namespace pretty_output
 
 
 			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
-			member_function_call_printer(const member_function_call_printer &another); // not defined
+			member_function_call_printer(const member_function_call_printer &another);
 
 			template <typename ...CallArguments_t>
 			Return_t operator ()(CallArguments_t &&...arguments);
@@ -883,7 +882,7 @@ namespace pretty_output
 
 
 			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
-			member_function_call_printer(const member_function_call_printer &another); // not defined
+			member_function_call_printer(const member_function_call_printer &another);
 
 			template <typename ...CallArguments_t>
 			void operator ()(CallArguments_t &&...arguments);
@@ -1094,6 +1093,13 @@ namespace pretty_output
 
 
 		template <typename Type_t>
+		pretty<Type_t>::pretty(const pretty &another)
+			: _data(another._data)
+		{
+		}
+
+
+		template <typename Type_t>
 		const Type_t &pretty<Type_t>::get() const
 		{
 			crash_on_bad_memory(_data);
@@ -1120,6 +1126,13 @@ namespace pretty_output
 		template <typename Type_t, typename ...RestTypes_t>
 		pretties<Type_t, RestTypes_t...>::pretties(const char *delimiter, const Type_t &first, const RestTypes_t &...rest)
 			: _delimiter(delimiter), _first(first), _rest(delimiter, rest...)
+		{
+		}
+
+
+		template <typename Type_t, typename ...RestTypes_t>
+		pretties<Type_t, RestTypes_t...>::pretties(const pretties &another)
+			: _delimiter(another._delimiter), _first(another._first), _rest(another._rest)
 		{
 		}
 
@@ -1154,6 +1167,13 @@ namespace pretty_output
 
 
 		template <typename Type_t>
+		pretties<Type_t>::pretties(const pretties &another)
+			: _delimiter(another._delimiter), _first(another._first)
+		{
+		}
+
+
+		template <typename Type_t>
 		const char *pretties<Type_t>::delimiter() const
 		{
 			return _delimiter;
@@ -1168,12 +1188,6 @@ namespace pretty_output
 
 
 
-		template <typename ...Whatever_t>
-		pretties<>::pretties(const char *, const Whatever_t &...)
-		{
-		}
-
-
 		template <typename ...Types_t>
 		pretties<Types_t...> make_pretties(const char *delimiter, const Types_t &...values)
 		{
@@ -1186,6 +1200,13 @@ namespace pretty_output
 		template <typename Type_t>
 		pretty_bool<Type_t>::pretty_bool(const Type_t &data)
 			: _data(data)
+		{
+		}
+
+
+		template <typename Type_t>
+		pretty_bool<Type_t>::pretty_bool(const pretty_bool &another)
+			: _data(another._data)
 		{
 		}
 
@@ -1795,6 +1816,13 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
+		const_member_function_call_printer<Type_t, Return_t, Arguments_t...>::const_member_function_call_printer(const const_member_function_call_printer &another)
+			: _filename_line(another._filename_line), _object_name(another._object_name), _accessor(another._accessor), _function_name(another._function_name), _object(another._object), _function_pointer(another._function_pointer)
+		{
+		}
+
+
+		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
 		Return_t const_member_function_call_printer<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
@@ -1819,6 +1847,13 @@ namespace pretty_output
 		template <typename Type_t, typename ...Arguments_t>
 		const_member_function_call_printer<Type_t, void, Arguments_t...>::const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename Type_t, typename ...Arguments_t>
+		const_member_function_call_printer<Type_t, void, Arguments_t...>::const_member_function_call_printer(const const_member_function_call_printer &another)
+			: _filename_line(another._filename_line), _object_name(another._object_name), _accessor(another._accessor), _function_name(another._function_name), _object(another._object), _function_pointer(another._function_pointer)
 		{
 		}
 
@@ -1861,6 +1896,13 @@ namespace pretty_output
 
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
+		member_function_call_printer<Type_t, Return_t, Arguments_t...>::member_function_call_printer(const member_function_call_printer &another)
+			: _filename_line(another._filename_line), _object_name(another._object_name), _accessor(another._accessor), _function_name(another._function_name), _object(another._object), _function_pointer(another._function_pointer)
+		{
+		}
+
+
+		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		template <typename ...CallArguments_t>
 		Return_t member_function_call_printer<Type_t, Return_t, Arguments_t...>::operator ()(CallArguments_t &&...arguments)
 		{
@@ -1885,6 +1927,13 @@ namespace pretty_output
 		template <typename Type_t, typename ...Arguments_t>
 		member_function_call_printer<Type_t, void, Arguments_t...>::member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer)
 			: _filename_line(filename_line), _object_name(object_name), _accessor(accessor), _function_name(function_name), _object(object), _function_pointer(function_pointer)
+		{
+		}
+
+
+		template <typename Type_t, typename ...Arguments_t>
+		member_function_call_printer<Type_t, void, Arguments_t...>::member_function_call_printer(const member_function_call_printer &another)
+			: _filename_line(another._filename_line), _object_name(another._object_name), _accessor(another._accessor), _function_name(another._function_name), _object(another._object), _function_pointer(another._function_pointer)
 		{
 		}
 

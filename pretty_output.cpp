@@ -254,6 +254,19 @@ namespace pretty_output
 
 
 		//
+		// Pretties
+
+		pretties<>::pretties(const char *)
+		{
+		}
+
+
+		pretties<>::pretties(const pretties &)
+		{
+		}
+
+
+		//
 		// Out stream
 
 		out_stream::out_stream(const std::string &filename_line)
