@@ -696,6 +696,11 @@ namespace pretty_output
 		}
 
 
+		block::block(const block &)
+		{
+		}
+
+
 		block::~block()
 		{
 			{
