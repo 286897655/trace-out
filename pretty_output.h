@@ -49,14 +49,19 @@
 #endif
 
 
+
 //
-// Public macros
+// Public stuff
+//
+
+
+//
+// Macros
 
 #if (!defined(NDEBUG) && !defined(PRETTY_OUTPUT_OFF)) || defined(PRETTY_OUTPUT_ON)
 
 	#define $w(...) \
 				pretty_output::impl::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
-
 
 	#define $m(pointer, ...) \
 				pretty_output::impl::print_memory(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
@@ -64,12 +69,12 @@
 
 	#if defined(PRETTY_OUTPUT_CPP11)
 
-	#define $c(function_name) \
-				pretty_output::impl::make_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
+		#define $c(function_name) \
+					pretty_output::impl::make_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #function_name, function_name)
 
 
-	#define $cm(object, function_name) \
-				pretty_output::impl::make_member_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, pretty_output::impl::reference(object), &std::remove_pointer<decltype(object)>::type::function_name)
+		#define $cm(object, function_name) \
+					pretty_output::impl::make_member_function_call_printer(PRETTY_OUTPUT_FILENAME_LINE, #object, #function_name, pretty_output::impl::reference(object), &std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -77,29 +82,23 @@
 	#define $f \
 				pretty_output::impl::function_printer PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_f) = pretty_output::impl::make_function_printer(PRETTY_OUTPUT_FILENAME_LINE, PRETTY_OUTPUT_FUNCTION_SIGNATURE);
 
-
 	#define $return \
 				return pretty_output::impl::make_return_printer(PRETTY_OUTPUT_FILENAME_LINE) ,
 
-
 	#define $if(...) \
 				if (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_if_block) = pretty_output::impl::if_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, (__VA_ARGS__)))
-
 
 	#define pretty_output_private__for(block_name, ...) \
 				if (pretty_output::impl::for_block block_name = pretty_output::impl::make_for_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__)) {} else \
 					for (__VA_ARGS__) \
 						if (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_iteration_block) = pretty_output::impl::iteration_block(PRETTY_OUTPUT_FILENAME_LINE, block_name.iteration())) {} else
 
-
 	#define $for(...) \
 				pretty_output_private__for(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_for_block), ##__VA_ARGS__)
-
 
 	#define $while(...) \
 				if (pretty_output::impl::print_while_header(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__), false) {} else \
 					while (pretty_output::impl::block PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_while_block) = pretty_output::impl::while_block(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, (__VA_ARGS__)))
-
 
 	#define $p(format, ...) \
 				{ \
@@ -108,10 +107,8 @@
 					stream << pretty_output::impl::ENDLINE; \
 				}
 
-
 	#define $t(name) \
 				pretty_output::impl::set_current_thread_name(#name);
-
 
 	#define pretty_output_private__time(start_time_var, end_time_var, ...) \
 				{ \
@@ -121,10 +118,8 @@
 					pretty_output::impl::print_execution_time_in_milliseconds(PRETTY_OUTPUT_FILENAME_LINE, end_time_var - start_time_var); \
 				}
 
-
 	#define $time(...) \
 				pretty_output_private__time(PRETTY_OUTPUT_PRIVATE__UNIFY(start_time), PRETTY_OUTPUT_PRIVATE__UNIFY(end_time), ##__VA_ARGS__)
-
 
 	#define pretty_output_private__ticks(start_time_var, end_time_var, ...) \
 				{ \
@@ -135,62 +130,50 @@
 					pretty_output::impl::print_execution_time_in_ticks(PRETTY_OUTPUT_FILENAME_LINE, execution_time, (static_cast<double>(execution_time)) / CLOCKS_PER_SEC * 1000); \
 				}
 
-
 	#define $ticks(...) \
 				pretty_output_private__ticks(PRETTY_OUTPUT_PRIVATE__UNIFY(start_time), PRETTY_OUTPUT_PRIVATE__UNIFY(end_time), ##__VA_ARGS__)
-
 
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
 
 	#define $w(...)
-
 
 	#define $m(pointer, ...)
 
 
 	#if defined(PRETTY_OUTPUT_CPP11)
 
-	#define $c(function_name) \
-				function_name
+		#define $c(function_name) \
+					function_name
 
 
-	#define $cm(object, function_name) \
-				(object.*&std::remove_pointer<decltype(object)>::type::function_name)
+		#define $cm(object, function_name) \
+					(object.*&std::remove_pointer<decltype(object)>::type::function_name)
 
 	#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 	#define $f
 
-
 	#define $return \
 				return
-
 
 	#define $if(...) \
 				if (__VA_ARGS__)
 
-
 	#define $for(...) \
 				for (__VA_ARGS__)
-
 
 	#define $while(...) \
 				while (__VA_ARGS__)
 
-
 	#define $_
-
 
 	#define $p(format, ...)
 
-
 	#define $t(name)
-
 
 	#define $time(...) \
 				__VA_ARGS__
-
 
 	#define $ticks(...) \
 				__VA_ARGS__
@@ -199,7 +182,44 @@
 
 
 //
-// Private macros
+// Flags
+
+namespace pretty_output
+{
+
+	namespace impl
+	{
+
+		typedef uint32_t option_t;
+
+		const size_t OPTIONS_START_BASE = 0;
+		const size_t OPTIONS_START_BYTE_ORDER = 16;
+
+	}
+
+
+	const impl::option_t BIN = 0x1 << (impl::OPTIONS_START_BASE + 0);
+	const impl::option_t SDEC = 0x1 << (impl::OPTIONS_START_BASE + 1);
+	const impl::option_t UDEC = 0x1 << (impl::OPTIONS_START_BASE + 2);
+	const impl::option_t HEX = 0x1 << (impl::OPTIONS_START_BASE + 3);
+	const impl::option_t FLT = 0x1 << (impl::OPTIONS_START_BASE + 4);
+	const impl::option_t DBL = 0x1 << (impl::OPTIONS_START_BASE + 5);
+	const impl::option_t LDBL = 0x1 << (impl::OPTIONS_START_BASE + 6);
+
+	const impl::option_t LITTLE = 0x1 << (impl::OPTIONS_START_BYTE_ORDER + 0);
+	const impl::option_t BIG = 0x1 << (impl::OPTIONS_START_BYTE_ORDER + 1);
+
+}
+
+
+
+//
+// Private stuff
+//
+
+
+//
+// Macros
 
 #define PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b) \
 			a##b
@@ -207,10 +227,8 @@
 #define PRETTY_OUTPUT_PRIVATE__CONCAT(a, b) \
 			PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b)
 
-
 #define PRETTY_OUTPUT_PRIVATE__UNIFY(identifier_base) \
 			PRETTY_OUTPUT_PRIVATE__CONCAT(identifier_base, __COUNTER__)
-
 
 #define PRETTY_OUTPUT_FILENAME_LINE \
 			(pretty_output::impl::filename_line_field(pretty_output::impl::filename_from_path(__FILE__), __LINE__))
@@ -232,6 +250,9 @@
 #endif
 
 
+//
+// Redirection
+
 namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
 {
 
@@ -241,35 +262,11 @@ namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
 }
 
 
+//
+// Implementation
+
 namespace pretty_output
 {
-
-	namespace impl
-	{
-
-		typedef uint32_t option_t;
-
-
-		const size_t OPTIONS_START_BASE = 0;
-		const size_t OPTIONS_START_BYTE_ORDER = 16;
-
-	}
-
-
-	//
-	// Public flags
-
-	const impl::option_t BIN = 0x1 << (impl::OPTIONS_START_BASE + 0);
-	const impl::option_t SDEC = 0x1 << (impl::OPTIONS_START_BASE + 1);
-	const impl::option_t UDEC = 0x1 << (impl::OPTIONS_START_BASE + 2);
-	const impl::option_t HEX = 0x1 << (impl::OPTIONS_START_BASE + 3);
-	const impl::option_t FLT = 0x1 << (impl::OPTIONS_START_BASE + 4);
-	const impl::option_t DBL = 0x1 << (impl::OPTIONS_START_BASE + 5);
-	const impl::option_t LDBL = 0x1 << (impl::OPTIONS_START_BASE + 6);
-
-	const impl::option_t LITTLE = 0x1 << (impl::OPTIONS_START_BYTE_ORDER + 0);
-	const impl::option_t BIG = 0x1 << (impl::OPTIONS_START_BYTE_ORDER + 1);
-
 
 	namespace impl
 	{
@@ -280,7 +277,7 @@ namespace pretty_output
 
 
 		//
-		// Platform specific
+		// Platform-specific
 
 		uint64_t current_thread_id();
 		size_t printf_string_length(const char *format, va_list arguments);
@@ -359,7 +356,6 @@ namespace pretty_output
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-
 			const Type_t &_data;
 		};
 
@@ -391,7 +387,6 @@ namespace pretty_output
 			pretties &operator =(const pretties &another); // = delete
 			pretties &operator =(pretties &&another); // = delete
 
-
 			const char *_delimiter;
 			const pretty<Type_t> _first;
 			pretties<RestTypes_t...> _rest;
@@ -411,7 +406,6 @@ namespace pretty_output
 		private:
 			pretties &operator =(const pretties &another); // = delete
 			pretties &operator =(pretties &&another); // = delete
-
 
 			const char *_delimiter;
 			const pretty<Type_t> _first;
@@ -455,7 +449,6 @@ namespace pretty_output
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-
 			const Type_t &_data;
 		};
 
@@ -482,6 +475,7 @@ namespace pretty_output
 			out_stream(const std::string &filename_line);
 			out_stream();
 			~out_stream();
+
 			out_stream &operator <<(char character);
 			out_stream &operator <<(const char *string);
 			out_stream &operator <<(const std::string &string);
@@ -647,47 +641,22 @@ namespace pretty_output
 					typedef to_unsigned_type unsigned_t; \
 				}
 
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true,
-											int8_t, 4, HEX, int8_t, uint8_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true, int8_t, 4, HEX, int8_t, uint8_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true, int16_t, 6, SDEC, int16_t, uint16_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, true, int32_t, 11, SDEC, int32_t, uint32_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, true, int64_t, 21, SDEC, int64_t, uint64_t);
 
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true,
-											int16_t, 6, SDEC, int16_t, uint16_t);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, true,
-											int32_t, 11, SDEC, int32_t, uint32_t);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, true,
-											int64_t, 21, SDEC, int64_t, uint64_t);
-
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, false,
-											uint8_t, 3, HEX, int8_t, uint8_t);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, false,
-											uint16_t, 5, UDEC, int16_t, uint16_t);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, false,
-											uint32_t, 10, UDEC, int32_t, uint32_t);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, false,
-											uint64_t, 20, UDEC, int64_t, uint64_t);
-
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, false, uint8_t, 3, HEX, int8_t, uint8_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, false, uint16_t, 5, UDEC, int16_t, uint16_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 4, false, uint32_t, 10, UDEC, int32_t, uint32_t);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 8, false, uint64_t, 20, UDEC, int64_t, uint64_t);
 
 		// first_digit + point + precision + 'e' + sign + exponent
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 4, true,
-											float, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 3, FLT, float, float);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 8, true,
-											double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 4, DBL, double, double);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 10, true,
-											long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 12, true,
-											long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
-
-		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 16, true,
-											long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 4, true, float, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 3, FLT, float, float);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 8, true, double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 4, DBL, double, double);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 10, true, long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 12, true, long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
+		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_FLOATING_POINT, 16, true, long double, 1 + 1 + std::numeric_limits<float>::digits10 + 1 + 1 + 5, LDBL, long double, long double);
 
 
 		template <typename Type_t>
@@ -743,7 +712,6 @@ namespace pretty_output
 		public:
 			typedef Return_t (*funcptr_t)(Arguments_t...);
 
-
 			function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
 			template <typename ...CallArguments_t>
@@ -761,7 +729,6 @@ namespace pretty_output
 		{
 		public:
 			typedef void (*funcptr_t)(Arguments_t...);
-
 
 			function_call_printer(const std::string &filename_line, const char *function_name, funcptr_t function_pointer);
 
@@ -788,7 +755,6 @@ namespace pretty_output
 		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...) const;
 
-
 			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
 			const_member_function_call_printer(const const_member_function_call_printer &another);
 
@@ -798,7 +764,6 @@ namespace pretty_output
 		private:
 			const_member_function_call_printer &operator =(const const_member_function_call_printer &another); // = delete
 			const_member_function_call_printer &operator =(const_member_function_call_printer &&another); // = delete
-
 
 			std::string _filename_line;
 			std::string _object_name;
@@ -815,7 +780,6 @@ namespace pretty_output
 		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...) const;
 
-
 			const_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, const Type_t &object, funcptr_t function_pointer);
 			const_member_function_call_printer(const const_member_function_call_printer &another);
 
@@ -825,7 +789,6 @@ namespace pretty_output
 		private:
 			const_member_function_call_printer &operator =(const const_member_function_call_printer &another); // = delete
 			const_member_function_call_printer &operator =(const_member_function_call_printer &&another); // = delete
-
 
 			std::string _filename_line;
 			std::string _object_name;
@@ -838,7 +801,6 @@ namespace pretty_output
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
-
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		const_member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, const Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...) const);
@@ -853,7 +815,6 @@ namespace pretty_output
 		public:
 			typedef Return_t (Type_t::*funcptr_t)(Arguments_t...);
 
-
 			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
 			member_function_call_printer(const member_function_call_printer &another);
 
@@ -863,7 +824,6 @@ namespace pretty_output
 		private:
 			member_function_call_printer &operator =(const member_function_call_printer &another); // = delete
 			member_function_call_printer &operator =(member_function_call_printer &&another); // = delete
-
 
 			std::string _filename_line;
 			std::string _object_name;
@@ -880,7 +840,6 @@ namespace pretty_output
 		public:
 			typedef void (Type_t::*funcptr_t)(Arguments_t...);
 
-
 			member_function_call_printer(const std::string &filename_line, const char *object_name, const char *accessor, const char *function_name, Type_t &object, funcptr_t function_pointer);
 			member_function_call_printer(const member_function_call_printer &another);
 
@@ -890,7 +849,6 @@ namespace pretty_output
 		private:
 			member_function_call_printer &operator =(const member_function_call_printer &another); // = delete
 			member_function_call_printer &operator =(member_function_call_printer &&another); // = delete
-
 
 			std::string _filename_line;
 			std::string _object_name;
@@ -903,7 +861,6 @@ namespace pretty_output
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t &object, Return_t (Type_t::*function_pointer)(Arguments_t...));
-
 
 		template <typename Type_t, typename Return_t, typename ...Arguments_t>
 		member_function_call_printer<Type_t, Return_t, Arguments_t...> make_member_function_call_printer(const std::string &filename_line, const char *object_name, const char *function_name, Type_t *object, Return_t (Type_t::*function_pointer)(Arguments_t...));
@@ -969,7 +926,6 @@ namespace pretty_output
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-
 			bool _value;
 		};
 
@@ -991,6 +947,7 @@ namespace pretty_output
 		public:
 			for_block(const std::string &filename_line, const char *expression);
 			~for_block();
+
 			operator bool() const;
 			size_t iteration();
 
@@ -1257,6 +1214,7 @@ namespace pretty_output
 			stream << FLUSH;
 			return stream << "'" << value.get() << "'";
 		}
+
 
 		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value)
 		{

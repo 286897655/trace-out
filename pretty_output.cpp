@@ -11,6 +11,15 @@
 #include <iostream>
 
 
+
+//
+// Private stuff
+//
+
+
+//
+// Redirection
+
 namespace pretty_output_to_stdout
 {
 
@@ -30,6 +39,9 @@ namespace pretty_output_to_stdout
 #endif // !defined(PRETTY_OUTPUT_REDIRECTION)
 
 
+//
+// Implementation
+
 namespace pretty_output
 {
 
@@ -39,21 +51,17 @@ namespace pretty_output
 		//
 		// Constants
 
-		const size_t WIDTH =
 #if defined(PRETTY_OUTPUT_WIDTH)
-			PRETTY_OUTPUT_WIDTH
+		const size_t WIDTH = PRETTY_OUTPUT_WIDTH;
 #else
-			79
+		const size_t WIDTH = 79;
 #endif
-		;
 
-		const char INDENTATION[] =
 #if defined(PRETTY_OUTPUT_INDENTATION)
-			PRETTY_OUTPUT_INDENTATION
+		const char INDENTATION[] = PRETTY_OUTPUT_INDENTATION;
 #else
-			"    "
+		const char INDENTATION[] = "    ";
 #endif
-		;
 
 		const char THREAD_HEADER_SEPARATOR = '~';
 		const char FILENAME_FIELD_EXCESS_PADDING[] = "~";
@@ -90,7 +98,6 @@ namespace pretty_output
 		public:
 			typedef void (*deleter_t)(Type_t);
 
-
 			resource(Type_t handle, deleter_t deleter);
 			~resource();
 
@@ -107,7 +114,6 @@ namespace pretty_output
 			resource &operator =(resource &&another);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
-
 
 			Type_t _handle;
 			deleter_t _deleter;
@@ -135,7 +141,6 @@ namespace pretty_output
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-
 			resource<tlskey_t> _key;
 		};
 
@@ -158,7 +163,6 @@ namespace pretty_output
 			mutex &operator =(mutex &&another);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
-
 
 			resource<mutex_t> _handle;
 		};

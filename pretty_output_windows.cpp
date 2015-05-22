@@ -10,6 +10,14 @@
 #include "pretty_output.h"
 
 
+//
+// Private stuff
+//
+
+
+//
+// Implementation
+
 namespace pretty_output
 {
 
@@ -17,7 +25,7 @@ namespace pretty_output
 	{
 
 		//
-		// Platform specific
+		// Platform-specific
 
 		uint64_t current_thread_id()
 		{
