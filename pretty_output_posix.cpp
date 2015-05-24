@@ -28,6 +28,9 @@ namespace pretty_output
 		//
 		// Platform-specific
 
+		const char FILE_PATH_COMPONENT_DELIMITER = '/';
+
+
 		uint64_t current_thread_id()
 		{
 			return reinterpret_cast<uint64_t>(pthread_self());

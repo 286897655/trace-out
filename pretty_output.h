@@ -279,6 +279,8 @@ namespace pretty_output
 		//
 		// Platform-specific
 
+		extern const char FILE_PATH_COMPONENT_DELIMITER;
+
 		uint64_t current_thread_id();
 		size_t printf_string_length(const char *format, va_list arguments);
 		size_t printf_to_string(char *buffer, size_t size, const char *format, va_list arguments);

@@ -69,13 +69,6 @@ namespace pretty_output
 		const size_t FILENAME_FIELD_WIDTH = 20;
 		const size_t LINE_FIELD_WIDTH = 4;
 		const char DELIMITER[] = " |  ";
-
-#if defined(_WIN32)
-		const char FILE_PATH_COMPONENT_DELIMITER = '\\';
-#else
-		const char FILE_PATH_COMPONENT_DELIMITER = '/';
-#endif
-
 		const size_t INDENTATION_WIDTH = sizeof(INDENTATION) - 1;
 
 		const class newline_manipulator {} NEWLINE = newline_manipulator();
