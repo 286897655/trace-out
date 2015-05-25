@@ -119,19 +119,25 @@ Notes
 
 
 
-Compiler Warnings
-=================
+Troubleshooting
+===============
+
+* Passing expression of type `char []` will cause compiler error. Fix: the expression should be cast to a desired type.
+
+* Passing a pointer to a user-type will cause compiler error. Fix: the pointer should be cast to a `const void *` or `void *`.
+
+* Using macros `$c` and `$cm` with overloaded functions will cause compiler error. Fix: the function name should be explicitly casted to a desired function type.
+
+* Using precompiled headers with Visual Studio will cause compiler error. Fix: the precompiled header should be manually included in all used pretty_output source files.
+
+
+
+Dealing with compiler warnings
+==============================
 
 Using Clang with `-pedantic` option on: '$' in identifier
 
 Using MinGW ...
 
 Using Visual Studio ...
-
-
-
-Troubleshooting
-===============
-
-...
 
