@@ -71,7 +71,7 @@ The name is an abbreviation of 'memory'.
 The name is an abbreviation of 'function'.
 <br></br>
 
-`$return expression` - print value of `epxression` passed to return statement.
+`$return <expression>` - print value of `epxression` passed to return statement.
 <br></br>
 
 `$if (<condition>)` - print value of the if `condition`. Automatically shifts indentation of the output.
