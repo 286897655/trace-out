@@ -86,7 +86,7 @@ The name is an abbreviation of 'function'.
 `$p(<format>, ...)` - like printf. The name is an abbreviation of 'printf'.
 <br></br>
 
-`$t(<thread_name>)` - set thread name, that will be printed in the thread header. The name is an abbreviation of 'thread'.
+`$thread(<thread_name>)` - set thread name, that will be printed in the thread header.
 <br></br>
 
 

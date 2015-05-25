@@ -107,7 +107,7 @@
 					stream << pretty_output::impl::ENDLINE; \
 				}
 
-	#define $t(name) \
+	#define $thread(name) \
 				pretty_output::impl::set_current_thread_name(#name);
 
 	#define pretty_output_private__time(start_time_variable, end_time_variable, ...) \
@@ -170,7 +170,7 @@
 
 	#define $p(format, ...)
 
-	#define $t(name)
+	#define $thread(name)
 
 	#define $time(...) \
 				__VA_ARGS__
