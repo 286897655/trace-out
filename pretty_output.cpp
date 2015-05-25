@@ -686,26 +686,34 @@ namespace pretty_output
 		//
 		// Block
 
-		block::block(bool value)
-			: _value(value)
+		auto_indentation::auto_indentation()
 		{
 			indentation_add();
 		}
 
 
-		block::block(const block &)
+		auto_indentation::~auto_indentation()
+		{
+			indentation_remove();
+		}
+
+
+		block::block(bool value)
+			: _auto_indentation(), _value(value)
+		{
+		}
+
+
+		block::block(const block &another)
+			: _auto_indentation(), _value(another._value)
 		{
 		}
 
 
 		block::~block()
 		{
-			{
-				out_stream stream;
-				stream << ENDLINE;
-			}
-
-			indentation_remove();
+			out_stream stream;
+			stream << ENDLINE;
 		}
 
 
@@ -717,12 +725,14 @@ namespace pretty_output
 
 		block iteration_block(const std::string &filename_line, size_t iteration)
 		{
-			block block(false);
+			{
+				auto_indentation auto_indentation;
 
-			out_stream stream(filename_line);
-			stream << "// for: iteration #" << make_pretty(iteration) << ENDLINE;
+				out_stream stream(filename_line);
+				stream << "// for: iteration #" << make_pretty(iteration) << ENDLINE;
+			}
 
-			return block;
+			return block(false);
 		}
 
 

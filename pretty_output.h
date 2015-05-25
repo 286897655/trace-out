@@ -910,11 +910,19 @@ namespace pretty_output
 		//
 		// Block
 
+		class auto_indentation
+		{
+		public:
+			auto_indentation();
+			~auto_indentation();
+		};
+
+
 		class block
 		{
 		public:
 			block(bool value);
-			block(const block &value);
+			block(const block &another);
 			~block();
 
 			operator bool() const;
@@ -928,6 +936,7 @@ namespace pretty_output
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
+			auto_indentation _auto_indentation;
 			bool _value;
 		};
 
@@ -1955,13 +1964,15 @@ namespace pretty_output
 		template <typename Type_t>
 		block while_block(const std::string &filename_line, const char *condition, const Type_t &value)
 		{
-			block block(static_cast<bool>(value));
+			{
+				auto_indentation auto_indentation;
 
-			out_stream stream(filename_line);
-			stream << "// while: " << condition << " => " << FLUSH;
-			stream << make_pretty_bool(value) << ENDLINE;
+				out_stream stream(filename_line);
+				stream << "// while: " << condition << " => " << FLUSH;
+				stream << make_pretty_bool(value) << ENDLINE;
+			}
 
-			return block;
+			return block(static_cast<bool>(value));
 		}
 
 
