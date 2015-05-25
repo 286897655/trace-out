@@ -1986,7 +1986,6 @@ namespace pretty_output
 }
 
 
-#undef PRETTY_OUTPUT_CPP11
 #undef PRETTY_OUTPUT__DEFINE_PRINT_TRAITS
 
 
