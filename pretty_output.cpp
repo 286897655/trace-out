@@ -253,6 +253,8 @@ namespace pretty_output
 		//
 		// Pretties
 
+#if defined(PRETTY_OUTPUT_CPP11)
+
 		pretties<>::pretties(const char *)
 		{
 		}
@@ -261,6 +263,8 @@ namespace pretty_output
 		pretties<>::pretties(const pretties &)
 		{
 		}
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
 
 
 		//
