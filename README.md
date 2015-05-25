@@ -45,13 +45,13 @@ The name is an abbreviation of 'call member-function'.
 
 `$m(<pointer>, <size>, <options>)` - print memory under the `pointer`.
 
-`pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char*` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int*` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and base is hexadecimal.
+`pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char *` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int *` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and numerical base is hexadecimal.
 
 `size` - size of memory is bytes.
 
 `options` (optional) - numeric base for value representation and order of the bytes to use when converting bytes to the numeric values.
 
-Base flags:
+Numerical base flags:
 * `pretty_output::BIN` - binary
 * `pretty_output::SDEC` - signed decimal
 * `pretty_output::UDEC` - unsigned decimal
@@ -71,19 +71,19 @@ The name is an abbreviation of 'memory'.
 The name is an abbreviation of 'function'.
 <br></br>
 
-`$return <expression>` - print value of `epxression` passed to return statement.
+`$return <expression>` - print value of `epxression` passed to the return statement.
 <br></br>
 
 `$if (<condition>)` - print value of the if `condition`. Automatically shifts indentation of the output.
 <br></br>
 
-`$for (<statements>)` - print iteration numbers of the for loop. Automatically shifts indentation of the output.
+`$for (<statements>)` - print iterations' numbers of the 'for' loop. Automatically shifts indentation of the output.
 <br></br>
 
-`$while (<condition>)` - print iteration conditions of the while loop. Automatically shifts indentation of the output.
+`$while (<condition>)` - print iterations' conditions of the while loop. Automatically shifts indentation of the output.
 <br></br>
 
-`$p(<format>, ...)` - like printf. The name is an abbreviation of 'printf'.
+`$p(<format>, ...)` - like `printf` function. The name is an abbreviation of 'printf'.
 <br></br>
 
 `$thread(<thread_name>)` - set thread name, that will be printed in the thread header.
@@ -104,18 +104,18 @@ Options
 
 `PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
 
-`PRETTY_OUTPUT_REDIRECTION_H` - header file, which contains overrided printing routines. Read details in the 'Notes' section.
+`PRETTY_OUTPUT_REDIRECTION` - namespace, that contains overrided printing routines.
 
 
 
 Notes
 =====
 
-* `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are enabled only with C++11 and later.
+* `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are supported only with C++11 and later.
 
 * Output is flushed before reading variables and dereferencing pointers that are passed from the outer context, thus it is more clear where things went wrong when memory has corrupted.
 
-* There is an output synchronization that prevents outputs from different threads mixing up. By default this feature is turned on. To disable this synchronization the macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC` should be defined.
+* There is an output synchronization that prevents outputs from different threads to mix up. By default this feature is turned on. To disable this synchronization the macro `PRETTY_OUTPUT_NO_OUTPUT_SYNC` should be defined.
 
 
 
