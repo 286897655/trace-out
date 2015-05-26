@@ -5,7 +5,6 @@ This is a library for pretty printing information about a code. Those who prefer
 
 
 Features:
-
 * Easy to use, but right now not easy to extend
 * Uses C++/C++11 and standard library, does not use any additional preprocessors or libraries
 * Supports output redirection
@@ -24,7 +23,6 @@ To use output redirection from the 'redirection' folder the required .cpp file s
 To implement custom redirection the functions `void print(const char *)` and `void flush()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
 
 pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
-<br></br>
 
 
 
@@ -33,15 +31,12 @@ Macros
 
 `$w(<expression>)` - print value of `expression` and returns that value, so can be used inside other expression.
 The name is an abbreviation of 'watch'.
-<br></br>
 
 `$c(<function>)(<arguments>)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
 The name is an abbreviation of 'call'.
-<br></br>
 
 `$cm(<object>, <function_name>)(<arguments>)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
 The name is an abbreviation of 'call member-function'.
-<br></br>
 
 `$m(<pointer>, <size>, <options>)` - print memory under the `pointer`.
 
@@ -65,29 +60,21 @@ Byte order flags (default value is determined automatically):
 * `pretty_output::BIG` - little-endian byte order
 
 The name is an abbreviation of 'memory'.
-<br></br>
 
 `$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
 The name is an abbreviation of 'function'.
-<br></br>
 
 `$return <expression>` - print value of `epxression` passed to the return statement.
-<br></br>
 
 `$if (<condition>)` - print value of the if `condition`. Automatically shifts indentation of the output.
-<br></br>
 
 `$for (<statements>)` - print iterations' numbers of the 'for' loop. Automatically shifts indentation of the output.
-<br></br>
 
 `$while (<condition>)` - print iterations' conditions of the while loop. Automatically shifts indentation of the output.
-<br></br>
 
 `$p(<format>, ...)` - like `printf` function. The name is an abbreviation of 'printf'.
-<br></br>
 
 `$thread(<thread_name>)` - set thread name, that will be printed in the thread header.
-<br></br>
 
 
 
