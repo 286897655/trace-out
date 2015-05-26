@@ -11,7 +11,7 @@ This is a library for pretty printing information about a code. Those who prefer
 - [Options](#options)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
-- [Dealing with compiler warnings](#dealing with compiler warnings)
+- [Dealing with compiler warnings](#dealing-with-compiler-warnings)
 
 
 
