@@ -7,9 +7,11 @@ This is a library for pretty printing information about a code. Those who prefer
 
 - [Features](#features)
 - [Usage](#usage)
+- [Macros](#macros)
 - [Options](#options)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
+- [Dealing with compiler warnings](#dealing with compiler warnings)
 
 
 
