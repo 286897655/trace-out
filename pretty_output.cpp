@@ -253,6 +253,12 @@ namespace pretty_output
 		//
 		// Pretties
 
+		pretty<const char *> make_pretty(const char *const &value)
+		{
+			return pretty<const char *>(value);
+		}
+
+
 #if defined(PRETTY_OUTPUT_CPP11)
 
 		pretties<>::pretties(const char *)
@@ -393,6 +399,148 @@ namespace pretty_output
 		void out_stream::flush()
 		{
 			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::flush();
+		}
+
+
+		//
+		// 'operator <<' overloads
+
+		out_stream &operator <<(out_stream &stream, const pretty<bool> &value)
+		{
+			stream << FLUSH;
+			return stream << (value.get() ? "true" : "false");
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<char> &value)
+		{
+			stream << FLUSH;
+			return stream << "'" << value.get() << "'";
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value)
+		{
+			stream << FLUSH;
+			return stream << "\"" << value.get() << "\"";
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<std::string> &value)
+		{
+			stream << FLUSH;
+			return stream << "\"" << value.get() << "\"";
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<short> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned short> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<int> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned int> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<long> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		out_stream &operator <<(out_stream &stream, const pretty<long long> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<float> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<double> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<long double> &value)
+		{
+			stream << FLUSH;
+			return stream << to_string(value.get());
+		}
+
+
+		out_stream &operator <<(out_stream &stream, const pretty<const void *> &value)
+		{
+			stream << FLUSH;
+			if (value.get() == NULL)
+			{
+				return stream << "(null)";
+			}
+
+			uintptr_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
+			return stream << to_string(numeric_value, std::hex, std::showbase, NULL);
+		}
+
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		out_stream &operator <<(out_stream &stream, const pretties<> &)
+		{
+			return stream;
+		}
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+		out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value)
+		{
+			stream << FLUSH;
+			return stream << (value.get() ? "true" : "false");
 		}
 
 

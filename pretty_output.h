@@ -362,7 +362,7 @@ namespace pretty_output
 		};
 
 
-		inline pretty<const char *> make_pretty(const char *const &value);
+		pretty<const char *> make_pretty(const char *const &value);
 
 		template <typename Type_t>
 		pretty<Type_t> make_pretty(const Type_t &value);
@@ -496,52 +496,34 @@ namespace pretty_output
 		//
 		// 'operator <<' overloads
 
-		inline out_stream &operator <<(out_stream &stream, const pretty<bool> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value);
-
-		template <typename Type_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<char> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<const char *> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<std::string> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<short> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<unsigned short> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<int> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<unsigned int> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<long> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<bool> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<char> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<std::string> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<short> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned short> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<int> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned int> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<long> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value);
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-		inline out_stream &operator <<(out_stream &stream, const pretty<long long> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<long long> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
-		inline out_stream &operator <<(out_stream &stream, const pretty<float> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<double> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<long double> &value);
-
-		inline out_stream &operator <<(out_stream &stream, const pretty<const void *> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<float> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<double> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<long double> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<const void *> &value);
 
 		template <typename Type_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty<const Type_t *> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<const Type_t *> &value);
 
 		template <typename Type_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty<Type_t *> &value);
+		out_stream &operator <<(out_stream &stream, const pretty<Type_t *> &value);
 
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value);
@@ -557,25 +539,35 @@ namespace pretty_output
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
 		template <typename First_t, typename Second_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty<std::pair<First_t, Second_t> > &value);
+		out_stream &operator <<(out_stream &stream, const pretty<std::pair<First_t, Second_t> > &value);
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		template <typename ...Types_t>
+		out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t...> > &value);
+
+		template <template <typename ...> class Container, typename ...Parameters_t>
+		out_stream &operator <<(out_stream &stream, const pretty<Container<Parameters_t...> > &value);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
 		template <typename Type_t>
-		inline out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values);
+		out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values);
 
 		template <typename ...Types_t>
-		inline out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values);
+		out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values);
 
-		inline out_stream &operator <<(out_stream &stream, const pretties<> &values);
-
-		template <typename ...Types_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t...> > &value);
-
-		template <template <typename ...> class Container, typename ...Parameters_t>
-		inline out_stream &operator <<(out_stream &stream, const pretty<Container<Parameters_t...> > &value);
+		out_stream &operator <<(out_stream &stream, const pretties<> &values);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
+
+		out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value);
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value);
 
 
 		//
@@ -1076,12 +1068,6 @@ namespace pretty_output
 		}
 
 
-		pretty<const char *> make_pretty(const char *const &value)
-		{
-			return pretty<const char *>(value);
-		}
-
-
 		template <typename Type_t>
 		pretty<Type_t> make_pretty(const Type_t &value)
 		{
@@ -1196,145 +1182,6 @@ namespace pretty_output
 		//
 		// 'operator <<' overloads
 
-		out_stream &operator <<(out_stream &stream, const pretty<bool> &value)
-		{
-			stream << FLUSH;
-			return stream << (value.get() ? "true" : "false");
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value)
-		{
-			stream << FLUSH;
-			return stream << (value.get() ? "true" : "false");
-		}
-
-
-		template <typename Type_t>
-		out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value)
-		{
-			stream << FLUSH;
-			stream << (value.get() ? "true" : "false") << " (" << FLUSH;
-			stream << make_pretty(value.get()) << ")";
-			return stream;
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<char> &value)
-		{
-			stream << FLUSH;
-			return stream << "'" << value.get() << "'";
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value)
-		{
-			stream << FLUSH;
-			return stream << "\"" << value.get() << "\"";
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<std::string> &value)
-		{
-			stream << FLUSH;
-			return stream << "\"" << value.get() << "\"";
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<short> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<unsigned short> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<int> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<unsigned int> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<long> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-#if defined(PRETTY_OUTPUT_CPP11)
-
-		out_stream &operator <<(out_stream &stream, const pretty<long long> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-#endif // defined(PRETTY_OUTPUT_CPP11)
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<float> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<double> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<long double> &value)
-		{
-			stream << FLUSH;
-			return stream << to_string(value.get());
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretty<const void *> &value)
-		{
-			stream << FLUSH;
-			if (value.get() == NULL)
-			{
-				return stream << "(null)";
-			}
-
-			uintptr_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
-			return stream << to_string(numeric_value, std::hex, std::showbase, NULL);
-		}
-
-
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const pretty<const Type_t *> &value)
 		{
@@ -1410,28 +1257,6 @@ namespace pretty_output
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-		template <typename Type_t>
-		out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values)
-		{
-			stream << FLUSH;
-			return stream << make_pretty(values.first().get());
-		}
-
-
-		template <typename ...Types_t>
-		out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values)
-		{
-			stream << FLUSH;
-			return stream << make_pretty(values.first().get()) << values.delimiter() << values.rest();
-		}
-
-
-		out_stream &operator <<(out_stream &stream, const pretties<> &)
-		{
-			return stream;
-		}
-
-
 		template <std::size_t Index, typename ...Types_t>
 		typename std::enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 		{
@@ -1485,6 +1310,36 @@ namespace pretty_output
 		}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values)
+		{
+			stream << FLUSH;
+			return stream << make_pretty(values.first().get());
+		}
+
+
+		template <typename ...Types_t>
+		out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values)
+		{
+			stream << FLUSH;
+			return stream << make_pretty(values.first().get()) << values.delimiter() << values.rest();
+		}
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+
+		template <typename Type_t>
+		out_stream &operator <<(out_stream &stream, const pretty_bool<Type_t> &value)
+		{
+			stream << FLUSH;
+			stream << (value.get() ? "true" : "false") << " (" << FLUSH;
+			stream << make_pretty(value.get()) << ")";
+			return stream;
+		}
 
 
 		//
