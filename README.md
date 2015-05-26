@@ -1,10 +1,21 @@
-About pretty_output
+pretty_output
 ===================
 
 This is a library for pretty printing information about a code. Those who prefer using text output for debugging purposes might consider this library as a more useful alternative to printf/std::cout/whatever.
 
 
-Features:
+
+- [Features](#features)
+- [Usage](#usage)
+- [Options](#options)
+- [Notes](#notes)
+- [Troubleshooting](#troubleshooting)
+
+
+
+Features
+========
+
 * Easy to use, but right now not easy to extend
 * Uses C++/C++11 and standard library, does not use any additional preprocessors or libraries
 * Supports output redirection
