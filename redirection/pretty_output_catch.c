@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -19,7 +20,10 @@ struct sockaddr_in sockaddr_new(const char *host_string, int port)
 {
 	struct sockaddr_in socket_address;
 	socket_address.sin_family = AF_INET;
-	socket_address.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	struct hostent *host_entry = gethostbyname(host_string);
+	memcpy(&(socket_address.sin_addr.s_addr), host_entry->h_addr, host_entry->h_length);
+
 	socket_address.sin_port = htons(port);
 
 	return socket_address;
