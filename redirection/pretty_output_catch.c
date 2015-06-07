@@ -13,7 +13,7 @@ const char *HELP_STRING =
 	"Usage:\n"
 	"	catch <host> <port>";
 
-const size_t BUFFER_SIZE = 1024;
+#define BUFFER_SIZE ((size_t)1024)
 
 
 struct sockaddr_in sockaddr_new(const char *host_string, int port)
