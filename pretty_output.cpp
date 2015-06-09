@@ -51,12 +51,6 @@ namespace pretty_output
 		//
 		// Constants
 
-#if defined(PRETTY_OUTPUT_WIDTH)
-		const size_t WIDTH = PRETTY_OUTPUT_WIDTH;
-#else
-		const size_t WIDTH = 79;
-#endif
-
 #if defined(PRETTY_OUTPUT_INDENTATION)
 		const char INDENTATION[] = PRETTY_OUTPUT_INDENTATION;
 #else
@@ -373,7 +367,7 @@ namespace pretty_output
 
 		size_t out_stream::width_left() const
 		{
-			return WIDTH - _current_line_length;
+			return PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width() - _current_line_length;
 		}
 
 
@@ -954,7 +948,7 @@ namespace pretty_output
 			std::stringstream stream;
 			stream.fill(THREAD_HEADER_SEPARATOR);
 			stream.flags(std::ios::left);
-			stream.width(WIDTH);
+			stream.width(PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width());
 			stream << ("[Thread: " + thread_id + (!thread_name.empty() ? " " : "") + thread_name + "]");
 
 			return stream.str();

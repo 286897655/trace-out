@@ -258,6 +258,7 @@ namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
 
 	void print(const char *string);
 	void flush();
+	size_t width();
 
 }
 

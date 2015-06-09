@@ -19,5 +19,19 @@ namespace pretty_output_to_wdo
 	{
 	}
 
+
+	size_t width()
+	{
+#if defined(PRETTY_OUTPUT_WIDTH)
+
+		return PRETTY_OUTPUT_WIDTH;
+
+#else
+
+		return 120;
+
+#endif // defined(PRETTY_OUTPUT_WIDTH)
+	}
+
 }
 

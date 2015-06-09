@@ -17,6 +17,46 @@
 
 
 //
+// Redirection
+
+#if !defined(PRETTY_OUTPUT_REDIRECTION)
+
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+
+namespace pretty_output_to_stdout
+{
+
+	const size_t DEFAULT_WIDTH = 79;
+
+
+	size_t width()
+	{
+#if defined(PRETTY_OUTPUT_WIDTH)
+
+		return PRETTY_OUTPUT_WIDTH;
+
+#else
+
+		winsize window_size;
+		int retval = ioctl(STDOUT_FILENO, TIOCGWINSZ, &window_size);
+		if (retval == -1)
+		{
+			return DEFAULT_WIDTH;
+		}
+
+		return static_cast<size_t>(window_size.ws_col) - 1;
+
+#endif // defined(PRETTY_OUTPUT_WIDTH)
+	}
+
+}
+
+#endif // !defined(PRETTY_OUTPUT_REDIRECTION)
+
+
+//
 // Implementation
 
 namespace pretty_output
