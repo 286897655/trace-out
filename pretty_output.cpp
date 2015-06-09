@@ -6,12 +6,6 @@
 #include "pretty_output.h"
 
 
-#if !defined(PRETTY_OUTPUT_REDIRECTION)
-
-#include <iostream>
-
-
-
 //
 // Private stuff
 //
@@ -19,6 +13,11 @@
 
 //
 // Redirection
+
+#if !defined(PRETTY_OUTPUT_REDIRECTION)
+
+#include <iostream>
+
 
 namespace pretty_output_to_stdout
 {
@@ -924,7 +923,7 @@ namespace pretty_output
 		{
 #if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 			_output_mutex.unlock();
-#endif // !deifned(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+#endif // !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 		}
 
 
