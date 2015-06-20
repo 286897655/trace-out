@@ -11,7 +11,6 @@ This is a library for pretty printing information about a code. Those who prefer
 - [Options](#options)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
-- [Dealing with compiler warnings](#dealing-with-compiler-warnings)
 
 
 
@@ -33,16 +32,16 @@ To use pretty_output in a project, files pretty_output.h, pretty_output.cpp, pre
 
 To use output redirection from the 'redirection' folder the required .cpp file should be added to the project and macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined. There are files for redirecting output to file (pretty_output_to_file.cpp) and windows debugger output (pretty_output_to_wdo.cpp). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is 'pretty_output_log.txt').
 
-To implement custom redirection the functions `void print(const char *)` and `void flush()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
+To implement custom redirection the functions `void print(const char *)`, `void flush()` and `size_t width()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
 
-pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
+pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output is turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
 
 
 
 Macros
 ======
 
-`$w(<expression>)` - print value of `expression` and returns that value, so can be used inside other expression.
+`$w(<expression>)` - print value of `expression` and return that value (can be used inside other expression).
 The name is an abbreviation of 'watch'.
 
 `$c(<function>)(<arguments>)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
@@ -55,7 +54,7 @@ The name is an abbreviation of 'call member-function'.
 
 `pointer` - address of the memory to be printed. The type of the pointer determines the grouping of bytes and default `base`. For example memory under the `unsigned char *` pointer will be grouped by 1 byte and use hexadecimal numbers; memory under `int *` will be grouped by 4 bytes and use signed decimal numbers. For unknown types default grouping is by 1 byte and numerical base is hexadecimal.
 
-`size` - size of memory is bytes.
+`size` - size of memory in bytes.
 
 `options` (optional) - numeric base for value representation and order of the bytes to use when converting bytes to the numeric values.
 
@@ -74,16 +73,16 @@ Byte order flags (default value is determined automatically):
 
 The name is an abbreviation of 'memory'.
 
-`$f` - print function or member-function call and return labels. Should be used inside a function or member-function. Automatically shifts indentation of the output.
+`$f` - print function call and return labels. Should be used inside a function. Automatically shifts indentation of the output.
 The name is an abbreviation of 'function'.
 
 `$return <expression>` - print value of `epxression` passed to the return statement.
 
 `$if (<condition>)` - print value of the if `condition`. Automatically shifts indentation of the output.
 
-`$for (<statements>)` - print iterations' numbers of the 'for' loop. Automatically shifts indentation of the output.
+`$for (<statements>)` - print iterations' numbers of the `for` loop. Automatically shifts indentation of the output.
 
-`$while (<condition>)` - print iterations' conditions of the while loop. Automatically shifts indentation of the output.
+`$while (<condition>)` - print iterations' conditions of the `while` loop. Automatically shifts indentation of the output.
 
 `$p(<format>, ...)` - like `printf` function. The name is an abbreviation of 'printf'.
 
@@ -98,13 +97,13 @@ Options
 
 `PRETTY_OUTPUT_OFF` - turn pretty_output off.
 
-`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually wrapping only a thread header and memory output). Default is 79.
+`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually only a thread header and memory output are wrapped). Default is 79.
 
 `PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
 
-`PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the 'Notes' section.
+`PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the [Notes](#notes) section.
 
-`PRETTY_OUTPUT_REDIRECTION` - namespace, that contains overrided printing routines.
+`PRETTY_OUTPUT_REDIRECTION` - namespace, that contains overridden printing routines.
 
 
 
@@ -129,15 +128,4 @@ Troubleshooting
 * Using macros `$c` and `$cm` with overloaded functions will cause compiler error. Fix: the function name should be explicitly casted to a desired function type.
 
 * Using precompiled headers with Visual Studio will cause compiler error. Fix: the precompiled header should be manually included in all used pretty_output source files.
-
-
-
-Dealing with compiler warnings
-==============================
-
-Using Clang with `-pedantic` option on: '$' in identifier
-
-Using MinGW ...
-
-Using Visual Studio ...
 
