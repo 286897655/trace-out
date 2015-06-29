@@ -626,15 +626,15 @@ namespace pretty_output
 		};
 
 #define PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(family, type_size, is_signed, unit_type, field_width_value, default_base_value, to_signed_type, to_unsigned_type) \
-				template <> \
-				struct print_traits_details<family, type_size, is_signed> \
-				{ \
-					typedef unit_type unit_t; \
-					static const size_t field_width = field_width_value; \
-					static const option_t default_base = default_base_value; \
-					typedef to_signed_type signed_t; \
-					typedef to_unsigned_type unsigned_t; \
-				}
+			template <> \
+			struct print_traits_details<family, type_size, is_signed> \
+			{ \
+				typedef unit_type unit_t; \
+				static const size_t field_width = field_width_value; \
+				static const option_t default_base = default_base_value; \
+				typedef to_signed_type signed_t; \
+				typedef to_unsigned_type unsigned_t; \
+			}
 
 		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 1, true, int8_t, 4, HEX, int8_t, uint8_t);
 		PRETTY_OUTPUT__DEFINE_PRINT_TRAITS(TYPE_FAMILY_INTEGER, 2, true, int16_t, 6, SDEC, int16_t, uint16_t);
@@ -1842,9 +1842,6 @@ namespace pretty_output
 	}
 
 }
-
-
-#undef PRETTY_OUTPUT__DEFINE_PRINT_TRAITS
 
 
 #if defined(__clang__)

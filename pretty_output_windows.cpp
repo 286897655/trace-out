@@ -10,6 +10,7 @@
 #include "pretty_output.h"
 
 
+
 //
 // Private stuff
 //
@@ -24,7 +25,7 @@ namespace pretty_output_to_stdout
 {
 
 	const size_t DEFAULT_WIDTH = 79;
-	
+
 
 	size_t width()
 	{
@@ -42,7 +43,7 @@ namespace pretty_output_to_stdout
 			return DEFAULT_WIDTH;
 		}
 
-		size_t width = static_cast<size_t>(screen_buffer_info.srWindow.Right - screen_buffer_info.srWindow.Left); 
+		size_t width = static_cast<size_t>(screen_buffer_info.srWindow.Right - screen_buffer_info.srWindow.Left);
 		return width;
 
 #endif // defined(PRETTY_OUTPUT_WIDTH)

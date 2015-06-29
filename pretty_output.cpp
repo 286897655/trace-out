@@ -6,6 +6,7 @@
 #include "pretty_output.h"
 
 
+
 //
 // Private stuff
 //
@@ -914,7 +915,9 @@ namespace pretty_output
 		void lock_output()
 		{
 #if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+
 			_output_mutex.lock();
+
 #endif // !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 		}
 
@@ -922,7 +925,9 @@ namespace pretty_output
 		void unlock_output()
 		{
 #if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+
 			_output_mutex.unlock();
+
 #endif // !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
 		}
 
