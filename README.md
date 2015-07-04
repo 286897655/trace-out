@@ -28,11 +28,18 @@ Features
 Usage
 =====
 
-To use pretty_output in a project, files pretty_output.h, pretty_output.cpp, pretty_output_posix.cpp/pretty_output_windows.cpp (depending on a platform) should be added to the project.
+To use pretty_output in a project, files "pretty_output.h", "pretty_output.cpp", "pretty_output_posix.cpp" / "pretty_output_windows.cpp" (depending on a platform) should be added to the project.
 
-To use output redirection from the 'redirection' folder the required .cpp file should be added to the project and macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined. There are files for redirecting output to file (pretty_output_to_file.cpp) and windows debugger output (pretty_output_to_wdo.cpp). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is 'pretty_output_log.txt').
+To use output redirection the following steps are required:
+* The redireciton .cpp file should be added to a project
+* Macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined
 
-To implement custom redirection the functions `void print(const char *)`, `void flush()` and `size_t width()` should be defined within some namespace (the namespace name will be used further to define macro `PRETTY_OUTPUT_REDIRECTION`).
+There are implementations for redirecting output to a file ("pretty_output_to_file.cpp") and windows debugger output ("pretty_output_to_wdo.cpp"). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is "pretty_output_log.txt").
+
+To implement custom redirection, the following functions should be defined within some namespace (the name of this namespace will be used to define macro `PRETTY_OUTPUT_REDIRECTION`):
+* `void print(const char *string)` - print a `string`
+* `void flush()` - flush output
+* `size_t width()` - get width of the output (in characters)
 
 pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output is turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
 
@@ -42,13 +49,13 @@ Macros
 ======
 
 `$w(<expression>)` - print value of `expression` and return that value (can be used inside other expression).
-The name is an abbreviation of 'watch'.
+The name is an abbreviation of "watch".
 
 `$c(<function>)(<arguments>)` - print `function` arguments and return value. Should be used at function call. Automatically shifts indentation of the output.
-The name is an abbreviation of 'call'.
+The name is an abbreviation of "call".
 
 `$cm(<object>, <function_name>)(<arguments>)` - print member-function arguments and return value. Should be used at member-function call. `object` argument can be of a pointer or non-pointer type.
-The name is an abbreviation of 'call member-function'.
+The name is an abbreviation of "call member-function".
 
 `$m(<pointer>, <size>, <options>)` - print memory under the `pointer`.
 
@@ -71,10 +78,10 @@ Byte order flags (default value is determined automatically):
 * `pretty_output::LITTLE` - big-endian byte order
 * `pretty_output::BIG` - little-endian byte order
 
-The name is an abbreviation of 'memory'.
+The name is an abbreviation of "memory".
 
 `$f` - print function call and return labels. Should be used inside a function. Automatically shifts indentation of the output.
-The name is an abbreviation of 'function'.
+The name is an abbreviation of "function".
 
 `$return <expression>` - print value of `epxression` passed to the return statement.
 
@@ -84,9 +91,9 @@ The name is an abbreviation of 'function'.
 
 `$while (<condition>)` - print iterations' conditions of the `while` loop. Automatically shifts indentation of the output.
 
-`$p(<format>, ...)` - like `printf` function. The name is an abbreviation of 'printf'.
+`$p(<format>, ...)` - like `printf` function. The name is an abbreviation of "printf".
 
-`$thread(<thread_name>)` - set thread name, that will be printed in the thread header.
+`$thread(<name>)` - set thread name, that will be printed in the thread header.
 
 
 
@@ -97,13 +104,13 @@ Options
 
 `PRETTY_OUTPUT_OFF` - turn pretty_output off.
 
-`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually only a thread header and memory output are wrapped). Default is 79.
+`PRETTY_OUTPUT_WIDTH` - width, to which output is wrapped (actually only a thread header and memory output are wrapped). This macro overrides value returned by `<redirection_namespace>::width()` function. Default value for standard output is 79.
 
-`PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default is `"    "` (4 spaces).
+`PRETTY_OUTPUT_INDENTATION` - string, that is used as an indentation for the actual output. Default value is `"    "` (4 spaces).
 
 `PRETTY_OUTPUT_NO_OUTPUT_SYNC` - disables output syncronization. Read details in the [Notes](#notes) section.
 
-`PRETTY_OUTPUT_REDIRECTION` - namespace, that contains overridden printing routines.
+`PRETTY_OUTPUT_REDIRECTION` - namespace, that contains overridden redirection routines.
 
 
 
