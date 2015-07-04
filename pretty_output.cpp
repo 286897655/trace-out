@@ -367,7 +367,7 @@ namespace pretty_output
 
 		size_t out_stream::width_left() const
 		{
-			return PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width() - _current_line_length;
+			return out_stream::width() - _current_line_length;
 		}
 
 
@@ -393,6 +393,20 @@ namespace pretty_output
 		void out_stream::flush()
 		{
 			PRETTY_OUTPUT_REDIRECTION_NAMESPACE::flush();
+		}
+
+
+		size_t out_stream::width()
+		{
+#if defined(PRETTY_OUTPUT_WIDTH)
+
+			return PRETTY_OUTPUT_WIDTH;
+
+#else
+
+			return PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width();
+
+#endif // defined(PRETTY_OUTPUT_WIDTH)
 		}
 
 
@@ -952,7 +966,7 @@ namespace pretty_output
 			std::stringstream stream;
 			stream.fill(THREAD_HEADER_SEPARATOR);
 			stream.flags(std::ios::left);
-			stream.width(PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width());
+			stream.width(out_stream::width());
 			stream << ("[Thread: " + thread_id + (!thread_name.empty() ? " " : "") + thread_name + "]");
 
 			return stream.str();

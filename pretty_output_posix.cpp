@@ -34,12 +34,6 @@ namespace pretty_output_to_stdout
 
 	size_t width()
 	{
-#if defined(PRETTY_OUTPUT_WIDTH)
-
-		return PRETTY_OUTPUT_WIDTH;
-
-#else
-
 		winsize window_size;
 		int retval = ioctl(STDOUT_FILENO, TIOCGWINSZ, &window_size);
 		if (retval == -1)
@@ -48,8 +42,6 @@ namespace pretty_output_to_stdout
 		}
 
 		return static_cast<size_t>(window_size.ws_col) - 1;
-
-#endif // defined(PRETTY_OUTPUT_WIDTH)
 	}
 
 }

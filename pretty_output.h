@@ -489,6 +489,8 @@ namespace pretty_output
 			void printf(const char *format, ...);
 			void flush();
 
+			static size_t width();
+
 		private:
 			size_t _current_line_length;
 		};

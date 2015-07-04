@@ -29,12 +29,6 @@ namespace pretty_output_to_stdout
 
 	size_t width()
 	{
-#if defined(PRETTY_OUTPUT_WIDTH)
-
-		return PRETTY_OUTPUT_WIDTH;
-
-#else
-
 		CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
 
 		BOOL retval = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &screen_buffer_info);
@@ -45,8 +39,6 @@ namespace pretty_output_to_stdout
 
 		size_t width = static_cast<size_t>(screen_buffer_info.srWindow.Right - screen_buffer_info.srWindow.Left);
 		return width;
-
-#endif // defined(PRETTY_OUTPUT_WIDTH)
 	}
 
 }
