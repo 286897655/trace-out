@@ -1,5 +1,4 @@
-pretty_output
-===================
+# pretty_output
 
 This is a library for pretty printing information about a code. Those who prefer using text output for debugging purposes might consider this library as a more useful alternative to printf/std::cout/whatever.
 
@@ -14,8 +13,7 @@ This is a library for pretty printing information about a code. Those who prefer
 
 
 
-Features
-========
+# Features
 
 * Easy to use, but right now not easy to extend
 * Uses C++/C++11 and standard library, does not use any additional preprocessors or libraries
@@ -25,28 +23,29 @@ Features
 
 
 
-Usage
-=====
+# Usage
 
-To use pretty_output in a project, files "pretty_output.h", "pretty_output.cpp", "pretty_output_posix.cpp" / "pretty_output_windows.cpp" (depending on a platform) should be added to the project.
+To use pretty_output in a project, the "pretty_output" directory should be added to a project and the header "pretty_output.h" included.
+
+pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output is turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
+
+
+## Redirection
 
 To use output redirection the following steps are required:
 * The redireciton .cpp file should be added to a project
 * Macro `PRETTY_OUTPUT_REDIRECTION` should be defined with a name of the namespace where redirection functions are defined
-
-There are implementations for redirecting output to a file ("pretty_output_to_file.cpp") and windows debugger output ("pretty_output_to_wdo.cpp"). When using redirection to a file, the macro `PRETTY_OUTPUT_TO_FILE` can be defined with the name of the destination file (default is "pretty_output_log.txt").
 
 To implement custom redirection, the following functions should be defined within some namespace (the name of this namespace will be used to define macro `PRETTY_OUTPUT_REDIRECTION`):
 * `void print(const char *string)` - print a `string`
 * `void flush()` - flush output
 * `size_t width()` - get width of the output (in characters)
 
-pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output is turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
+There are implementations for redirecting output to a file, windows debugger output and via network in the [pretty_output_redirections](https://github.com/shrpnsld/pretty_output_redirections) repository.
 
 
 
-Macros
-======
+# Macros
 
 `$w(<expression>)` - print value of `expression` and return that value (can be used inside other expression).
 The name is an abbreviation of "watch".
@@ -97,8 +96,7 @@ The name is an abbreviation of "function".
 
 
 
-Options
-=======
+# Options
 
 `PRETTY_OUTPUT_ON` - turn pretty_output on.
 
@@ -114,8 +112,7 @@ Options
 
 
 
-Notes
-=====
+# Notes
 
 * `$w`, `$c`, `$mc`, `$return`, `$if` and `$while` macros support printing of all fundamental types, iterable types (for which `std::begin()` and `std::end()` are defined), `std::pair`, `std::tuple`. Printing values of iterable types and macros `$c`, `$cm` are supported only with C++11 and later.
 
@@ -125,8 +122,7 @@ Notes
 
 
 
-Troubleshooting
-===============
+# Troubleshooting
 
 * Passing expression of type `char []` will cause compiler error. Fix: the expression should be cast to a desired type.
 
@@ -134,5 +130,5 @@ Troubleshooting
 
 * Using macros `$c` and `$cm` with overloaded functions will cause compiler error. Fix: the function name should be explicitly casted to a desired function type.
 
-* Using precompiled headers with Visual Studio will cause compiler error. Fix: the precompiled header should be manually included in all used pretty_output source files.
+* Using precompiled headers with Visual Studio will cause compiler error. Fix: the precompiled header should be manually included in all used pretty_output source files; or not use precompiled header.
 
