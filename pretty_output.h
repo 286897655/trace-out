@@ -5,10 +5,6 @@
 
 #pragma once
 
-#include "defines.h"
-#include "pretty.h"
-#include "out_stream.h"
-
 #include <limits>
 #include <string>
 #include <sstream>
@@ -26,6 +22,9 @@
 	#include <tuple>
 #endif
 
+#include "implementation/defines.h"
+#include "implementation/pretty.h"
+#include "implementation/out_stream.h"
 #include "implementation/time.h"
 
 
