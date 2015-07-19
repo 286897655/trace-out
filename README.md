@@ -25,7 +25,7 @@ This is a library for pretty printing information about a code. Those who prefer
 
 # Usage
 
-To use pretty_output in a project, the "pretty_output" directory should be added to a project and the header "pretty_output.h" included.
+To use pretty_output in a project, the "pretty_output" directory should be added to a project (excluding one of the "posix" or "windows" directories) and the header "pretty_output.h" included.
 
 pretty_output is turned on if `NDEBUG` is not defined or `PRETTY_OUTPUT_ON` is defined. pretty_output is turned off if `NDEBUG` or `PRETTY_OUTPUT_OFF` is defined.
 
