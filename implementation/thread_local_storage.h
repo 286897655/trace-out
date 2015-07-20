@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "defines.h"
 #include "resource.h"
 #include "thread_local_storage.h"

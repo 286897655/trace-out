@@ -3,7 +3,7 @@
 // See more at https://github.com/shrpnsld/pretty_output
 //
 
-#include <assert.h>
+#include <cassert>
 #include <windows.h>
 
 #include "../implementation/thread_local_storage.h"

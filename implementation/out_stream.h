@@ -8,6 +8,11 @@
 #include <memory>
 #include <string>
 
+#if defined(PRETTY_OUTPUT_CPP11)
+	#include <tuple>
+#endif
+
+
 #include "defines.h"
 #include "pretty.h"
 

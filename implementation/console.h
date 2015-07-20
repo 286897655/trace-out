@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <cstdint>
-
 
 namespace pretty_output
 {

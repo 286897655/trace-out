@@ -10,17 +10,7 @@
 #include <sstream>
 #include <iomanip>
 #include <utility>
-#include <iterator>
-#include <memory>
-#include <cstdlib>
-#include <cstdarg>
-#include <cstring>
-#include <ctime>
-#include <stdint.h>
-
-#if defined(PRETTY_OUTPUT_CPP11)
-	#include <tuple>
-#endif
+#include <cstdint>
 
 #include "implementation/defines.h"
 #include "implementation/pretty.h"

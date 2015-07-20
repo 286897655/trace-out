@@ -3,6 +3,7 @@
 // See more at https://github.com/shrpnsld/pretty_output
 //
 
+#include <cstdint>
 #include <pthread.h>
 
 #include "../implementation/thread.h"

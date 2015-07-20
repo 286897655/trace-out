@@ -5,6 +5,7 @@
 
 #if !defined(PRETTY_OUTPUT_REDIRECTION)
 
+#include <cstddef>
 #include <iostream>
 
 #include "console.h"
@@ -36,7 +37,7 @@ namespace pretty_output_to_stdout
 			return DEFAULT_WIDTH;
 		}
 
-		return width;
+		return static_cast<size_t>(width);
 	}
 
 }

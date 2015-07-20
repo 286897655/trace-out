@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include <cstdarg>
+#include <cstring>
+#include <cstdint>
+#include <string>
 #include <sstream>
 
 

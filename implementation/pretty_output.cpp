@@ -3,6 +3,8 @@
 // See more at https://github.com/shrpnsld/pretty_output
 //
 
+#include <cstring>
+
 #include "stdlib_specific.h"
 #include "platform_specific.h"
 #include "thread.h"
@@ -10,7 +12,7 @@
 #include "thread_local_storage.h"
 #include "mutex.h"
 #include "constants.h"
-#include "pretty_output.h"
+#include "../pretty_output.h"
 
 
 namespace pretty_output
