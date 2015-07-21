@@ -10,7 +10,7 @@
 #include <sstream>
 #include <iomanip>
 #include <utility>
-#include <cstdint>
+#include <stdint.h>
 
 #include "implementation/defines.h"
 #include "implementation/pretty.h"

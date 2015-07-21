@@ -7,9 +7,9 @@
 
 #include <cstdarg>
 #include <cstring>
-#include <cstdint>
 #include <string>
 #include <sstream>
+#include <stdint.h>
 
 
 #define PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b) \
