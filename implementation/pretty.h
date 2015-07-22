@@ -37,8 +37,6 @@ namespace pretty_output
 		};
 
 
-		pretty<const char *> make_pretty(const char *const &value);
-
 		template <typename Type_t>
 		pretty<Type_t> make_pretty(const Type_t &value);
 

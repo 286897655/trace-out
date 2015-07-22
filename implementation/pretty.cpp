@@ -12,12 +12,6 @@ namespace pretty_output
 	namespace impl
 	{
 
-		pretty<const char *> make_pretty(const char *const &value)
-		{
-			return pretty<const char *>(value);
-		}
-
-
 #if defined(PRETTY_OUTPUT_CPP11)
 
 		pretties<>::pretties(const char *)

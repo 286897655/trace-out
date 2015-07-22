@@ -124,8 +124,6 @@ The name is an abbreviation of "function".
 
 # Troubleshooting
 
-* Passing expression of type `char []` will cause compiler error. Fix: the expression should be cast to a desired type.
-
 * Passing a pointer to a user-type will cause compiler error. Fix: the pointer should be cast to a `const void *` or `void *`.
 
 * Using macros `$c` and `$cm` with overloaded functions will cause compiler error. Fix: the function name should be explicitly casted to a desired function type.
