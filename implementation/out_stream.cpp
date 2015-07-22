@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <cstdarg>
+#include <cstdlib>
 
 #include "constants.h"
 #include "out_stream.h"
