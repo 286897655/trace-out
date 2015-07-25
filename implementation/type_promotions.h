@@ -24,6 +24,7 @@ namespace pretty_output
 			}
 
 
+		PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(char);
 		PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed char);
 		PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned char);
 		PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed short int);
