@@ -65,10 +65,6 @@ namespace pretty_output
 
 		out_stream &operator <<(out_stream &stream, const pretty<bool> &value);
 		out_stream &operator <<(out_stream &stream, const pretty<char> &value);
-
-		template <size_t Size>
-		out_stream &operator <<(out_stream &stream, const pretty<char[Size]> &value);
-
 		out_stream &operator <<(out_stream &stream, const pretty<const char *> &value);
 		out_stream &operator <<(out_stream &stream, const pretty<std::string> &value);
 		out_stream &operator <<(out_stream &stream, const pretty<short> &value);
@@ -150,24 +146,6 @@ namespace pretty_output
 
 	namespace impl
 	{
-
-		template <size_t Size>
-		out_stream &operator <<(out_stream &stream, const pretty<char[Size]> &value)
-		{
-			stream << FLUSH;
-
-			const char *buffer = value.get();
-			if (buffer[Size - 1] != '\0')
-			{
-				char string[Size + 1];
-				std::memcpy(string, buffer, Size);
-				string[sizeof(string) - 1] = '\0';
-				return stream << "\"" << string << "\"";
-			}
-
-			return stream << "\"" << buffer << "\"";
-		}
-
 
 		template <typename Type_t>
 		out_stream &operator <<(out_stream &stream, const pretty<const Type_t *> &value)

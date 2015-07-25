@@ -7,6 +7,7 @@
 
 #include "defines.h"
 #include "stuff.h"
+#include "type_promotions.h"
 
 
 namespace pretty_output
@@ -38,7 +39,7 @@ namespace pretty_output
 
 
 		template <typename Type_t>
-		pretty<Type_t> make_pretty(const Type_t &value);
+		pretty<typename promote<Type_t>::type> make_pretty(const Type_t &value);
 
 
 #if defined(PRETTY_OUTPUT_CPP11)
@@ -166,9 +167,11 @@ namespace pretty_output
 
 
 		template <typename Type_t>
-		pretty<Type_t> make_pretty(const Type_t &value)
+		pretty<typename promote<Type_t>::type> make_pretty(const Type_t &value)
 		{
-			return pretty<Type_t>(value);
+			typedef typename promote<Type_t>::type promoted_t;
+
+			return pretty<promoted_t>(reinterpret_cast<const promoted_t &>(value));
 		}
 
 
