@@ -1,8 +1,3 @@
-//
-// This file is a part of pretty_output project
-// See more at https://github.com/shrpnsld/pretty_output
-//
-
 #pragma once
 
 
@@ -15,5 +10,17 @@
 	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE PRETTY_OUTPUT_REDIRECTION
 #else
 	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE pretty_output_to_stdout
+#endif
+
+
+#if defined(__clang__)
+	#define PRETTY_OUTPUT_CLANG
+	#define PRETTY_OUTPUT_POSIX
+#elif defined(__GNUC__) || defined(__GNUG__)
+	#define PRETTY_OUTPUT_GCC
+	#define PRETTY_OUTPUT_POSIX
+#elif defined(_MSC_VER)
+	#define PRETTY_OUTPUT_MVS
+	#define PRETTY_OUTPUT_WINDOWS
 #endif
 

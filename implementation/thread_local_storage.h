@@ -1,13 +1,7 @@
-//
-// This file is a part of pretty_output project
-// See more at https://github.com/shrpnsld/pretty_output
-//
-
 #pragma once
 
 #include "defines.h"
 #include "resource.h"
-#include "thread_local_storage.h"
 
 
 namespace pretty_output

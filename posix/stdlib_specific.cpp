@@ -1,7 +1,4 @@
-//
-// This file is a part of pretty_output project
-// See more at https://github.com/shrpnsld/pretty_output
-//
+#if defined(PRETTY_OUTPUT_POSIX)
 
 #include <cstdio>
 
@@ -28,4 +25,6 @@ namespace pretty_output
 	}
 
 }
+
+#endif
 

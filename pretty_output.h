@@ -1,8 +1,3 @@
-//
-// This file is a part of pretty_output project
-// See more at https://github.com/shrpnsld/pretty_output
-//
-
 #pragma once
 
 #include <limits>
@@ -18,19 +13,19 @@
 #include "implementation/time.h"
 
 
-#if defined(__clang__)
+#if defined(PRETTY_OUTPUT_CLANG)
 
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
 	#pragma clang diagnostic ignored "-Wvariadic-macros"
 	#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 
-#elif defined(__GNUC__) || defined(__GNUG__)
+#elif defined(PRETTY_OUTPUT_GCC)
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wvariadic-macros" // doesn't work with MinGW and probably also with GCC
 
-#elif defined(_MSC_VER)
+#elif defined(PRETTY_OUTPUT_MVS)
 
 	#pragma warning(push)
 	#pragma warning(disable:4296) // expression is always false
