@@ -288,13 +288,17 @@ namespace pretty_output { namespace detail
 				stream << NEWLINE << make_pretty(static_cast<const void *>(&iterator[index])) << ":";
 			}
 
+			const Type_t &bytes = iterator[index];
+
+			crash_on_bad_memory(bytes);
+
+			Type_t ordered_bytes;
+			order_bytes(&ordered_bytes, &bytes, sizeof(Type_t), byte_order);
+
 			string_stream << " ";
 			string_stream.fill(' ');
 			string_stream.width(column_width);
 			string_stream.flags(std::ios::right);
-
-			Type_t ordered_bytes;
-			order_bytes(&ordered_bytes, &iterator[index], sizeof(Type_t), byte_order);
 
 			string_stream << bytes_to_string(ordered_bytes);
 		}
