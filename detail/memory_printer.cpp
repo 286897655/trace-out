@@ -102,7 +102,7 @@ namespace pretty_output { namespace detail
 
 	option_t base_value_from_options(option_t options, option_t default_value)
 	{
-		option_t base = options & (0x0000ffff << OPTIONS_START_BASE);
+		option_t base = options & (static_cast<option_t>(0x0000ffff) << OPTIONS_START_BASE);
 		if (base == 0)
 		{
 			return default_value;
@@ -114,7 +114,7 @@ namespace pretty_output { namespace detail
 
 	option_t byte_order_value_from_options(option_t options, option_t default_value)
 	{
-		option_t byte_order = options & (0x0000ffff << OPTIONS_START_BYTE_ORDER);
+		option_t byte_order = options & (static_cast<option_t>(0x0000ffff) << OPTIONS_START_BYTE_ORDER);
 		if (byte_order == 0)
 		{
 			return default_value;
@@ -150,10 +150,10 @@ namespace pretty_output { namespace detail
 
 	option_t current_byte_order()
 	{
-		const uint16_t VALUE = 0x0001;
+		const uint16_t VALUE = static_cast<uint16_t>(0x0001);
 		const uint8_t FIRST_BYTE = *reinterpret_cast<const uint8_t *>(&VALUE);
 
-		if (FIRST_BYTE == 0x01)
+		if (FIRST_BYTE == static_cast<uint8_t>(0x01))
 		{
 			return BIG;
 		}

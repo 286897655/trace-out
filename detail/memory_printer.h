@@ -25,16 +25,16 @@ namespace pretty_output { namespace detail
 namespace pretty_output
 {
 
-	const detail::option_t BIN = 0x1 << (detail::OPTIONS_START_BASE + 0);
-	const detail::option_t SDEC = 0x1 << (detail::OPTIONS_START_BASE + 1);
-	const detail::option_t UDEC = 0x1 << (detail::OPTIONS_START_BASE + 2);
-	const detail::option_t HEX = 0x1 << (detail::OPTIONS_START_BASE + 3);
-	const detail::option_t FLT = 0x1 << (detail::OPTIONS_START_BASE + 4);
-	const detail::option_t DBL = 0x1 << (detail::OPTIONS_START_BASE + 5);
-	const detail::option_t LDBL = 0x1 << (detail::OPTIONS_START_BASE + 6);
+	const detail::option_t BIN = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 0);
+	const detail::option_t SDEC = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 1);
+	const detail::option_t UDEC = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 2);
+	const detail::option_t HEX = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 3);
+	const detail::option_t FLT = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 4);
+	const detail::option_t DBL = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 5);
+	const detail::option_t LDBL = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BASE + 6);
 
-	const detail::option_t LITTLE = 0x1 << (detail::OPTIONS_START_BYTE_ORDER + 0);
-	const detail::option_t BIG = 0x1 << (detail::OPTIONS_START_BYTE_ORDER + 1);
+	const detail::option_t LITTLE = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BYTE_ORDER + 0);
+	const detail::option_t BIG = static_cast<detail::option_t>(0x1) << (detail::OPTIONS_START_BYTE_ORDER + 1);
 
 }
 
