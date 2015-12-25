@@ -85,7 +85,7 @@ namespace pretty_output { namespace detail
 		stream << "if (" << condition << ") => " << FLUSH;
 		stream << make_pretty_bool(value) << ENDLINE;
 
-		return block(static_cast<bool>(value));
+		return block(!!value);
 	}
 
 
@@ -100,7 +100,7 @@ namespace pretty_output { namespace detail
 			stream << make_pretty_bool(value) << ENDLINE;
 		}
 
-		return block(static_cast<bool>(value));
+		return block(!!value);
 	}
 
 }

@@ -117,7 +117,7 @@ namespace pretty_output { namespace detail
 		std::stringstream stream;
 		stream.fill(THREAD_HEADER_SEPARATOR);
 		stream.flags(std::ios::left);
-		stream.width(out_stream::width());
+		stream.width(static_cast<std::streamsize>(out_stream::width()));
 		stream << ("[Thread: " + thread_id + (!thread_name.empty() ? " " : "") + thread_name + "]");
 
 		return stream.str();

@@ -215,12 +215,25 @@ namespace pretty_output { namespace detail
 	}
 
 
+#if defined(PRETTY_OUTPUT_MVS)
+
+	#pragma warning(push)
+	#pragma warning(disable:4296) // "expression is always false"
+
+#endif
+
 	template <std::size_t Index, typename ...Types_t>
 	typename std::enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
 		stream << make_pretty(std::get<Index>(tuple)) << ", ";
 		return print_tuple<Index + 1>(stream, tuple);
 	}
+
+#if defined(_MSC_VER)
+
+	#pragma warning(pop)
+
+#endif
 
 
 	template <typename ...Types_t>

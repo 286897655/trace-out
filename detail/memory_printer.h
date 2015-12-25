@@ -48,6 +48,8 @@ namespace pretty_output { namespace detail
 	extern const char *const BYTE_ORDER_NAMES[];
 	extern const size_t BYTE_ORDER_NAMES_LENGTH;
 
+	typedef std::streamsize outputwidth_t;
+
 
 	enum typefamily_t
 	{
@@ -68,7 +70,7 @@ namespace pretty_output { namespace detail
 	struct print_traits_details
 	{
 		typedef uint8_t unit_t;
-		static const size_t field_width = 2;
+		static const outputwidth_t field_width = 2;
 		static const option_t default_base = HEX;
 		typedef void signed_t;
 		typedef void unsigned_t;
@@ -79,7 +81,7 @@ namespace pretty_output { namespace detail
 		struct print_traits_details<family, type_size, is_signed> \
 		{ \
 			typedef unit_type unit_t; \
-			static const size_t field_width = field_width_value; \
+			static const outputwidth_t field_width = field_width_value; \
 			static const option_t default_base = default_base_value; \
 			typedef to_signed_type signed_t; \
 			typedef to_unsigned_type unsigned_t; \
@@ -119,7 +121,7 @@ namespace pretty_output { namespace detail
 	const char *byte_to_hexadecimal(uint8_t byte);
 
 	template <typename Type_t>
-	size_t field_width(option_t base);
+	outputwidth_t field_width(option_t base);
 
 	template <typename Type_t>
 	const std::string bytes_to_binary_string(Type_t value);
@@ -154,7 +156,7 @@ namespace pretty_output { namespace detail
 {
 
 	template <typename Type_t>
-	size_t field_width(option_t base)
+	outputwidth_t field_width(option_t base)
 	{
 		switch (base)
 		{
@@ -269,7 +271,7 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t>
-	void print_memory_contents(out_stream &stream, const Type_t *pointer, size_t size, size_t column_width, const std::string (*bytes_to_string)(Type_t), option_t byte_order)
+	void print_memory_contents(out_stream &stream, const Type_t *pointer, size_t size, outputwidth_t column_width, const std::string (*bytes_to_string)(Type_t), option_t byte_order)
 	{
 		std::stringstream string_stream;
 
@@ -280,7 +282,7 @@ namespace pretty_output { namespace detail
 		for (std::size_t index = 0; index < length; ++index)
 		{
 			const std::string string_representation = string_stream.str();
-			if (string_representation.length() + column_width + 1 > stream.width_left())
+			if (string_representation.length() + static_cast<size_t>(column_width) + 1 > stream.width_left())
 			{
 				stream << string_representation;
 				string_stream.str("");
@@ -328,7 +330,7 @@ namespace pretty_output { namespace detail
 		stream << NEWLINE;
 
 		const std::string (*bytes_to_string)(Type_t) = select_conversion<Type_t>(base);
-		size_t column_width = field_width<Type_t>(base);
+		outputwidth_t column_width = field_width<Type_t>(base);
 		print_memory_contents(stream, static_cast<const unit_t *>(pointer), size, column_width, bytes_to_string, byte_order);
 
 		indentation_remove();

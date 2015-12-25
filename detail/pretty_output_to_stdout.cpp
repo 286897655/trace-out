@@ -9,6 +9,16 @@
 namespace pretty_output_to_stdout
 {
 
+	void print(const char *string);
+	void flush();
+	size_t width();
+
+}
+
+
+namespace pretty_output_to_stdout
+{
+
 	const size_t DEFAULT_WIDTH = 79;
 
 

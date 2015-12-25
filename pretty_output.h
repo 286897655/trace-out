@@ -25,11 +25,6 @@
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wvariadic-macros" // doesn't work with MinGW and probably also with GCC
 
-#elif defined(PRETTY_OUTPUT_MVS)
-
-	#pragma warning(push)
-	#pragma warning(disable:4296) // expression is always false
-
 #endif
 
 
@@ -121,8 +116,6 @@
 	#define $while(...) \
 				while (__VA_ARGS__)
 
-	#define $_
-
 	#define $p(format, ...)
 
 	#define $thread(name)
@@ -144,10 +137,6 @@
 #elif defined(__GNUC__) || defined(__GNUG__)
 
 	#pragma GCC diagnostic pop
-
-#elif defined(_MSC_VER)
-
-	#pragma warning(pop)
 
 #endif
 
