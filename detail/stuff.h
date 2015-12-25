@@ -59,6 +59,9 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	const std::string to_string(const Type_t &value, manipulator_t first_manipulator = NULL, ...);
 
+	std::string first_token(const std::string &tokens);
+	std::string rest_tokens(const std::string &tokens);
+
 }
 }
 

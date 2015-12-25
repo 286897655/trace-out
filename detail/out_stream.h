@@ -114,12 +114,10 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename Type_t>
-	out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values);
+	out_stream &operator <<(out_stream &stream, const watches<Type_t> &values);
 
 	template <typename ...Types_t>
-	out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values);
-
-	out_stream &operator <<(out_stream &stream, const pretties<> &values);
+	out_stream &operator <<(out_stream &stream, const watches<Types_t...> &values);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -268,18 +266,18 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename Type_t>
-	out_stream &operator <<(out_stream &stream, const pretties<Type_t> &values)
+	out_stream &operator <<(out_stream &stream, const watches<Type_t> &values)
 	{
 		stream << FLUSH;
-		return stream << make_pretty(values.first().get());
+		return stream << values.first_name() << " = " << values.first_pretty();
 	}
 
 
 	template <typename ...Types_t>
-	out_stream &operator <<(out_stream &stream, const pretties<Types_t...> &values)
+	out_stream &operator <<(out_stream &stream, const watches<Types_t...> &values)
 	{
 		stream << FLUSH;
-		return stream << make_pretty(values.first().get()) << values.delimiter() << values.rest();
+		return stream << values.first_name() << " = " << values.first_pretty() << NEWLINE << values.rest();
 	}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)

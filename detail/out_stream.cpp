@@ -405,16 +405,6 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
-
-	out_stream &operator <<(out_stream &stream, const pretties<> &)
-	{
-		return stream;
-	}
-
-#endif // defined(PRETTY_OUTPUT_CPP11)
-
-
 	out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value)
 	{
 		stream << FLUSH;

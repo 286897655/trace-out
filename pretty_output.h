@@ -35,8 +35,11 @@
 
 #if (!defined(NDEBUG) && !defined(PRETTY_OUTPUT_OFF)) || defined(PRETTY_OUTPUT_ON)
 
+	#define $e(...) \
+				pretty_output::detail::expression(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, ##__VA_ARGS__)
+
 	#define $w(...) \
-				pretty_output::detail::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, __VA_ARGS__)
+				pretty_output::detail::watch(PRETTY_OUTPUT_FILENAME_LINE, #__VA_ARGS__, ##__VA_ARGS__);
 
 	#define $m(pointer, ...) \
 				pretty_output::detail::print_memory(PRETTY_OUTPUT_FILENAME_LINE, #pointer, pointer, ##__VA_ARGS__);
@@ -96,6 +99,9 @@
 				pretty_output_private__ticks(PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_start_time), PRETTY_OUTPUT_PRIVATE__UNIFY(pretty_output_end_time), ##__VA_ARGS__)
 
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
+
+	#define $e(...)
+				(__VA_ARGS__)
 
 	#define $w(...)
 

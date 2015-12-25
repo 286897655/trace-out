@@ -54,6 +54,24 @@ namespace pretty_output { namespace detail
 		}
 	}
 
+
+	std::string first_token(const std::string &tokens)
+	{
+		return tokens.substr(0, tokens.find(','));
+	}
+
+
+	std::string rest_tokens(const std::string &tokens)
+	{
+		size_t from = tokens.find(',') + 1;
+		while (tokens[from] == ' ')
+		{
+			++from;
+		}
+
+		return tokens.substr(from, tokens.size());
+	}
+
 }
 }
 

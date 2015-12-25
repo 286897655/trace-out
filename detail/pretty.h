@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "platform_defines.h"
 #include "stuff.h"
 #include "type_promotions.h"
@@ -37,64 +39,51 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename ...>
-	class pretties;
+	class watches;
 
 
-	template <typename Type_t, typename ...RestTypes_t>
-	class pretties<Type_t, RestTypes_t...>
+	template <typename Type_t, typename ...Types_t>
+	class watches<Type_t, Types_t...>
 	{
 	public:
-		pretties(const char *delimiter, const Type_t &first, const RestTypes_t &...rest);
-		pretties(const pretties &another);
+		watches(const std::string &names, const Type_t &first, const Types_t &...rest);
+		watches(const watches<Type_t, Types_t...> &another);
 
-		const char *delimiter() const;
-		const pretty<Type_t> &first() const;
-		const pretties<RestTypes_t...> &rest() const;
+		const std::string &first_name() const;
+		const pretty<Type_t> &first_pretty() const;
+		const watches<Types_t...> &rest() const;
 
 	private:
-		pretties &operator =(const pretties &another); // = delete
-		pretties &operator =(pretties &&another); // = delete
+		std::string _first_name;
+		pretty<Type_t> _first_pretty;
+		watches<Types_t...> _rest;
 
-		const char *_delimiter;
-		const pretty<Type_t> _first;
-		pretties<RestTypes_t...> _rest;
+		watches<Type_t, Types_t...> &operator =(const watches<Type_t, Types_t...> &) = delete;
+		watches<Type_t, Types_t...> &operator =(watches<Type_t, Types_t...> &&) = delete;
 	};
 
 
 	template <typename Type_t>
-	class pretties<Type_t>
+	class watches<Type_t>
 	{
 	public:
-		pretties(const char *delimiter, const Type_t &first);
-		pretties(const pretties &another);
+		watches(const std::string &name, const Type_t &first);
+		watches(const watches<Type_t> &another);
 
-		const char *delimiter() const;
-		const pretty<Type_t> &first() const;
-
-	private:
-		pretties &operator =(const pretties &another); // = delete
-		pretties &operator =(pretties &&another); // = delete
-
-		const char *_delimiter;
-		const pretty<Type_t> _first;
-	};
-
-
-	template <>
-	class pretties<>
-	{
-	public:
-		pretties(const char *delimiter);
-		pretties(const pretties &another);
+		const std::string &first_name() const;
+		const pretty<Type_t> &first_pretty() const;
 
 	private:
-		pretties &operator =(const pretties &another); // = delete
-		pretties &operator =(pretties &&another); // = delete
+		std::string _first_name;
+		pretty<Type_t> _first_pretty;
+
+		watches<Type_t> &operator =(const watches<Type_t> &) = delete;
+		watches<Type_t> &operator =(watches<Type_t> &&) = delete;
 	};
 
 
 	template <typename ...Types_t>
-	pretties<Types_t...> make_pretties(const char *delimiter, const Types_t &...values);
+	watches<Types_t...> make_watches(const std::string &names, const Types_t &...arguments);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -165,40 +154,40 @@ namespace pretty_output { namespace detail
 
 #if defined(PRETTY_OUTPUT_CPP11)
 
-	template <typename Type_t, typename ...RestTypes_t>
-	pretties<Type_t, RestTypes_t...>::pretties(const char *delimiter, const Type_t &first, const RestTypes_t &...rest) :
-		_delimiter(delimiter),
-		_first(first),
-		_rest(delimiter, rest...)
+	template <typename Type_t, typename ...Types_t>
+	watches<Type_t, Types_t...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest) :
+		_first_name(first_token(names)),
+		_first_pretty(first),
+		_rest(rest_tokens(names), rest...)
 	{
 	}
 
 
-	template <typename Type_t, typename ...RestTypes_t>
-	pretties<Type_t, RestTypes_t...>::pretties(const pretties &another) :
-		_delimiter(another._delimiter),
-		_first(another._first),
+	template <typename Type_t, typename ...Types_t>
+	watches<Type_t, Types_t...>::watches(const watches<Type_t, Types_t...> &another) :
+		_first_name(another._first_name),
+		_first_pretty(another._first_pretty),
 		_rest(another._rest)
 	{
 	}
 
 
-	template <typename Type_t, typename ...RestTypes_t>
-	const char *pretties<Type_t, RestTypes_t...>::delimiter() const
+	template <typename Type_t, typename ...Types_t>
+	const std::string &watches<Type_t, Types_t...>::first_name() const
 	{
-		return _delimiter;
+		return _first_name;
 	}
 
 
-	template <typename Type_t, typename ...RestTypes_t>
-	const pretty<Type_t> &pretties<Type_t, RestTypes_t...>::first() const
+	template <typename Type_t, typename ...Types_t>
+	const pretty<Type_t> &watches<Type_t, Types_t...>::first_pretty() const
 	{
-		return _first;
+		return _first_pretty;
 	}
 
 
-	template <typename Type_t, typename ...RestTypes_t>
-	const pretties<RestTypes_t...> &pretties<Type_t, RestTypes_t...>::rest() const
+	template <typename Type_t, typename ...Types_t>
+	const watches<Types_t...> &watches<Type_t, Types_t...>::rest() const
 	{
 		return _rest;
 	}
@@ -206,40 +195,40 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t>
-	pretties<Type_t>::pretties(const char *, const Type_t &first) :
-		_delimiter(""),
-		_first(first)
+	watches<Type_t>::watches(const std::string &name, const Type_t &first) :
+		_first_name(name),
+		_first_pretty(first)
 	{
 	}
 
 
 	template <typename Type_t>
-	pretties<Type_t>::pretties(const pretties &another) :
-		_delimiter(another._delimiter),
-		_first(another._first)
+	watches<Type_t>::watches(const watches<Type_t> &another) :
+		_first_name(another._first_name),
+		_first_pretty(another._first_pretty)
 	{
 	}
 
 
 	template <typename Type_t>
-	const char *pretties<Type_t>::delimiter() const
+	const std::string &watches<Type_t>::first_name() const
 	{
-		return _delimiter;
+		return _first_name;
 	}
 
 
 	template <typename Type_t>
-	const pretty<Type_t> &pretties<Type_t>::first() const
+	const pretty<Type_t> &watches<Type_t>::first_pretty() const
 	{
-		return _first;
+		return _first_pretty;
 	}
 
 
 
 	template <typename ...Types_t>
-	pretties<Types_t...> make_pretties(const char *delimiter, const Types_t &...values)
+	watches<Types_t...> make_watches(const std::string &names, const Types_t &...arguments)
 	{
-		return pretties<Types_t...>(delimiter, values...);
+		return watches<Types_t...>(names, arguments...);
 	}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
