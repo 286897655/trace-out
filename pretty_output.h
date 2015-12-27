@@ -95,8 +95,8 @@
 
 #elif defined(NDEBUG) || defined(PRETTY_OUTPUT_OFF)
 
-	#define $e(...)
-				(__VA_ARGS__)
+	#define $e(...) \
+				__VA_ARGS__
 
 	#define $w(...)
 
