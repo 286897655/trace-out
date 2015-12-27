@@ -13,5 +13,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif
+#endif // defined(PRETTY_OUTPUT_WINDOWS)
 
