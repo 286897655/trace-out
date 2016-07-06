@@ -165,6 +165,17 @@ namespace pretty_output { namespace detail
 		typedef Type_t type;
 	};
 
+
+	// need this to fix printing of std::tuple
+	template <typename ...Types_t>
+	struct sizeof_pack
+	{
+		enum
+		{
+			value = sizeof...(Types_t)
+		};
+	};
+
 }
 }
 

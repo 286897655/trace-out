@@ -461,7 +461,7 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <std::size_t Index, typename ...Types_t>
-	typename enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t ...> &tuple)
+	typename enable_if<Index == sizeof_pack<Types_t...>::value - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
 		return stream << make_pretty(std::get<Index>(tuple)) << "}";
 	}
@@ -475,7 +475,7 @@ namespace pretty_output { namespace detail
 #endif
 
 	template <std::size_t Index, typename ...Types_t>
-	typename enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t ...> &tuple)
+	typename enable_if<Index < sizeof_pack<Types_t...>::value - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
 		stream << make_pretty(std::get<Index>(tuple)) << ", ";
 		return print_tuple<Index + 1>(stream, tuple);
