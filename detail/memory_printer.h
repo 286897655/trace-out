@@ -62,7 +62,10 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	struct type_family
 	{
-		static const typefamily_t value = std::numeric_limits<Type_t>::is_integer ? TYPE_FAMILY_INTEGER : (std::numeric_limits<Type_t>::is_specialized ? TYPE_FAMILY_FLOATING_POINT : TYPE_FAMILY_OTHER);
+		enum
+		{
+			value = std::numeric_limits<Type_t>::is_integer ? TYPE_FAMILY_INTEGER : (std::numeric_limits<Type_t>::is_specialized ? TYPE_FAMILY_FLOATING_POINT : TYPE_FAMILY_OTHER)
+		};
 	};
 
 
@@ -109,7 +112,7 @@ namespace pretty_output { namespace detail
 
 	template <typename Type_t>
 	struct print_traits :
-		public print_traits_details<type_family<Type_t>::value, sizeof(Type_t), std::numeric_limits<Type_t>::is_signed>
+		public print_traits_details<static_cast<typefamily_t>(type_family<Type_t>::value), sizeof(Type_t), std::numeric_limits<Type_t>::is_signed>
 	{
 	};
 

@@ -66,16 +66,22 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	struct is_fundamental
 	{
-		static const bool value = false;
+		enum
+		{
+			value = false
+		};
 	};
 
 
 #define PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(type) \
-		template <> \
-		struct is_fundamental<type> \
-		{ \
-			static const bool value = true; \
-		}
+			template <> \
+			struct is_fundamental<type> \
+			{ \
+				enum \
+				{ \
+					value = true \
+				}; \
+			}
 
 
 	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(char);
@@ -105,22 +111,33 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	struct is_pointer
 	{
-		static const bool value = false;
+		enum
+		{
+			value = false
+		};
 	};
 
 
 	template <typename Type_t>
 	struct is_pointer<Type_t *>
 	{
-		static const bool value = true;
+		enum
+		{
+			value = true
+		};
 	};
+
 
 
 	template <typename Type_t>
 	struct is_primitive
 	{
-		static const bool value = is_fundamental<Type_t>::value || is_pointer<Type_t>::value;
+		enum
+		{
+			value = is_fundamental<Type_t>::value || is_pointer<Type_t>::value
+		};
 	};
+
 
 
 	template <bool Condition, typename True_t, typename False_t>
@@ -137,8 +154,10 @@ namespace pretty_output { namespace detail
 	};
 
 
+
 	template <bool Condition, typename Type_t>
 	struct enable_if;
+
 
 	template <typename Type_t>
 	struct enable_if<true, Type_t>

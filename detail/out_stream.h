@@ -176,10 +176,10 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename ...Types_t>
-	out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t...> > &value);
+	out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t ...> > &value);
 
 	template <template <typename ...> class Container, typename ...Parameters_t>
-	out_stream &operator <<(out_stream &stream, const pretty<Container<Parameters_t...> > &value);
+	out_stream &operator <<(out_stream &stream, const pretty<Container<Parameters_t ...> > &value);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -190,7 +190,7 @@ namespace pretty_output { namespace detail
 	out_stream &operator <<(out_stream &stream, const watches<Type_t> &values);
 
 	template <typename ...Types_t>
-	out_stream &operator <<(out_stream &stream, const watches<Types_t...> &values);
+	out_stream &operator <<(out_stream &stream, const watches<Types_t ...> &values);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -461,7 +461,7 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <std::size_t Index, typename ...Types_t>
-	typename enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
+	typename enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t ...> &tuple)
 	{
 		return stream << make_pretty(std::get<Index>(tuple)) << "}";
 	}
@@ -475,7 +475,7 @@ namespace pretty_output { namespace detail
 #endif
 
 	template <std::size_t Index, typename ...Types_t>
-	typename enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
+	typename enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t ...> &tuple)
 	{
 		stream << make_pretty(std::get<Index>(tuple)) << ", ";
 		return print_tuple<Index + 1>(stream, tuple);
@@ -489,10 +489,10 @@ namespace pretty_output { namespace detail
 
 
 	template <typename ...Types_t>
-	out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t...> > &value)
+	out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t ...> > &value)
 	{
 		stream << FLUSH;
-		const std::tuple<Types_t...> &tuple = value.get();
+		const std::tuple<Types_t ...> &tuple = value.get();
 		stream << "{";
 		return print_tuple<0>(stream, tuple);
 	}

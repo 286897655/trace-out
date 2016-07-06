@@ -44,23 +44,23 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t, typename ...Types_t>
-	class watches<Type_t, Types_t...>
+	class watches<Type_t, Types_t ...>
 	{
 	public:
 		watches(const std::string &names, const Type_t &first, const Types_t &...rest);
-		watches(const watches<Type_t, Types_t...> &another);
+		watches(const watches<Type_t, Types_t ...> &another);
 
 		const std::string &first_name() const;
 		const pretty<Type_t> &first_pretty() const;
-		const watches<Types_t...> &rest() const;
+		const watches<Types_t ...> &rest() const;
 
 	private:
 		std::string _first_name;
 		pretty<Type_t> _first_pretty;
-		watches<Types_t...> _rest;
+		watches<Types_t ...> _rest;
 
-		watches<Type_t, Types_t...> &operator =(const watches<Type_t, Types_t...> &) = delete;
-		watches<Type_t, Types_t...> &operator =(watches<Type_t, Types_t...> &&) = delete;
+		watches<Type_t, Types_t ...> &operator =(const watches<Type_t, Types_t ...> &) = delete;
+		watches<Type_t, Types_t ...> &operator =(watches<Type_t, Types_t ...> &&) = delete;
 	};
 
 
@@ -84,7 +84,7 @@ namespace pretty_output { namespace detail
 
 
 	template <typename ...Types_t>
-	watches<Types_t...> make_watches(const std::string &names, const Types_t &...arguments);
+	watches<Types_t ...> make_watches(const std::string &names, const Types_t &...arguments);
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
 
@@ -163,7 +163,7 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest) :
+	watches<Type_t, Types_t ...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest) :
 		_first_name(first_token(names)),
 		_first_pretty(first),
 		_rest(rest_tokens(names), rest...)
@@ -172,7 +172,7 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t...>::watches(const watches<Type_t, Types_t...> &another) :
+	watches<Type_t, Types_t ...>::watches(const watches<Type_t, Types_t ...> &another) :
 		_first_name(another._first_name),
 		_first_pretty(another._first_pretty),
 		_rest(another._rest)
@@ -181,21 +181,21 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t, typename ...Types_t>
-	const std::string &watches<Type_t, Types_t...>::first_name() const
+	const std::string &watches<Type_t, Types_t ...>::first_name() const
 	{
 		return _first_name;
 	}
 
 
 	template <typename Type_t, typename ...Types_t>
-	const pretty<Type_t> &watches<Type_t, Types_t...>::first_pretty() const
+	const pretty<Type_t> &watches<Type_t, Types_t ...>::first_pretty() const
 	{
 		return _first_pretty;
 	}
 
 
 	template <typename Type_t, typename ...Types_t>
-	const watches<Types_t...> &watches<Type_t, Types_t...>::rest() const
+	const watches<Types_t ...> &watches<Type_t, Types_t ...>::rest() const
 	{
 		return _rest;
 	}
@@ -234,9 +234,9 @@ namespace pretty_output { namespace detail
 
 
 	template <typename ...Types_t>
-	watches<Types_t...> make_watches(const std::string &names, const Types_t &...arguments)
+	watches<Types_t ...> make_watches(const std::string &names, const Types_t &...arguments)
 	{
-		return watches<Types_t...>(names, arguments...);
+		return watches<Types_t ...>(names, arguments...);
 	}
 
 #endif // defined(PRETTY_OUTPUT_CPP11)
