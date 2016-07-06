@@ -18,6 +18,7 @@ namespace pretty_output { namespace detail
 		pretty(const pretty &another);
 
 		const Type_t &get() const;
+		const Type_t &unsafe_get() const;
 
 	private:
 		pretty &operator =(const pretty &another); // = delete
@@ -139,6 +140,13 @@ namespace pretty_output { namespace detail
 	{
 		crash_on_bad_memory(_data);
 
+		return _data;
+	}
+
+
+	template <typename Type_t>
+	const Type_t &pretty<Type_t>::unsafe_get() const
+	{
 		return _data;
 	}
 

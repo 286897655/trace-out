@@ -9,12 +9,75 @@
 	#include <tuple>
 #endif
 
-
+#include "stuff.h"
 #include "pretty.h"
 
 
 namespace pretty_output { namespace detail
 {
+
+#define PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(field_name) \
+			template <typename Struct_t> \
+			struct has_##field_name \
+			{ \
+				struct fallback \
+				{ \
+					int field_name; \
+				}; \
+				\
+				struct dummy \
+				{ \
+				}; \
+				\
+				struct derived \
+					: conditional<!is_primitive<Struct_t>::value, Struct_t, dummy>::type, fallback \
+				{ \
+				}; \
+				\
+				template <typename Type_t, Type_t> \
+				struct check; \
+				\
+				template <typename Type_t> \
+				static char (&function(check<int fallback::*, &Type_t::field_name> *))[1]; \
+				\
+				template <typename Type_t> \
+				static char (&function(...))[2]; \
+				\
+				enum \
+				{ \
+					value = sizeof(function<derived>(0)) == 2 \
+				}; \
+			}
+
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(x);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(y);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(z);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(width);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(height);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(origin);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(size);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(X);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Y);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Z);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(WIDTH);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(HEIGHT);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(ORIGIN);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(SIZE);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Width);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Height);
+
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Origin);
+	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Size);
+
+#undef PRETTY_OUTPUT_PRIVATE_DEFINE_HAS_FIELD
+
 
 	const std::string &indentation();
 	void indentation_add();
@@ -83,6 +146,15 @@ namespace pretty_output { namespace detail
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<Type_t *> &value);
+
+	template <typename Type_t>
+	typename enable_if<has_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
+
+	template <typename Type_t>
+	typename enable_if<has_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
+
+	template <typename Type_t>
+	typename enable_if<has_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value);
@@ -157,6 +229,185 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t>
+	typename enable_if<has_z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		return stream << ", " << make_pretty(point.z) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		return stream << ", " << make_pretty(point.Z) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<!(has_z<Type_t>::value || has_Z<Type_t>::value), out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &)
+	{
+		return stream << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		stream << ", " << make_pretty(point.y);
+		return print_z(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		stream << ", " << make_pretty(point.Y);
+		return print_z(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.get();
+		stream << "(" << make_pretty(point.x);
+		return print_y(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_X<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.get();
+		stream << "(" << make_pretty(point.X);
+		return print_y(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.unsafe_get();
+		return stream << " * " << make_pretty(size.height) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.unsafe_get();
+		return stream << " * " << make_pretty(size.Height) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_HEIGHT<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.unsafe_get();
+		return stream << " * " << make_pretty(size.HEIGHT) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.get();
+		stream << "(" << make_pretty(size.width);
+		return print_height(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.get();
+		stream << "(" << make_pretty(size.Width);
+		return print_height(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_WIDTH<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &size = value.get();
+		stream << "(" << make_pretty(size.WIDTH);
+		return print_height(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.unsafe_get();
+		return stream << " " << make_pretty(rect.size);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.unsafe_get();
+		return stream << " " << make_pretty(rect.Size);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_SIZE<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.unsafe_get();
+		return stream << " " << make_pretty(rect.SIZE);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.get();
+		stream << make_pretty(rect.origin);
+		return print_size(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_Origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.get();
+		stream << make_pretty(rect.Origin);
+		return print_size(stream, value);
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_ORIGIN<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &rect = value.get();
+		stream << make_pretty(rect.ORIGIN);
+		return print_size(stream, value);
+	}
+
+
+	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value)
 	{
 		stream << FLUSH;
@@ -209,9 +460,9 @@ namespace pretty_output { namespace detail
 #if defined(PRETTY_OUTPUT_CPP11)
 
 	template <std::size_t Index, typename ...Types_t>
-	typename std::enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
+	typename enable_if<Index == sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
-		return stream << make_pretty(std::get<Index>(tuple)) << ")";
+		return stream << make_pretty(std::get<Index>(tuple)) << "}";
 	}
 
 
@@ -223,7 +474,7 @@ namespace pretty_output { namespace detail
 #endif
 
 	template <std::size_t Index, typename ...Types_t>
-	typename std::enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
+	typename enable_if<Index < sizeof...(Types_t) - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
 	{
 		stream << make_pretty(std::get<Index>(tuple)) << ", ";
 		return print_tuple<Index + 1>(stream, tuple);
@@ -241,7 +492,7 @@ namespace pretty_output { namespace detail
 	{
 		stream << FLUSH;
 		const std::tuple<Types_t...> &tuple = value.get();
-		stream << "(";
+		stream << "{";
 		return print_tuple<0>(stream, tuple);
 	}
 

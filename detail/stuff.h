@@ -62,6 +62,90 @@ namespace pretty_output { namespace detail
 	std::string first_token(const std::string &tokens);
 	std::string rest_tokens(const std::string &tokens);
 
+
+	template <typename Type_t>
+	struct is_fundamental
+	{
+		static const bool value = false;
+	};
+
+
+#define PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(type) \
+		template <> \
+		struct is_fundamental<type> \
+		{ \
+			static const bool value = true; \
+		}
+
+
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(char);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed char);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned char);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed short int);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned short int);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed int);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned int);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed long int);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned long int);
+
+#if defined(PRETTY_OUTPUT_CPP11)
+
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed long long);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned long long);
+
+#endif // defined(PRETTY_OUTPUT_CPP11)
+
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(float);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(double);
+	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(long double);
+
+#undef PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL
+
+
+	template <typename Type_t>
+	struct is_pointer
+	{
+		static const bool value = false;
+	};
+
+
+	template <typename Type_t>
+	struct is_pointer<Type_t *>
+	{
+		static const bool value = true;
+	};
+
+
+	template <typename Type_t>
+	struct is_primitive
+	{
+		static const bool value = is_fundamental<Type_t>::value || is_pointer<Type_t>::value;
+	};
+
+
+	template <bool Condition, typename True_t, typename False_t>
+	struct conditional
+	{
+		typedef False_t type;
+	};
+
+
+	template <typename True_t, typename False_t>
+	struct conditional<true, True_t, False_t>
+	{
+		typedef True_t type;
+	};
+
+
+	template <bool Condition, typename Type_t>
+	struct enable_if;
+
+	template <typename Type_t>
+	struct enable_if<true, Type_t>
+	{
+		typedef Type_t type;
+	};
+
 }
 }
 
