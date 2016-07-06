@@ -297,6 +297,13 @@ namespace pretty_output { namespace detail
 	}
 
 
+	out_stream &operator <<(out_stream &stream, const pretty<unsigned char> &value)
+	{
+		stream << FLUSH;
+		return stream << to_string(static_cast<unsigned int>(value.get()));
+	}
+
+
 	out_stream &operator <<(out_stream &stream, const pretty<const char *> &value)
 	{
 		stream << FLUSH;

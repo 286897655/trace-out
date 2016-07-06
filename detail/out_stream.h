@@ -120,6 +120,7 @@ namespace pretty_output { namespace detail
 
 	out_stream &operator <<(out_stream &stream, const pretty<bool> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<char> &value);
+	out_stream &operator <<(out_stream &stream, const pretty<unsigned char> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<const char *> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<std::string> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<short> &value);
