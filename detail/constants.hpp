@@ -3,11 +3,11 @@
 #include <cstddef>
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-#if defined(PRETTY_OUTPUT_INDENTATION)
-	const char INDENTATION[] = PRETTY_OUTPUT_INDENTATION;
+#if defined(TRACE_OUT_INDENTATION)
+	const char INDENTATION[] = TRACE_OUT_INDENTATION;
 #else
 	const char INDENTATION[] = "    ";
 #endif

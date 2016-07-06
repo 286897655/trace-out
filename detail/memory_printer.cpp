@@ -1,7 +1,7 @@
-#include "memory_printer.h"
+#include "memory_printer.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const char *const BINARY_VALUES[] = {

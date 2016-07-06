@@ -4,7 +4,7 @@
 #include <cstdarg>
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	size_t printf_string_length(const char *format, va_list arguments);

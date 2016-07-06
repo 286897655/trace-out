@@ -3,7 +3,7 @@
 #include <cstdint>
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	uint64_t current_thread_id();

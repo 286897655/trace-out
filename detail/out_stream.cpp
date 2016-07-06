@@ -3,23 +3,23 @@
 #include <cstdlib>
 #include <sstream>
 
-#include "constants.h"
-#include "system_thread_local_storage.h"
-#include "system_mutex.h"
-#include "system_thread.h"
-#include "stdlib_specific.h"
+#include "constants.hpp"
+#include "system_thread_local_storage.hpp"
+#include "system_mutex.hpp"
+#include "system_thread.hpp"
+#include "stdlib_specific.hpp"
 
-#include "out_stream.h"
+#include "out_stream.hpp"
 
 
-#if defined(PRETTY_OUTPUT_REDIRECTION)
-	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE PRETTY_OUTPUT_REDIRECTION
+#if defined(TRACE_OUT_REDIRECTION)
+	#define TRACE_OUT_REDIRECTION_NAMESPACE TRACE_OUT_REDIRECTION
 #else
-	#define PRETTY_OUTPUT_REDIRECTION_NAMESPACE pretty_output_to_stdout
+	#define TRACE_OUT_REDIRECTION_NAMESPACE trace_out_to_stdout
 #endif
 
 
-namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
+namespace TRACE_OUT_REDIRECTION_NAMESPACE
 {
 
 	void print(const char *string);
@@ -29,7 +29,7 @@ namespace PRETTY_OUTPUT_REDIRECTION_NAMESPACE
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const class newline_manipulator {} NEWLINE = newline_manipulator();
@@ -56,7 +56,7 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const std::string current_thread_name()
@@ -79,21 +79,21 @@ namespace pretty_output { namespace detail
 
 	void lock_output()
 	{
-#if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+#if !defined(TRACE_OUT_NO_OUTPUT_SYNC)
 
 		_output_mutex.lock();
 
-#endif // !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+#endif // !defined(TRACE_OUT_NO_OUTPUT_SYNC)
 	}
 
 
 	void unlock_output()
 	{
-#if !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+#if !defined(TRACE_OUT_NO_OUTPUT_SYNC)
 
 		_output_mutex.unlock();
 
-#endif // !defined(PRETTY_OUTPUT_NO_OUTPUT_SYNC)
+#endif // !defined(TRACE_OUT_NO_OUTPUT_SYNC)
 	}
 
 
@@ -143,7 +143,8 @@ namespace pretty_output { namespace detail
 	}
 
 
-	out_stream::out_stream(const std::string &filename_line) :
+	out_stream::out_stream(const std::string &filename_line)
+		:
 		_current_line_length(0)
 	{
 		lock_output();
@@ -160,7 +161,8 @@ namespace pretty_output { namespace detail
 	}
 
 
-	out_stream::out_stream() :
+	out_stream::out_stream()
+		:
 		_current_line_length(0)
 	{
 		lock_output();
@@ -185,7 +187,7 @@ namespace pretty_output { namespace detail
 	out_stream &out_stream::operator <<(char character)
 	{
 		char string[2] = {character, '\0'};
-		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
+		TRACE_OUT_REDIRECTION_NAMESPACE::print(string);
 		++_current_line_length;
 
 		return *this;
@@ -194,7 +196,7 @@ namespace pretty_output { namespace detail
 
 	out_stream &out_stream::operator <<(const char *string)
 	{
-		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::print(string);
+		TRACE_OUT_REDIRECTION_NAMESPACE::print(string);
 		_current_line_length += std::strlen(string);
 
 		return *this;
@@ -265,21 +267,21 @@ namespace pretty_output { namespace detail
 
 	void out_stream::flush()
 	{
-		PRETTY_OUTPUT_REDIRECTION_NAMESPACE::flush();
+		TRACE_OUT_REDIRECTION_NAMESPACE::flush();
 	}
 
 
 	size_t out_stream::width()
 	{
-#if defined(PRETTY_OUTPUT_WIDTH)
+#if defined(TRACE_OUT_WIDTH)
 
-		return PRETTY_OUTPUT_WIDTH;
+		return TRACE_OUT_WIDTH;
 
 #else
 
-		return PRETTY_OUTPUT_REDIRECTION_NAMESPACE::width();
+		return TRACE_OUT_REDIRECTION_NAMESPACE::width();
 
-#endif // defined(PRETTY_OUTPUT_WIDTH)
+#endif // defined(TRACE_OUT_WIDTH)
 	}
 
 
@@ -360,7 +362,7 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	out_stream &operator <<(out_stream &stream, const pretty<long long> &value)
 	{
@@ -375,7 +377,7 @@ namespace pretty_output { namespace detail
 		return stream << to_string(value.get());
 	}
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
 	out_stream &operator <<(out_stream &stream, const pretty<float> &value)

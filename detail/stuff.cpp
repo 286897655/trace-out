@@ -1,9 +1,9 @@
-#include "platform_specific.h"
-#include "constants.h"
-#include "stuff.h"
+#include "platform_specific.hpp"
+#include "constants.hpp"
+#include "stuff.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const std::string filename_from_path(const char *path)

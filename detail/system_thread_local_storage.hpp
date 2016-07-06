@@ -1,10 +1,10 @@
 #pragma once
 
-#include "platform_defines.h"
-#include "resource.h"
+#include "platform_defines.hpp"
+#include "resource.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	typedef struct _tlskey *tlskey_t;
@@ -29,12 +29,12 @@ namespace pretty_output { namespace detail
 		tls(const tls &another);
 		tls &operator =(const tls &another);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		tls(tls &&another);
 		tls &operator =(tls &&another);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		resource<tlskey_t> _key;
 	};
@@ -43,11 +43,12 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
-	tls<Type_t>::tls() :
+	tls<Type_t>::tls()
+		:
 		_key(tls_new_key(), tls_delete_key)
 	{
 	}

@@ -1,7 +1,7 @@
-#include "statements_printer.h"
+#include "statements_printer.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	auto_indentation::auto_indentation()
@@ -16,14 +16,16 @@ namespace pretty_output { namespace detail
 	}
 
 
-	block::block(bool value) :
+	block::block(bool value)
+		:
 		_auto_indentation(),
 		_value(value)
 	{
 	}
 
 
-	block::block(const block &another) :
+	block::block(const block &another)
+		:
 		_auto_indentation(),
 		_value(another._value)
 	{
@@ -57,7 +59,8 @@ namespace pretty_output { namespace detail
 
 
 
-	for_block::for_block(const std::string &filename_line, const char *expression) :
+	for_block::for_block(const std::string &filename_line, const char *expression)
+		:
 		_iteration_number(0)
 	{
 		out_stream stream(filename_line);

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "platform_defines.h"
+#include "platform_defines.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
@@ -22,12 +22,12 @@ namespace pretty_output { namespace detail
 		resource(const resource &);
 		resource &operator =(const resource &);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		resource(resource &&another);
 		resource &operator =(resource &&another);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		Type_t _handle;
 		deleter_t _deleter;
@@ -37,11 +37,12 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
-	resource<Type_t>::resource(Type_t handle, deleter_t deleter) :
+	resource<Type_t>::resource(Type_t handle, deleter_t deleter)
+		:
 		_handle(handle),
 		_deleter(deleter)
 	{

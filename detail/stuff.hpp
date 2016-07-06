@@ -7,30 +7,32 @@
 #include <ios>
 #include <sstream>
 
+#include "platform_defines.hpp"
 
-#define PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b) \
+
+#define TRACE_OUT_PRIVATE__CONCAT_IMPL(a, b) \
 			a##b
 
-#define PRETTY_OUTPUT_PRIVATE__CONCAT(a, b) \
-			PRETTY_OUTPUT_PRIVATE__CONCAT_IMPL(a, b)
+#define TRACE_OUT_PRIVATE__CONCAT(a, b) \
+			TRACE_OUT_PRIVATE__CONCAT_IMPL(a, b)
 
-#define PRETTY_OUTPUT_PRIVATE__UNIFY(identifier_base) \
-			PRETTY_OUTPUT_PRIVATE__CONCAT(identifier_base, __COUNTER__)
+#define TRACE_OUT_PRIVATE__UNIFY(identifier_base) \
+			TRACE_OUT_PRIVATE__CONCAT(identifier_base, __COUNTER__)
 
-#define PRETTY_OUTPUT_FILENAME_LINE \
-			(pretty_output::detail::filename_line_field(pretty_output::detail::filename_from_path(__FILE__), __LINE__))
+#define TRACE_OUT_FILENAME_LINE \
+			(trace_out::detail::filename_line_field(trace_out::detail::filename_from_path(__FILE__), __LINE__))
 
 
 #if defined(__GNUG__) || defined(__clang__)
-	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
+	#define TRACE_OUT_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #elif defined(_MSC_VER)
-	#define PRETTY_OUTPUT_FUNCTION_SIGNATURE __FUNCSIG__
+	#define TRACE_OUT_FUNCTION_SIGNATURE __FUNCSIG__
 #else
 	#error Cannot find function signature macro for current compiler. Try to add one manualy to this block.
 #endif
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const std::string filename_from_path(const char *path);
@@ -73,7 +75,7 @@ namespace pretty_output { namespace detail
 	};
 
 
-#define PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(type) \
+#define TRACE_OUT__DEFINE_IS_FUNDAMENTAL(type) \
 			template <> \
 			struct is_fundamental<type> \
 			{ \
@@ -84,28 +86,28 @@ namespace pretty_output { namespace detail
 			}
 
 
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(char);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed char);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned char);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed short int);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned short int);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed int);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned int);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed long int);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned long int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(char);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(signed char);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(unsigned char);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(signed short int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(unsigned short int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(signed int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(unsigned int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(signed long int);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(unsigned long int);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(signed long long);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(unsigned long long);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(signed long long);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(unsigned long long);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(float);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(double);
-	PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL(long double);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(float);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(double);
+	TRACE_OUT__DEFINE_IS_FUNDAMENTAL(long double);
 
-#undef PRETTY_OUTPUT__DEFINE_IS_FUNDAMENTAL
+#undef TRACE_OUT__DEFINE_IS_FUNDAMENTAL
 
 
 	template <typename Type_t>
@@ -166,6 +168,8 @@ namespace pretty_output { namespace detail
 	};
 
 
+#if defined(TRACE_OUT_CPP11)
+
 	// need this to fix printing of std::tuple
 	template <typename ...Types_t>
 	struct sizeof_pack
@@ -176,11 +180,13 @@ namespace pretty_output { namespace detail
 		};
 	};
 
+#endif // defined(TRACE_OUT_CPP11)
+
 }
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>

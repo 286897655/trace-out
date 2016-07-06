@@ -1,13 +1,13 @@
-#include "../platform_defines.h"
-#if defined(PRETTY_OUTPUT_WINDOWS)
+#include "../platform_defines.hpp"
+#if defined(TRACE_OUT_WINDOWS)
 
 #include <cassert>
 #include <windows.h>
 
-#include "../system_thread_local_storage.h"
+#include "../system_thread_local_storage.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	struct _tlskey
@@ -52,5 +52,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif // defined(PRETTY_OUTPUT_WINDOWS)
+#endif // defined(TRACE_OUT_WINDOWS)
 

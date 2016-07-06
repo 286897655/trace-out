@@ -4,19 +4,19 @@
 #include <memory>
 #include <string>
 
-#include "platform_defines.h"
-#if defined(PRETTY_OUTPUT_CPP11)
+#include "platform_defines.hpp"
+#if defined(TRACE_OUT_CPP11)
 	#include <tuple>
 #endif
 
-#include "stuff.h"
-#include "pretty.h"
+#include "stuff.hpp"
+#include "pretty.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-#define PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(field_name) \
+#define TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(field_name) \
 			template <typename Struct_t> \
 			struct has_##field_name \
 			{ \
@@ -50,33 +50,33 @@ namespace pretty_output { namespace detail
 			}
 
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(x);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(y);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(x);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(z);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(width);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(height);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(height);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(origin);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(size);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(size);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(X);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Y);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(X);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Z);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(WIDTH);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(HEIGHT);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(WIDTH);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(HEIGHT);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(ORIGIN);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(SIZE);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(ORIGIN);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(SIZE);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Width);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Height);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Height);
 
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Origin);
-	PRETTY_OUTPUT_PRIVATE__DEFINE_HAS_FIELD(Size);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Size);
 
-#undef PRETTY_OUTPUT_PRIVATE_DEFINE_HAS_FIELD
+#undef TRACE_OUT_PRIVATE_DEFINE_HAS_FIELD
 
 
 	const std::string &indentation();
@@ -130,12 +130,12 @@ namespace pretty_output { namespace detail
 	out_stream &operator <<(out_stream &stream, const pretty<long> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<unsigned long> &value);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	out_stream &operator <<(out_stream &stream, const pretty<long long> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<unsigned long long> &value);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 	out_stream &operator <<(out_stream &stream, const pretty<float> &value);
 	out_stream &operator <<(out_stream &stream, const pretty<double> &value);
@@ -160,7 +160,7 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value);
@@ -168,12 +168,12 @@ namespace pretty_output { namespace detail
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 	template <typename First_t, typename Second_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::pair<First_t, Second_t> > &value);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename ...Types_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::tuple<Types_t ...> > &value);
@@ -181,10 +181,10 @@ namespace pretty_output { namespace detail
 	template <template <typename ...> class Container, typename ...Parameters_t>
 	out_stream &operator <<(out_stream &stream, const pretty<Container<Parameters_t ...> > &value);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const watches<Type_t> &values);
@@ -192,7 +192,7 @@ namespace pretty_output { namespace detail
 	template <typename ...Types_t>
 	out_stream &operator <<(out_stream &stream, const watches<Types_t ...> &values);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 	out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value);
 
@@ -203,7 +203,7 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
@@ -417,7 +417,7 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value)
@@ -443,7 +443,7 @@ namespace pretty_output { namespace detail
 		return stream << make_pretty(pointer.get());
 	}
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
 	template <typename First_t, typename Second_t>
@@ -458,7 +458,7 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <std::size_t Index, typename ...Types_t>
 	typename enable_if<Index == sizeof_pack<Types_t...>::value - 1, out_stream &>::type print_tuple(out_stream &stream, const std::tuple<Types_t...> &tuple)
@@ -467,7 +467,7 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_MVS)
+#if defined(TRACE_OUT_MVS)
 
 	#pragma warning(push)
 	#pragma warning(disable:4296) // "expression is always false"
@@ -525,10 +525,10 @@ namespace pretty_output { namespace detail
 		return stream;
 	}
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const watches<Type_t> &values)
@@ -545,7 +545,7 @@ namespace pretty_output { namespace detail
 		return stream << values.first_name() << " = " << values.first_pretty() << NEWLINE << values.rest();
 	}
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
 	template <typename Type_t>

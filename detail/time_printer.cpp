@@ -1,10 +1,10 @@
-#include "stuff.h"
-#include "out_stream.h"
+#include "stuff.hpp"
+#include "out_stream.hpp"
 
-#include "time_printer.h"
+#include "time_printer.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	void print_execution_time_in_milliseconds(const std::string &filename_line, uint64_t milliseconds)

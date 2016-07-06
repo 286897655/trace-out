@@ -1,14 +1,14 @@
-#include "../platform_defines.h"
-#if defined(PRETTY_OUTPUT_POSIX)
+#include "../platform_defines.hpp"
+#if defined(TRACE_OUT_POSIX)
 
 #include <cstddef>
 #include <cassert>
 #include <sys/time.h>
 
-#include "../system_time.h"
+#include "../system_time.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	uint64_t time_in_milliseconds()
@@ -28,5 +28,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif // defined(PRETTY_OUTPUT_POSIX)
+#endif // defined(TRACE_OUT_POSIX)
 

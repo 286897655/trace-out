@@ -1,10 +1,10 @@
 #pragma once
 
-#include "platform_defines.h"
-#include "stuff.h"
+#include "platform_defines.hpp"
+#include "stuff.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t, bool Is_fundamental>

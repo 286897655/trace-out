@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "out_stream.h"
+#include "out_stream.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	class function_printer
@@ -43,7 +43,7 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>

@@ -1,10 +1,11 @@
-#include "system_mutex.h"
+#include "system_mutex.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-	mutex::mutex() :
+	mutex::mutex()
+		:
 		_handle(mutex_new(), mutex_delete)
 	{
 	}

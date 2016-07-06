@@ -1,10 +1,10 @@
-#include "../platform_defines.h"
-#if defined(PRETTY_OUTPUT_WINDOWS)
+#include "../platform_defines.hpp"
+#if defined(TRACE_OUT_WINDOWS)
 
-#include "../platform_specific.h"
+#include "../platform_specific.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	const char FILE_PATH_COMPONENT_DELIMITER = '\\';
@@ -13,5 +13,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif // defined(PRETTY_OUTPUT_WINDOWS)
+#endif // defined(TRACE_OUT_WINDOWS)
 

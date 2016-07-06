@@ -1,12 +1,12 @@
-#include "../platform_defines.h"
-#if defined(PRETTY_OUTPUT_WINDOWS)
+#include "../platform_defines.hpp"
+#if defined(TRACE_OUT_WINDOWS)
 
 #include <windows.h>
 
-#include "../system_thread.h"
+#include "../system_thread.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	uint64_t current_thread_id()
@@ -18,5 +18,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif // defined(PRETTY_OUTPUT_WINDOWS)
+#endif // defined(TRACE_OUT_WINDOWS)
 

@@ -1,12 +1,12 @@
-#include "../platform_defines.h"
-#if defined(PRETTY_OUTPUT_POSIX)
+#include "../platform_defines.hpp"
+#if defined(TRACE_OUT_POSIX)
 
 #include <cstdio>
 
-#include "../stdlib_specific.h"
+#include "../stdlib_specific.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	size_t printf_string_length(const char *format, va_list arguments)
@@ -26,5 +26,5 @@ namespace pretty_output { namespace detail
 }
 
 
-#endif // defined(PRETTY_OUTPUT_POSIX)
+#endif // defined(TRACE_OUT_POSIX)
 

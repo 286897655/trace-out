@@ -2,15 +2,15 @@
 
 #include <string>
 
-#include "platform_defines.h"
-#include "pretty.h"
-#include "out_stream.h"
+#include "platform_defines.hpp"
+#include "pretty.hpp"
+#include "out_stream.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-#if !defined(PRETTY_OUTPUT_CPP11)
+#if !defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	const Type_t &expression(const std::string &filename_line, const char *name, const Type_t &value);
@@ -26,16 +26,16 @@ namespace pretty_output { namespace detail
 	template <typename ...Types_t>
 	void watch(const std::string &filename_line, const char *names, const Types_t &...arguments);
 
-#endif // !defined(PRETTY_OUTPUT_CPP11)
+#endif // !defined(TRACE_OUT_CPP11)
 
 }
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-#if !defined(PRETTY_OUTPUT_CPP11)
+#if !defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
 	const Type_t &expression(const std::string &filename_line, const char *name, const Type_t &value)
@@ -72,7 +72,7 @@ namespace pretty_output { namespace detail
 		stream << make_watches(names, arguments...) << ENDLINE;
 	}
 
-#endif // !defined(PRETTY_OUTPUT_CPP11)
+#endif // !defined(TRACE_OUT_CPP11)
 
 }
 }

@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "platform_defines.h"
-#include "stuff.h"
-#include "type_promotions.h"
+#include "platform_defines.hpp"
+#include "stuff.hpp"
+#include "type_promotions.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
@@ -23,11 +23,11 @@ namespace pretty_output { namespace detail
 	private:
 		pretty &operator =(const pretty &another); // = delete
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		pretty &operator =(pretty &&another); // = delete
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		const Type_t &_data;
 	};
@@ -37,7 +37,7 @@ namespace pretty_output { namespace detail
 	pretty<typename promote<Type_t>::type> make_pretty(const Type_t &value);
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename ...>
 	class watches;
@@ -86,7 +86,7 @@ namespace pretty_output { namespace detail
 	template <typename ...Types_t>
 	watches<Types_t ...> make_watches(const std::string &names, const Types_t &...arguments);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
 	template <typename Type_t>
@@ -101,11 +101,11 @@ namespace pretty_output { namespace detail
 	private:
 		pretty_bool &operator =(const pretty_bool &another); // = delete
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		pretty_bool &operator =(pretty_bool &&another); // = delete
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		const Type_t &_data;
 	};
@@ -118,18 +118,20 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>
-	pretty<Type_t>::pretty(const Type_t &data) :
+	pretty<Type_t>::pretty(const Type_t &data)
+		:
 		_data(data)
 	{
 	}
 
 
 	template <typename Type_t>
-	pretty<Type_t>::pretty(const pretty &another) :
+	pretty<Type_t>::pretty(const pretty &another)
+		:
 		_data(another._data)
 	{
 	}
@@ -160,10 +162,11 @@ namespace pretty_output { namespace detail
 	}
 
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t ...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest) :
+	watches<Type_t, Types_t ...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest)
+		:
 		_first_name(first_token(names)),
 		_first_pretty(first),
 		_rest(rest_tokens(names), rest...)
@@ -172,7 +175,8 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t ...>::watches(const watches<Type_t, Types_t ...> &another) :
+	watches<Type_t, Types_t ...>::watches(const watches<Type_t, Types_t ...> &another)
+		:
 		_first_name(another._first_name),
 		_first_pretty(another._first_pretty),
 		_rest(another._rest)
@@ -203,7 +207,8 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t>
-	watches<Type_t>::watches(const std::string &name, const Type_t &first) :
+	watches<Type_t>::watches(const std::string &name, const Type_t &first)
+		:
 		_first_name(name),
 		_first_pretty(first)
 	{
@@ -211,7 +216,8 @@ namespace pretty_output { namespace detail
 
 
 	template <typename Type_t>
-	watches<Type_t>::watches(const watches<Type_t> &another) :
+	watches<Type_t>::watches(const watches<Type_t> &another)
+		:
 		_first_name(another._first_name),
 		_first_pretty(another._first_pretty)
 	{
@@ -239,18 +245,20 @@ namespace pretty_output { namespace detail
 		return watches<Types_t ...>(names, arguments...);
 	}
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 
 	template <typename Type_t>
-	pretty_bool<Type_t>::pretty_bool(const Type_t &data) :
+	pretty_bool<Type_t>::pretty_bool(const Type_t &data)
+		:
 		_data(data)
 	{
 	}
 
 
 	template <typename Type_t>
-	pretty_bool<Type_t>::pretty_bool(const pretty_bool &another) :
+	pretty_bool<Type_t>::pretty_bool(const pretty_bool &another)
+		:
 		_data(another._data)
 	{
 	}

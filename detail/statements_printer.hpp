@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "platform_defines.h"
-#include "pretty.h"
-#include "out_stream.h"
+#include "platform_defines.hpp"
+#include "pretty.hpp"
+#include "out_stream.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	class auto_indentation
@@ -30,11 +30,11 @@ namespace pretty_output { namespace detail
 	private:
 		block &operator =(const block &another); // = delete
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		block &operator =(block &&another); // = delete
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		auto_indentation _auto_indentation;
 		bool _value;
@@ -75,7 +75,7 @@ namespace pretty_output { namespace detail
 }
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	template <typename Type_t>

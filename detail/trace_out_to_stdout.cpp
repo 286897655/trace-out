@@ -1,12 +1,12 @@
-#if !defined(PRETTY_OUTPUT_REDIRECTION)
+#if !defined(TRACE_OUT_REDIRECTION)
 
 #include <cstddef>
 #include <iostream>
 
-#include "system_console.h"
+#include "system_console.hpp"
 
 
-namespace pretty_output_to_stdout
+namespace trace_out_to_stdout
 {
 
 	void print(const char *string);
@@ -16,7 +16,7 @@ namespace pretty_output_to_stdout
 }
 
 
-namespace pretty_output_to_stdout
+namespace trace_out_to_stdout
 {
 
 	const size_t DEFAULT_WIDTH = 79;
@@ -36,7 +36,7 @@ namespace pretty_output_to_stdout
 
 	size_t width()
 	{
-		int width = pretty_output::detail::console_width();
+		int width = trace_out::detail::console_width();
 		if (width == -1)
 		{
 			return DEFAULT_WIDTH;
@@ -48,5 +48,5 @@ namespace pretty_output_to_stdout
 }
 
 
-#endif // !defined(PRETTY_OUTPUT_REDIRECTION)
+#endif // !defined(TRACE_OUT_REDIRECTION)
 

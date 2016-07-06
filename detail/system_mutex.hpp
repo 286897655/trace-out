@@ -1,10 +1,10 @@
 #pragma once
 
-#include "platform_defines.h"
-#include "resource.h"
+#include "platform_defines.hpp"
+#include "resource.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	typedef struct _mutex *mutex_t;
@@ -27,12 +27,12 @@ namespace pretty_output { namespace detail
 		mutex(const mutex &another);
 		mutex &operator =(const mutex &another);
 
-#if defined(PRETTY_OUTPUT_CPP11)
+#if defined(TRACE_OUT_CPP11)
 
 		mutex(mutex &&another);
 		mutex &operator =(mutex &&another);
 
-#endif // defined(PRETTY_OUTPUT_CPP11)
+#endif // defined(TRACE_OUT_CPP11)
 
 		resource<mutex_t> _handle;
 	};

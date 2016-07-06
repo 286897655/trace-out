@@ -1,12 +1,13 @@
-#include "constants.h"
+#include "constants.hpp"
 
-#include "function_printer.h"
+#include "function_printer.hpp"
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
-	function_printer::function_printer(const std::string &filename_line, const char *function_signature) :
+	function_printer::function_printer(const std::string &filename_line, const char *function_signature)
+		:
 		_filename_line(filename_line),
 		_function_signature(function_signature)
 	{
@@ -31,7 +32,8 @@ namespace pretty_output { namespace detail
 
 
 
-	return_printer::return_printer(const std::string &filename_line) :
+	return_printer::return_printer(const std::string &filename_line)
+		:
 		_filename_line(filename_line)
 	{
 	}

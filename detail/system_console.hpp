@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace pretty_output { namespace detail
+namespace trace_out { namespace detail
 {
 
 	int console_width();
