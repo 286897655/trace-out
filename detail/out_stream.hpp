@@ -16,13 +16,13 @@
 namespace trace_out { namespace detail
 {
 
-#define TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(field_name) \
+#define TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(name) \
 			template <typename Struct_t> \
-			struct has_##field_name \
+			struct has_data_member_##name \
 			{ \
 				struct fallback \
 				{ \
-					int field_name; \
+					int name; \
 				}; \
 				\
 				struct dummy \
@@ -38,7 +38,7 @@ namespace trace_out { namespace detail
 				struct check; \
 				\
 				template <typename Type_t> \
-				static char (&function(check<int fallback::*, &Type_t::field_name> *))[1]; \
+				static char (&function(check<int fallback::*, &Type_t::name> *))[1]; \
 				\
 				template <typename Type_t> \
 				static char (&function(...))[2]; \
@@ -50,33 +50,33 @@ namespace trace_out { namespace detail
 			}
 
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(x);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(y);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(x);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(z);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(width);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(height);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(height);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(origin);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(size);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(size);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(X);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Y);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(X);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Z);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(WIDTH);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(HEIGHT);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(WIDTH);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(HEIGHT);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(ORIGIN);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(SIZE);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(ORIGIN);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(SIZE);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Width);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Height);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Height);
 
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Origin);
-	TRACE_OUT_PRIVATE__DEFINE_HAS_FIELD(Size);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Size);
 
-#undef TRACE_OUT_PRIVATE_DEFINE_HAS_FIELD
+#undef TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER
 
 
 	const std::string &indentation();
@@ -149,13 +149,13 @@ namespace trace_out { namespace detail
 	out_stream &operator <<(out_stream &stream, const pretty<Type_t *> &value);
 
 	template <typename Type_t>
-	typename enable_if<has_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
+	typename enable_if<has_data_member_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
 
 	template <typename Type_t>
-	typename enable_if<has_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
+	typename enable_if<has_data_member_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
 
 	template <typename Type_t>
-	typename enable_if<has_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
+	typename enable_if<has_data_member_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value);
 
 	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::auto_ptr<Type_t> > &value);
@@ -230,7 +230,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
@@ -239,7 +239,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
@@ -248,14 +248,14 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<!(has_z<Type_t>::value || has_Z<Type_t>::value), out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &)
+	typename enable_if<!(has_data_member_z<Type_t>::value || has_data_member_Z<Type_t>::value), out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &)
 	{
 		return stream << ")";
 	}
 
 
 	template <typename Type_t>
-	typename enable_if<has_y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
@@ -265,7 +265,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Y<Type_t>::value, out_stream &>::type print_y(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
@@ -275,7 +275,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_x<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.get();
@@ -285,7 +285,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_X<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_X<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.get();
@@ -295,7 +295,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.unsafe_get();
@@ -304,7 +304,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Height<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.unsafe_get();
@@ -313,7 +313,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_HEIGHT<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_HEIGHT<Type_t>::value, out_stream &>::type print_height(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.unsafe_get();
@@ -322,7 +322,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.get();
@@ -332,7 +332,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Width<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.get();
@@ -342,7 +342,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_WIDTH<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_WIDTH<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &size = value.get();
@@ -352,7 +352,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.unsafe_get();
@@ -361,7 +361,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Size<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.unsafe_get();
@@ -370,7 +370,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_SIZE<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_SIZE<Type_t>::value, out_stream &>::type print_size(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.unsafe_get();
@@ -379,7 +379,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.get();
@@ -389,7 +389,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_Origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_Origin<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.get();
@@ -399,7 +399,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	typename enable_if<has_ORIGIN<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
+	typename enable_if<has_data_member_ORIGIN<Type_t>::value, out_stream &>::type operator <<(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &rect = value.get();
