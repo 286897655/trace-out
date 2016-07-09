@@ -163,10 +163,13 @@ namespace trace_out { namespace detail
 #if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
+	out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value);
+
+	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value);
 
 	template <typename Type_t>
-	out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value);
+	out_stream &operator <<(out_stream &stream, const pretty<std::weak_ptr<Type_t> > &value);
 
 #endif // defined(TRACE_OUT_CPP11)
 
@@ -420,11 +423,20 @@ namespace trace_out { namespace detail
 #if defined(TRACE_OUT_CPP11)
 
 	template <typename Type_t>
+	out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value)
+	{
+		stream << FLUSH;
+		const std::unique_ptr<Type_t> &pointer = value.get();
+		return stream << make_pretty(pointer.get());
+	}
+
+
+	template <typename Type_t>
 	out_stream &operator <<(out_stream &stream, const pretty<std::shared_ptr<Type_t> > &value)
 	{
 		stream << FLUSH;
 		const std::shared_ptr<Type_t> &pointer = value.get();
-		stream << make_pretty(static_cast<const void *>(pointer.get())) << ", use_count = " << to_string(pointer.use_count());
+		stream << make_pretty(static_cast<const void *>(pointer.get())) << " (use_count: " << to_string(pointer.use_count()) << ")";
 		if (pointer.get() != NULL)
 		{
 			stream << " -> " << FLUSH;
@@ -436,11 +448,13 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	out_stream &operator <<(out_stream &stream, const pretty<std::unique_ptr<Type_t> > &value)
+	out_stream &operator <<(out_stream &stream, const pretty<std::weak_ptr<Type_t> > &value)
 	{
 		stream << FLUSH;
-		const std::unique_ptr<Type_t> &pointer = value.get();
-		return stream << make_pretty(pointer.get());
+		const std::weak_ptr<Type_t> &pointer = value.get();
+		stream << "(use_count: " << to_string(pointer.use_count()) << ")";
+
+		return stream;
 	}
 
 #endif // defined(TRACE_OUT_CPP11)
