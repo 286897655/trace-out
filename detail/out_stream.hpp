@@ -53,6 +53,7 @@ namespace trace_out { namespace detail
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(x);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(y);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(w);
 
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(width);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(height);
@@ -63,6 +64,7 @@ namespace trace_out { namespace detail
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(X);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Y);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(W);
 
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(WIDTH);
 	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(HEIGHT);
@@ -233,11 +235,37 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
+	typename enable_if<has_data_member_w<Type_t>::value, out_stream &>::type print_w(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		return stream << ", " << make_pretty(point.w) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<has_data_member_W<Type_t>::value, out_stream &>::type print_W(out_stream &stream, const pretty<Type_t> &value)
+	{
+		stream << FLUSH;
+		const Type_t &point = value.unsafe_get();
+		return stream << ", " << make_pretty(point.W) << ")";
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<!(has_data_member_w<Type_t>::value || has_data_member_W<Type_t>::value), out_stream &>::type print_w(out_stream &stream, const pretty<Type_t> &)
+	{
+		return stream << ")";
+	}
+
+
+	template <typename Type_t>
 	typename enable_if<has_data_member_z<Type_t>::value, out_stream &>::type print_z(out_stream &stream, const pretty<Type_t> &value)
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
-		return stream << ", " << make_pretty(point.z) << ")";
+		stream << ", " << make_pretty(point.z);
+		return print_w(stream, value);
 	}
 
 
@@ -246,7 +274,8 @@ namespace trace_out { namespace detail
 	{
 		stream << FLUSH;
 		const Type_t &point = value.unsafe_get();
-		return stream << ", " << make_pretty(point.Z) << ")";
+		stream << ", " << make_pretty(point.Z);
+		return print_w(stream, value);
 	}
 
 
