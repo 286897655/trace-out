@@ -83,7 +83,7 @@ namespace trace_out { namespace detail
 	{
 		out_stream stream(filename_line);
 		stream << "if (" << condition << ") => " << FLUSH;
-		stream << make_pretty_bool(value) << ENDLINE;
+		stream << make_pretty_condition(value) << ENDLINE;
 
 		return block(!!value);
 	}
@@ -97,7 +97,7 @@ namespace trace_out { namespace detail
 
 			out_stream stream(filename_line);
 			stream << "// while: " << condition << " => " << FLUSH;
-			stream << make_pretty_bool(value) << ENDLINE;
+			stream << make_pretty_condition(value) << ENDLINE;
 		}
 
 		return block(!!value);

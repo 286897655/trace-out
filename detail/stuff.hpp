@@ -141,7 +141,6 @@ namespace trace_out { namespace detail
 	};
 
 
-
 	template <bool Condition, typename True_t, typename False_t>
 	struct conditional
 	{
@@ -181,6 +180,80 @@ namespace trace_out { namespace detail
 	};
 
 #endif // defined(TRACE_OUT_CPP11)
+
+
+#define TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(name) \
+			template <typename Struct_t> \
+			struct has_data_member_##name \
+			{ \
+				struct fallback \
+				{ \
+					int name; \
+				}; \
+				\
+				struct dummy \
+				{ \
+				}; \
+				\
+				struct derived \
+					: conditional<!is_primitive<Struct_t>::value, Struct_t, dummy>::type, fallback \
+				{ \
+				}; \
+				\
+				template <typename Type_t, Type_t> \
+				struct check; \
+				\
+				template <typename Type_t> \
+				static char (&function(check<int fallback::*, &Type_t::name> *))[1]; \
+				\
+				template <typename Type_t> \
+				static char (&function(...))[2]; \
+				\
+				enum \
+				{ \
+					value = sizeof(function<derived>(0)) == 2 \
+				}; \
+			}
+
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(x);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(w);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(height);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(size);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(X);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Y);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Z);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(W);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(WIDTH);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(HEIGHT);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(ORIGIN);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(SIZE);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Width);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Height);
+
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Origin);
+	TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER(Size);
+
+#undef TRACE_OUT_PRIVATE__DEFINE_HAS_DATA_MEMBER
+
+	template <typename Type_t>
+	struct is_dimensional
+	{
+		enum
+		{
+			value = has_data_member_x<Type_t>::value || has_data_member_X<Type_t>::value || has_data_member_width<Type_t>::value || has_data_member_Width<Type_t>::value || has_data_member_WIDTH<Type_t>::value || has_data_member_origin<Type_t>::value || has_data_member_Origin<Type_t>::value || has_data_member_ORIGIN<Type_t>::value
+		};
+	};
 
 }
 }

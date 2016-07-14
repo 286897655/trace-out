@@ -406,7 +406,7 @@ namespace trace_out { namespace detail
 		stream << FLUSH;
 		if (value.get() == NULL)
 		{
-			return stream << "(null)";
+			return stream << "<null>";
 		}
 
 		uintptr_t numeric_value = reinterpret_cast<uintptr_t>(value.get());
@@ -414,7 +414,7 @@ namespace trace_out { namespace detail
 	}
 
 
-	out_stream &operator <<(out_stream &stream, const pretty_bool<bool> &value)
+	out_stream &operator <<(out_stream &stream, const pretty_condition<bool> &value)
 	{
 		stream << FLUSH;
 		return stream << (value.get() ? "true" : "false");

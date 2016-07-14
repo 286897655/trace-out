@@ -33,77 +33,22 @@ namespace trace_out { namespace detail
 	};
 
 
-	template <typename Type_t>
-	pretty<typename promote<Type_t>::type> make_pretty(const Type_t &value);
-
-
-#if defined(TRACE_OUT_CPP11)
-
-	template <typename ...>
-	class watches;
-
-
-	template <typename Type_t, typename ...Types_t>
-	class watches<Type_t, Types_t ...>
-	{
-	public:
-		watches(const std::string &names, const Type_t &first, const Types_t &...rest);
-		watches(const watches<Type_t, Types_t ...> &another);
-
-		const std::string &first_name() const;
-		const pretty<Type_t> &first_pretty() const;
-		const watches<Types_t ...> &rest() const;
-
-	private:
-		std::string _first_name;
-		pretty<Type_t> _first_pretty;
-		watches<Types_t ...> _rest;
-
-		watches<Type_t, Types_t ...> &operator =(const watches<Type_t, Types_t ...> &) = delete;
-		watches<Type_t, Types_t ...> &operator =(watches<Type_t, Types_t ...> &&) = delete;
-	};
-
 
 	template <typename Type_t>
-	class watches<Type_t>
+	class pretty_condition
 	{
 	public:
-		watches(const std::string &name, const Type_t &first);
-		watches(const watches<Type_t> &another);
-
-		const std::string &first_name() const;
-		const pretty<Type_t> &first_pretty() const;
-
-	private:
-		std::string _first_name;
-		pretty<Type_t> _first_pretty;
-
-		watches<Type_t> &operator =(const watches<Type_t> &) = delete;
-		watches<Type_t> &operator =(watches<Type_t> &&) = delete;
-	};
-
-
-	template <typename ...Types_t>
-	watches<Types_t ...> make_watches(const std::string &names, const Types_t &...arguments);
-
-#endif // defined(TRACE_OUT_CPP11)
-
-
-	template <typename Type_t>
-	class pretty_bool
-	{
-	public:
-		pretty_bool(const Type_t &data);
-		pretty_bool(const pretty_bool &another);
+		pretty_condition(const Type_t &data);
+		pretty_condition(const pretty_condition &another);
 
 		const Type_t &get() const;
 
 	private:
-		pretty_bool &operator =(const pretty_bool &another); // = delete
+		pretty_condition &operator =(const pretty_condition &another); // = delete
 
 #if defined(TRACE_OUT_CPP11)
 
-		pretty_bool &operator =(pretty_bool &&another); // = delete
+		pretty_condition &operator =(pretty_condition &&another); // = delete
 
 #endif // defined(TRACE_OUT_CPP11)
 
@@ -112,7 +57,49 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	pretty_bool<Type_t> make_pretty_bool(const Type_t &value);
+	pretty_condition<Type_t> make_pretty_condition(const Type_t &value);
+
+
+	template <typename Type_t>
+	class pretty_compound
+	{
+	public:
+		pretty_compound(const Type_t &data);
+		pretty_compound(const pretty_compound &another);
+
+		const Type_t &get() const;
+		const Type_t &unsafe_get() const;
+
+	private:
+		pretty_compound &operator =(const pretty_compound &another); // = delete
+
+#if defined(TRACE_OUT_CPP11)
+
+		pretty_compound &operator =(pretty_compound &&another); // = delete
+
+#endif // defined(TRACE_OUT_CPP11)
+
+		const Type_t &_data;
+	};
+
+
+
+	template <typename Type_t>
+	typename enable_if<is_dimensional<Type_t>::value, pretty_compound<typename promote<Type_t>::type> >::type make_pretty(const Type_t &value)
+	{
+		typedef typename promote<Type_t>::type promoted_t;
+
+		return pretty_compound<promoted_t>(reinterpret_cast<const promoted_t &>(value));
+	}
+
+
+	template <typename Type_t>
+	typename enable_if<!is_dimensional<Type_t>::value, pretty<typename promote<Type_t>::type> >::type make_pretty(const Type_t &value)
+	{
+		typedef typename promote<Type_t>::type promoted_t;
+
+		return pretty<promoted_t>(reinterpret_cast<const promoted_t &>(value));
+	}
 
 }
 }
@@ -153,103 +140,9 @@ namespace trace_out { namespace detail
 	}
 
 
-	template <typename Type_t>
-	pretty<typename promote<Type_t>::type> make_pretty(const Type_t &value)
-	{
-		typedef typename promote<Type_t>::type promoted_t;
-
-		return pretty<promoted_t>(reinterpret_cast<const promoted_t &>(value));
-	}
-
-
-#if defined(TRACE_OUT_CPP11)
-
-	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t ...>::watches(const std::string &names, const Type_t &first, const Types_t &...rest)
-		:
-		_first_name(first_token(names)),
-		_first_pretty(first),
-		_rest(rest_tokens(names), rest...)
-	{
-	}
-
-
-	template <typename Type_t, typename ...Types_t>
-	watches<Type_t, Types_t ...>::watches(const watches<Type_t, Types_t ...> &another)
-		:
-		_first_name(another._first_name),
-		_first_pretty(another._first_pretty),
-		_rest(another._rest)
-	{
-	}
-
-
-	template <typename Type_t, typename ...Types_t>
-	const std::string &watches<Type_t, Types_t ...>::first_name() const
-	{
-		return _first_name;
-	}
-
-
-	template <typename Type_t, typename ...Types_t>
-	const pretty<Type_t> &watches<Type_t, Types_t ...>::first_pretty() const
-	{
-		return _first_pretty;
-	}
-
-
-	template <typename Type_t, typename ...Types_t>
-	const watches<Types_t ...> &watches<Type_t, Types_t ...>::rest() const
-	{
-		return _rest;
-	}
-
-
 
 	template <typename Type_t>
-	watches<Type_t>::watches(const std::string &name, const Type_t &first)
-		:
-		_first_name(name),
-		_first_pretty(first)
-	{
-	}
-
-
-	template <typename Type_t>
-	watches<Type_t>::watches(const watches<Type_t> &another)
-		:
-		_first_name(another._first_name),
-		_first_pretty(another._first_pretty)
-	{
-	}
-
-
-	template <typename Type_t>
-	const std::string &watches<Type_t>::first_name() const
-	{
-		return _first_name;
-	}
-
-
-	template <typename Type_t>
-	const pretty<Type_t> &watches<Type_t>::first_pretty() const
-	{
-		return _first_pretty;
-	}
-
-
-
-	template <typename ...Types_t>
-	watches<Types_t ...> make_watches(const std::string &names, const Types_t &...arguments)
-	{
-		return watches<Types_t ...>(names, arguments...);
-	}
-
-#endif // defined(TRACE_OUT_CPP11)
-
-
-	template <typename Type_t>
-	pretty_bool<Type_t>::pretty_bool(const Type_t &data)
+	pretty_condition<Type_t>::pretty_condition(const Type_t &data)
 		:
 		_data(data)
 	{
@@ -257,7 +150,7 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	pretty_bool<Type_t>::pretty_bool(const pretty_bool &another)
+	pretty_condition<Type_t>::pretty_condition(const pretty_condition &another)
 		:
 		_data(another._data)
 	{
@@ -265,16 +158,49 @@ namespace trace_out { namespace detail
 
 
 	template <typename Type_t>
-	const Type_t &pretty_bool<Type_t>::get() const
+	const Type_t &pretty_condition<Type_t>::get() const
 	{
 		return _data;
 	}
 
 
 	template <typename Type_t>
-	pretty_bool<Type_t> make_pretty_bool(const Type_t &value)
+	pretty_condition<Type_t> make_pretty_condition(const Type_t &value)
 	{
-		return pretty_bool<Type_t>(value);
+		return pretty_condition<Type_t>(value);
+	}
+
+
+
+	template <typename Type_t>
+	pretty_compound<Type_t>::pretty_compound(const Type_t &data)
+		:
+		_data(data)
+	{
+	}
+
+
+	template <typename Type_t>
+	pretty_compound<Type_t>::pretty_compound(const pretty_compound &another)
+		:
+		_data(another._data)
+	{
+	}
+
+
+	template <typename Type_t>
+	const Type_t &pretty_compound<Type_t>::get() const
+	{
+		crash_on_bad_memory(_data);
+
+		return _data;
+	}
+
+
+	template <typename Type_t>
+	const Type_t &pretty_compound<Type_t>::unsafe_get() const
+	{
+		return _data;
 	}
 
 }
